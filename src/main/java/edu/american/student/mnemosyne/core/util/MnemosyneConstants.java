@@ -24,6 +24,13 @@ public class MnemosyneConstants
 		return toReturn;
 	}
 	
+	public static String getDefaultTable()
+	{
+		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
+		String toReturn = (String)properties.get("defaultTable");
+		return toReturn;
+	}
+	
 	public static String getZookeeperInstance()
 	{
 		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
@@ -31,6 +38,12 @@ public class MnemosyneConstants
 		return toReturn;
 	}
 
+	public static String getZookeeperInstanceName()
+	{
+		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
+		String toReturn = (String)properties.get("zookeeperInstanceName");
+		return toReturn;
+	}
 	public static String getAccumuloUser()
 	{
 		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
