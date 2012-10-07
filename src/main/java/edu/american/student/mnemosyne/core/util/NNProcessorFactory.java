@@ -5,9 +5,8 @@ import edu.american.student.mnemosyne.conf.NetworkConf;
 import edu.american.student.mnemosyne.core.ClassificationNNProcessor;
 import edu.american.student.mnemosyne.core.framework.NNProcessor;
 
-public class NNProcessorBeanFactory
+public class NNProcessorFactory
 {
-
 	
 	public static NNProcessor getProcessorBean(NetworkConf conf)
 	{

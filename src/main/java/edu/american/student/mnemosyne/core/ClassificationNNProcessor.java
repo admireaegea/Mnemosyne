@@ -19,7 +19,7 @@ public class ClassificationNNProcessor extends NNProcessor
 	private AccumuloForeman aForeman = new AccumuloForeman();
 	private List<Node> nodes;
 	@SuppressWarnings("unused")
-	private double[][] interInput ={{.4,.4},{.6,.4},{.4,.6},{.6,.6}};
+	private double[][] interInput ={{.4,.4},{.6,.4},{.4,.6},{.6,.6}};//TODO remove the old paradigm stuff
 	public ClassificationNNProcessor(ClassificationNetworkConf conf2)
 	{
 		this.conf = conf2;

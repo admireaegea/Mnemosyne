@@ -8,7 +8,7 @@ import org.encog.engine.network.activation.ActivationSigmoid;
 import edu.american.student.mnemosyne.conf.ClassificationNetworkConf;
 import edu.american.student.mnemosyne.core.framework.NNProcessor;
 import edu.american.student.mnemosyne.core.util.AccumuloForeman;
-import edu.american.student.mnemosyne.core.util.NNProcessorBeanFactory;
+import edu.american.student.mnemosyne.core.util.NNProcessorFactory;
 
 public class TestHelper
 {
@@ -31,7 +31,7 @@ public class TestHelper
 		conf.setOutputNeuronCount(2);
 		
 		conf.setNumberOfCategories(num);
-		NNProcessor processor = NNProcessorBeanFactory.getProcessorBean(conf);
+		NNProcessor processor = NNProcessorFactory.getProcessorBean(conf);
 		processor.constructNetworks();
 		
 	}

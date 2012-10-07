@@ -27,8 +27,6 @@ import org.apache.accumulo.core.security.ColumnVisibility;
 import org.apache.hadoop.io.Text;
 import org.encog.neural.networks.BasicNetwork;
 
-import edu.american.student.mnemosyne.core.model.Node;
-
 public class AccumuloForeman
 {
 
@@ -200,7 +198,6 @@ public class AccumuloForeman
 	public BasicNetwork inflateNetwork(String tableName,String fam) throws TableNotFoundException, IOException, ClassNotFoundException
 	{
 		List<Entry<Key, Value>> rows = 	this.fetchByColumnFamily(tableName, fam);
-		List<BasicNetwork> toReturn = new ArrayList<BasicNetwork>();
 		for (Entry<Key, Value> entry : rows)
 		{
 			byte[] arr = entry.getValue().get();
@@ -217,6 +214,7 @@ public class AccumuloForeman
 
 	public void assertBaseNetwork(BasicNetwork network) throws IOException
 	{
+		//TODO remove hard coded strings
 		this.saveNetwork("BASE_NETWORK", "RAW_BYTES", network, 0);
 	}
 

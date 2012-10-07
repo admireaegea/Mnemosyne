@@ -13,7 +13,7 @@ import edu.american.student.mnemosyne.core.util.ClassificationNetwork;
 
 public class Node
 {
-
+	//TODO remove this class.
 	private String name = UUID.randomUUID().toString().replace("-", "");
 	private String confType;
 	@SuppressWarnings("unused")

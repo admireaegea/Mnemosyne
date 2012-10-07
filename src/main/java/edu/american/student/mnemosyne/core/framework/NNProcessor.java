@@ -6,7 +6,7 @@ import org.apache.accumulo.core.client.TableNotFoundException;
 
 public abstract class NNProcessor
 {
-
+	//TODO remove old paradigm stuff
 	
 	public abstract void constructNetworks() throws IOException, TableNotFoundException, ClassNotFoundException;
 	

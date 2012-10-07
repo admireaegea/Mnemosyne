@@ -7,7 +7,7 @@ import java.util.Properties;
 
 public class MnemosyneConstants
 {
-
+	//TODO remove hardcoded shit
 	public static String mnemosyneSite  = "conf.mnemosyne-site";
 	
 	public static String getAccumuloInstance()

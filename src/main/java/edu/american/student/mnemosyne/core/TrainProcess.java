@@ -46,13 +46,13 @@ public class TrainProcess implements MnemosyneProcess
 			}
 			catch (Exception e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			if(base != null)
 			{
 				//train shit
 				System.out.println("Training ...");
+				//TODO figure out training process
 			}
 			
 		}

@@ -10,7 +10,7 @@ import org.junit.Test;
 import edu.american.student.mnemosyne.conf.ClassificationNetworkConf;
 import edu.american.student.mnemosyne.core.framework.NNProcessor;
 import edu.american.student.mnemosyne.core.util.AccumuloForeman;
-import edu.american.student.mnemosyne.core.util.NNProcessorBeanFactory;
+import edu.american.student.mnemosyne.core.util.NNProcessorFactory;
 
 public class CoreTest
 {
@@ -59,7 +59,7 @@ public class CoreTest
 		
 		conf.setNumberOfCategories(num);
 		
-		NNProcessor processor = NNProcessorBeanFactory.getProcessorBean(conf);
+		NNProcessor processor = NNProcessorFactory.getProcessorBean(conf);
 		processor.constructNetworks();
 		//((ClassificationNNProcessor)processor).testRun();
 		

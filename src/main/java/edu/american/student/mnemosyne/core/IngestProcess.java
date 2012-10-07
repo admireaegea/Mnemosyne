@@ -9,7 +9,7 @@ public class IngestProcess implements MnemosyneProcess
 
 	public void process() throws IOException, InterruptedException, ClassNotFoundException
 	{
-		
+		//TODO devise a MR strategy for Ingest
 		
 	}
 
