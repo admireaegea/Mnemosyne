@@ -16,6 +16,7 @@ public class Node
 
 	private String name = UUID.randomUUID().toString().replace("-", "");
 	private String confType;
+	@SuppressWarnings("unused")
 	private NetworkConf conf;
 	private AccumuloForeman aForeman = new AccumuloForeman();
 	private List<BasicNetwork> networks;
@@ -46,19 +47,19 @@ public class Node
 
 	public void constructNeuralNetworks(NetworkConf conf) throws IOException
 	{
-		if(conf instanceof ClassificationNetworkConf)
-		{
-			networks = ClassificationNetwork.constructNetworks((ClassificationNetworkConf) conf);
-			for(int i=0;i<networks.size();i++)
-			{
-				BasicNetwork network = networks.get(i);
-				if(!aForeman.tableExists(this.getName()))
-				{
-					aForeman.makeTable(this.getName());
-				}
-				aForeman.saveNetwork(this, network,i);
-			}
-		}
+//		if(conf instanceof ClassificationNetworkConf)
+//		{
+//			networks = ClassificationNetwork.constructNetworks((ClassificationNetworkConf) conf);
+//			for(int i=0;i<networks.size();i++)
+//			{
+//				BasicNetwork network = networks.get(i);
+//				if(!aForeman.tableExists(this.getName()))
+//				{
+//					aForeman.makeTable(this.getName());
+//				}
+//				aForeman.saveNetwork(this, network,i);
+//			}
+//		}
 		
 	}
 }

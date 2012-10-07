@@ -1,40 +1,36 @@
 package edu.american.student.mnemosyne.core;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.accumulo.core.client.TableNotFoundException;
+import org.encog.neural.networks.BasicNetwork;
 
 import edu.american.student.mnemosyne.conf.ClassificationNetworkConf;
 import edu.american.student.mnemosyne.core.framework.NNProcessor;
 import edu.american.student.mnemosyne.core.model.Node;
-import edu.american.student.mnemosyne.core.util.MnemosyneConstants;
+import edu.american.student.mnemosyne.core.util.AccumuloForeman;
+import edu.american.student.mnemosyne.core.util.ClassificationNetwork;
 
 public class ClassificationNNProcessor extends NNProcessor
 {
 
 	private ClassificationNetworkConf conf;
+	private AccumuloForeman aForeman = new AccumuloForeman();
 	private List<Node> nodes;
+	@SuppressWarnings("unused")
 	private double[][] interInput ={{.4,.4},{.6,.4},{.4,.6},{.6,.6}};
 	public ClassificationNNProcessor(ClassificationNetworkConf conf2)
 	{
 		this.conf = conf2;
+		aForeman.connect();
 	}
 
 	@Override
 	public void constructNetworks() throws IOException, TableNotFoundException, ClassNotFoundException
 	{
-		int numOfNodes = MnemosyneConstants.getNumberOfNodes();
-		nodes = new ArrayList<Node>();
-		for(int i=0;i<numOfNodes;i++)
-		{
-			Node toAdd = new Node();
-			toAdd.setConfigType(conf.getClass().getSimpleName());
-			toAdd.setConfig(conf);
-			toAdd.constructNeuralNetworks(conf);
-			nodes.add(toAdd);
-		}
+		BasicNetwork network = ClassificationNetwork.constructNetworks(conf);
+		aForeman.assertBaseNetwork(network);
 		
 	}
 //

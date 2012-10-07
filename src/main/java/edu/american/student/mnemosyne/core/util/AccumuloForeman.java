@@ -39,6 +39,7 @@ public class AccumuloForeman
 
 	}
 
+	@SuppressWarnings("deprecation")
 	public boolean connect()
 	{
 		try
@@ -153,6 +154,7 @@ public class AccumuloForeman
 		{
 			e.printStackTrace();
 		}
+		System.out.println(tableName+" created ...");
 
 	}
 
@@ -184,7 +186,7 @@ public class AccumuloForeman
 		return toRet;
 	}
 
-	public void saveNetwork(Node toNode, Serializable network,int networkId) throws IOException
+	public void saveNetwork(String TABLE_TO_SAVE,String FAMILY_NAME,Serializable network,int networkId) throws IOException
 	{
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ObjectOutputStream out = new ObjectOutputStream(baos);
@@ -192,25 +194,35 @@ public class AccumuloForeman
 		out.close();
 		byte[] arr = baos.toByteArray();
 		System.out.println(arr.length);
-		this.addBytes(toNode.getName(), MnemosyneConstants.getNeuralNetworkRowName(), toNode.getConfigType(), networkId+"", arr);
+		this.addBytes(TABLE_TO_SAVE, MnemosyneConstants.getNeuralNetworkRowName(), FAMILY_NAME, networkId+"", arr);
 	}
 
-	public List<BasicNetwork> inflateNetworks(Node node) throws TableNotFoundException, IOException, ClassNotFoundException
+	public BasicNetwork inflateNetwork(String tableName,String fam) throws TableNotFoundException, IOException, ClassNotFoundException
 	{
-		List<Entry<Key, Value>> rows = 	this.fetchByColumnFamily(node.getName(), node.getConfigType());
+		List<Entry<Key, Value>> rows = 	this.fetchByColumnFamily(tableName, fam);
 		List<BasicNetwork> toReturn = new ArrayList<BasicNetwork>();
 		for (Entry<Key, Value> entry : rows)
 		{
 			byte[] arr = entry.getValue().get();
 			ObjectInputStream objectIn = new ObjectInputStream(new ByteArrayInputStream(arr));
-			toReturn.add((BasicNetwork)objectIn.readObject());
+			return (BasicNetwork)objectIn.readObject();
 		}
-		return toReturn;
+		return null;
 	}
 
 	public boolean tableExists(String name)
 	{
 		return this.getTableOps().exists(name);
+	}
+
+	public void assertBaseNetwork(BasicNetwork network) throws IOException
+	{
+		this.saveNetwork("BASE_NETWORK", "RAW_BYTES", network, 0);
+	}
+
+	public BasicNetwork getBaseNetwork() throws TableNotFoundException, IOException, ClassNotFoundException
+	{
+		return this.inflateNetwork("BASE_NETWORK","RAW_BYTES");
 	}
 
 }
