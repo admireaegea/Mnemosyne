@@ -1,5 +1,11 @@
-package edu.american.student.mnemosyne.core.util.copy;
+package edu.american.student.mnemosyne.core.util;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -19,7 +25,9 @@ import org.apache.accumulo.core.data.Value;
 import org.apache.accumulo.core.security.Authorizations;
 import org.apache.accumulo.core.security.ColumnVisibility;
 import org.apache.hadoop.io.Text;
+import org.encog.neural.networks.BasicNetwork;
 
+import edu.american.student.mnemosyne.core.model.Node;
 
 public class AccumuloForeman
 {
@@ -58,19 +66,20 @@ public class AccumuloForeman
 
 	public boolean deleteTables()
 	{
-		Map<String,String> tableMap =this.getTableOps().tableIdMap();
-		Iterator<Entry<String,String>> it = tableMap.entrySet().iterator();
-		while(it.hasNext())
+		Map<String, String> tableMap = this.getTableOps().tableIdMap();
+		Iterator<Entry<String, String>> it = tableMap.entrySet().iterator();
+		while (it.hasNext())
 		{
-			Entry<String,String> entry = (it.next());
-			if(!entry.getKey().startsWith("!"))
+			Entry<String, String> entry = (it.next());
+			if (!entry.getKey().startsWith("!"))
 			{
-				System.out.println("Deleting "+entry.getKey()+" ... ");
+				System.out.println("Deleting " + entry.getKey() + " ... ");
 				this.deleteTable(entry.getKey());
 			}
 		}
-			return true;	
+		return true;
 	}
+
 	public boolean deleteTable(String name)
 	{
 		TableOperations tableOps = this.getTableOps();
@@ -108,14 +117,14 @@ public class AccumuloForeman
 		return writer;
 	}
 
-	public void add(String table, String row, String fam, String qual, String value)
+	public void addBytes(String table, String row, String fam, String qual, byte[] value)
 	{
 		try
 		{
 			BatchWriter writer = this.getBatchWriter(table);
 			Mutation m = new Mutation(row);
 			Value v = new Value();
-			v.set(value.getBytes());
+			v.set(value);
 			m.put(fam, qual, new ColumnVisibility("public"), System.currentTimeMillis(), v);
 			writer.addMutation(m);
 			writer.close();
@@ -125,6 +134,12 @@ public class AccumuloForeman
 		{
 			e.printStackTrace();
 		}
+	}
+
+	public void add(String table, String row, String fam, String qual, String value)
+	{
+		this.addBytes(table, row, fam, qual, value.getBytes());
+
 	}
 
 	public void makeTable(String tableName)
@@ -141,32 +156,61 @@ public class AccumuloForeman
 
 	}
 
-	public List<Entry<Key,Value>> fetchByColumnFamily(String table, String fam) throws TableNotFoundException
+	public List<Entry<Key, Value>> fetchByColumnFamily(String table, String fam) throws TableNotFoundException
 	{
 		Authorizations auths = new Authorizations("public");
 
 		Scanner scan = conn.createScanner(table, auths);
 
 		scan.fetchColumnFamily(new Text(fam));
-		List<Entry<Key,Value>> toRet = new ArrayList<Entry<Key,Value>>();
+		List<Entry<Key, Value>> toRet = new ArrayList<Entry<Key, Value>>();
 		for (Entry<Key, Value> entry : scan)
 		{
 			toRet.add(entry);
 		}
 		return toRet;
 	}
-	
-	public List<Entry<Key, Value>> fetchByQualifier(String table,String fam, String qual) throws TableNotFoundException
+
+	public List<Entry<Key, Value>> fetchByQualifier(String table, String fam, String qual) throws TableNotFoundException
 	{
 		Authorizations auths = new Authorizations("public");
 		Scanner scan = conn.createScanner(table, auths);
 		scan.fetchColumn(new Text(fam), new Text(qual));
-		List<Entry<Key,Value>> toRet = new ArrayList<Entry<Key,Value>>();
+		List<Entry<Key, Value>> toRet = new ArrayList<Entry<Key, Value>>();
 		for (Entry<Key, Value> entry : scan)
 		{
 			toRet.add(entry);
 		}
 		return toRet;
+	}
+
+	public void saveNetwork(Node toNode, Serializable network,int networkId) throws IOException
+	{
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ObjectOutputStream out = new ObjectOutputStream(baos);
+		out.writeObject(network);
+		out.close();
+		byte[] arr = baos.toByteArray();
+		System.out.println(arr.length);
+		this.addBytes(toNode.getName(), MnemosyneConstants.getNeuralNetworkRowName(), toNode.getConfigType(), networkId+"", arr);
+	}
+
+	public List<BasicNetwork> inflateNetworks(Node node) throws TableNotFoundException, IOException, ClassNotFoundException
+	{
+		List<Entry<Key, Value>> rows = 	this.fetchByColumnFamily(node.getName(), node.getConfigType());
+		List<BasicNetwork> toReturn = new ArrayList<BasicNetwork>();
+		for (Entry<Key, Value> entry : rows)
+		{
+			byte[] arr = entry.getValue().get();
+			ObjectInputStream objectIn = new ObjectInputStream(new ByteArrayInputStream(arr));
+			toReturn.add((BasicNetwork)objectIn.readObject());
+		}
+		return toReturn;
+	}
+
+	public boolean tableExists(String name)
+	{
+		return this.getTableOps().exists(name);
 	}
 
 }

@@ -1,4 +1,4 @@
-package edu.american.student.mnemosyne.core.util.copy;
+package edu.american.student.mnemosyne.core.util;
 
 import java.io.InputStream;
 import java.util.Enumeration;

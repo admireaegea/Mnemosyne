@@ -8,8 +8,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import edu.american.student.mnemosyne.core.util.copy.AccumuloForeman;
-import edu.american.student.mnemosyne.core.util.copy.MnemosyneConstants;
+import edu.american.student.mnemosyne.core.util.AccumuloForeman;
+import edu.american.student.mnemosyne.core.util.MnemosyneConstants;
 
 public class PropertiesLoaderTest
 {
@@ -40,7 +40,8 @@ public class PropertiesLoaderTest
 		System.out.println(MnemosyneConstants.getAccumuloInstance()+" "+MnemosyneConstants.getAccumuloPassword());
 		AccumuloForeman aForeman = new AccumuloForeman();
 		aForeman.connect();
-		aForeman.deleteTables();
+		
+		
 	}
 
 }

@@ -3,7 +3,7 @@ package edu.american.student.mnemosyne.conf;
 import org.encog.engine.network.activation.ActivationFunction;
 import org.encog.engine.network.activation.ActivationSigmoid;
 
-public class BasicNetworkConf extends NetworkConf
+public class ClassificationNetworkConf extends NetworkConf
 {
 	private ActivationFunction inputActivation = null;
 	private ActivationFunction hiddenActivation = new ActivationSigmoid();
@@ -17,6 +17,7 @@ public class BasicNetworkConf extends NetworkConf
 	private double[][] basicMLInput;
 	private double[][] basicIdealOutput;
 	private double error=.000005;
+	private int numOfCategories =1;
 	
 	public ActivationFunction getInputActivation()
 	{
@@ -134,6 +135,16 @@ public class BasicNetworkConf extends NetworkConf
 	{
 		this.basicIdealOutput = ds;
 		
+	}
+
+	public int getNumberOfCategories()
+	{
+		return numOfCategories;
+	}
+	
+	public void setNumberOfCategories(int num)
+	{
+		this.numOfCategories = num;
 	}
 	
 	
