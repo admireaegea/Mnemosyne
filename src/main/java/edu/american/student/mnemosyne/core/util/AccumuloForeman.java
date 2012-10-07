@@ -125,7 +125,7 @@ public class AccumuloForeman
 			Mutation m = new Mutation(row);
 			Value v = new Value();
 			v.set(value);
-			m.put(fam, qual, new ColumnVisibility("public"), System.currentTimeMillis(), v);
+			m.put(fam, qual, new ColumnVisibility(MnemosyneConstants.getDefaultAuths()), System.currentTimeMillis(), v);
 			writer.addMutation(m);
 			writer.close();
 
@@ -158,7 +158,7 @@ public class AccumuloForeman
 
 	public List<Entry<Key, Value>> fetchByColumnFamily(String table, String fam) throws TableNotFoundException
 	{
-		Authorizations auths = new Authorizations("public");
+		Authorizations auths = new Authorizations(MnemosyneConstants.getDefaultAuths());
 
 		Scanner scan = conn.createScanner(table, auths);
 
@@ -173,7 +173,7 @@ public class AccumuloForeman
 
 	public List<Entry<Key, Value>> fetchByQualifier(String table, String fam, String qual) throws TableNotFoundException
 	{
-		Authorizations auths = new Authorizations("public");
+		Authorizations auths = new Authorizations(MnemosyneConstants.getDefaultAuths());
 		Scanner scan = conn.createScanner(table, auths);
 		scan.fetchColumn(new Text(fam), new Text(qual));
 		List<Entry<Key, Value>> toRet = new ArrayList<Entry<Key, Value>>();

@@ -105,4 +105,11 @@ public class MnemosyneConstants
 			randomIdeal.put(id, value);
 		}
 	}
+
+	public static String getDefaultAuths()
+	{
+		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
+		String toReturn = (String)properties.get("defaultAuths");
+		return toReturn;
+	}
 }

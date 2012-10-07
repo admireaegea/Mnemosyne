@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.apache.accumulo.core.client.mapreduce.AccumuloInputFormat;
 import org.apache.accumulo.core.client.mapreduce.AccumuloOutputFormat;
-import org.apache.accumulo.core.security.Authorizations;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.mapreduce.Job;
 
@@ -21,30 +20,41 @@ public class HadoopForeman
 
 		job.setMapperClass(conf.getMapperClass());
 		job.setInputFormatClass(conf.getInputFormatClass());
+		
 		job.setOutputFormatClass(conf.getOutputFormatClass());
-		job.setOutputKeyClass(conf.getOutputKeyClass());
-
-		job.setOutputValueClass(conf.getOutputValueClass());
-		job.setNumReduceTasks(0);
+		if(conf.getOutputKeyClass() != null)
+		{
+			job.setOutputKeyClass(conf.getOutputKeyClass());
+		}
+		if(conf.getOutputValueClass() != null)
+		{
+			job.setOutputValueClass(conf.getOutputValueClass());
+		}
+		if(conf.getReducerClass() !=null)
+		{
+			job.setReducerClass(conf.getReducerClass());
+		}
+		
+		job.setNumReduceTasks(conf.getNumReduceTasks());
 		Configuration conf1 = job.getConfiguration();
 		if(conf.getInputFormatClass() == AccumuloInputFormat.class)
 		{
-			AccumuloInputFormat.setInputInfo(conf1, MnemosyneConstants.getAccumuloUser(), MnemosyneConstants.getAccumuloPassword().getBytes(),  MnemosyneConstants.getDefaultTable(), new Authorizations());
+			AccumuloInputFormat.setInputInfo(conf1, MnemosyneConstants.getAccumuloUser(), MnemosyneConstants.getAccumuloPassword().getBytes(),  conf.getDefaultTable(), conf.getDefaultAuths());
 			AccumuloInputFormat.setZooKeeperInstance(conf1,MnemosyneConstants.getZookeeperInstanceName(), MnemosyneConstants.getZookeeperInstance());
 		
 		}
 		if(conf.getOutputFormatClass() == AccumuloOutputFormat.class)
 		{
-			AccumuloOutputFormat.setOutputInfo(conf1, MnemosyneConstants.getAccumuloUser(), MnemosyneConstants.getAccumuloPassword().getBytes(), true, MnemosyneConstants.getDefaultTable());
+			AccumuloOutputFormat.setOutputInfo(conf1, MnemosyneConstants.getAccumuloUser(), MnemosyneConstants.getAccumuloPassword().getBytes(), true, conf.getDefaultTable());
 			AccumuloOutputFormat.setZooKeeperInstance(conf1,MnemosyneConstants.getZookeeperInstanceName(), MnemosyneConstants.getZookeeperInstance());
 			
 		}
 		return job;
 	}
 
-	public void runJob(HadoopJobConfiguration hConfig) throws IOException, InterruptedException, ClassNotFoundException
+	public boolean runJob(HadoopJobConfiguration hConfig) throws IOException, InterruptedException, ClassNotFoundException
 	{
-		this.getHadoopJob(hConfig).waitForCompletion(true);
+		return this.getHadoopJob(hConfig).waitForCompletion(true);
 		
 	}
 }
