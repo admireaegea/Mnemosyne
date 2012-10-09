@@ -1,6 +1,5 @@
 package edu.american.student.mnemosyne.core;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -13,7 +12,9 @@ import org.apache.accumulo.core.util.Pair;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.encog.neural.networks.BasicNetwork;
 
+import edu.american.student.mnemosyne.conf.ClassificationNetworkConf;
 import edu.american.student.mnemosyne.conf.HadoopJobConfiguration;
 import edu.american.student.mnemosyne.core.framework.MnemosyneProcess;
 import edu.american.student.mnemosyne.core.model.Artifact;
@@ -50,18 +51,20 @@ public class TrainProcess implements MnemosyneProcess
 		public void map(Key ik, Value iv, Context context)
 		{
 			aForeman.connect();
-			System.out.println(ik.toString() + " " + iv.toString());
 			System.out.println("Grabbing the base network...");
-//			BasicNetwork base = null;
-//			ClassificationNetworkConf baseConf = null;
-//			long error = 1;
-//			try
-//			{
-//				base = aForeman.getBaseNetwork();
-//				baseConf = aForeman.getBaseNetworkConf();
-//				error = aForeman.getBaseNetworkError();
-//			}
-//			catch (Exception e){}
+			BasicNetwork base = null;
+			ClassificationNetworkConf baseConf = null;
+			long error = 1;
+			try
+			{
+				base = aForeman.getBaseNetwork(ik.getRow().toString());
+				baseConf = aForeman.getBaseNetworkConf(ik.getRow().toString());
+				error = aForeman.getBaseNetworkError(ik.getRow().toString());
+			}
+			catch (Exception e){}
+			System.out.println("base? "+base ==null);
+			System.out.println("conf? "+baseConf == null);
+			System.out.println("error?"+ error);
 //			if(base == null)
 //			{
 //				//if base is null, constrcut a base

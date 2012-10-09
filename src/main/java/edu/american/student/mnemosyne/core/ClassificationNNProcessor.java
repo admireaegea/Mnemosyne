@@ -25,7 +25,7 @@ public class ClassificationNNProcessor extends NNProcessor
 	public void constructNetworks(String artifactId) throws IOException, TableNotFoundException, ClassNotFoundException
 	{
 		BasicNetwork network = ClassificationNetwork.constructNetworks(conf);
-		aForeman.assertBaseNetwork(network,artifactId);
+		aForeman.assertBaseNetwork(network,artifactId,conf);
 		
 	}
 

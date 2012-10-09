@@ -5,7 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -188,15 +187,21 @@ public class AccumuloForeman
 		return toRet;
 	}
 
-	public void saveNetwork(String TABLE_TO_SAVE, String FAMILY_NAME, String artifactId, BasicNetwork network) throws IOException
+	public void saveNetwork(String TABLE_TO_SAVE, String FAMILY_NAME, String artifactId, BasicNetwork network, ClassificationNetworkConf conf) throws IOException
 	{
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ObjectOutputStream out = new ObjectOutputStream(baos);
 		out.writeObject(network);
 		out.close();
 		byte[] arr = baos.toByteArray();
-		System.out.println(arr.length);
 		this.addBytes(TABLE_TO_SAVE, artifactId, FAMILY_NAME, artifactId, arr);
+		
+		baos = new ByteArrayOutputStream();
+		out = new ObjectOutputStream(baos);
+		out.writeObject(conf);
+		out.close();
+		arr = baos.toByteArray();
+		this.addBytes(TABLE_TO_SAVE, artifactId, "BASE_CONFIGURATION", artifactId, arr);
 	}
 
 	public BasicNetwork inflateNetwork(String tableName, String fam, String artifactId) throws TableNotFoundException, IOException, ClassNotFoundException
@@ -216,9 +221,9 @@ public class AccumuloForeman
 		return this.getTableOps().exists(name);
 	}
 
-	public void assertBaseNetwork(BasicNetwork network, String artifactId) throws IOException
+	public void assertBaseNetwork(BasicNetwork network, String artifactId, ClassificationNetworkConf conf) throws IOException
 	{
-		this.saveNetwork(AccumuloForeman.getBaseNetworkRepositoryName(), AccumuloForeman.getBaseNetworkRepository().getRawBytesField(), artifactId,network);
+		this.saveNetwork(AccumuloForeman.getBaseNetworkRepositoryName(), AccumuloForeman.getBaseNetworkRepository().getRawBytesField(), artifactId,network,conf);
 	}
 
 	public BasicNetwork getBaseNetwork(String artifactId) throws TableNotFoundException, IOException, ClassNotFoundException
@@ -246,15 +251,30 @@ public class AccumuloForeman
 		return new ArtifactRepository();
 	}
 
-	public ClassificationNetworkConf getBaseNetworkConf()
+	public ClassificationNetworkConf getBaseNetworkConf(String artifactId) throws Exception
 	{
-		// TODO Auto-generated method stub
+		return this.inflateNetworkConfiguration(artifactId);
+	}
+
+	private ClassificationNetworkConf inflateNetworkConfiguration(String artifactId) throws TableNotFoundException, IOException, ClassNotFoundException
+	{
+		List<Entry<Key, Value>> rows = this.fetchByQualifier(AccumuloForeman.getBaseNetworkRepositoryName(), "BASE_CONFIGURATION", artifactId);
+		for (Entry<Key, Value> entry : rows)
+		{
+			byte[] arr = entry.getValue().get();
+			ObjectInputStream objectIn = new ObjectInputStream(new ByteArrayInputStream(arr));
+			return (ClassificationNetworkConf) objectIn.readObject();
+		}
 		return null;
 	}
 
-	public long getBaseNetworkError()
+	public long getBaseNetworkError(String artifactId)
 	{
-		// TODO Auto-generated method stub
-		return 0;
+		return this.inflateNetworkError(artifactId);
+	}
+
+	private long inflateNetworkError(String artifactId)
+	{
+		return 1;
 	}
 }

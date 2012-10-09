@@ -3,8 +3,12 @@ package edu.american.student.mnemosyne.conf;
 import org.encog.engine.network.activation.ActivationFunction;
 import org.encog.engine.network.activation.ActivationSigmoid;
 
-public class ClassificationNetworkConf extends NetworkConf
+public class ClassificationNetworkConf extends NetworkConf implements java.io.Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8482110912070036554L;
 	private ActivationFunction inputActivation = null;
 	private ActivationFunction hiddenActivation = new ActivationSigmoid();
 	private ActivationFunction outputActivation = new ActivationSigmoid();
@@ -16,9 +20,9 @@ public class ClassificationNetworkConf extends NetworkConf
 	private int outputNeuronCount = 1;
 	private double[][] basicMLInput;
 	private double[][] basicIdealOutput;
-	private double error=.000005;
-	private int numOfCategories =1;
-	
+	private double error = .000005;
+	private int numOfCategories = 1;
+
 	public ActivationFunction getInputActivation()
 	{
 		return inputActivation;
@@ -81,26 +85,26 @@ public class ClassificationNetworkConf extends NetworkConf
 
 	public void setInputBias(boolean b)
 	{
-		this.inputBias =b;
-		
+		this.inputBias = b;
+
 	}
 
 	public void setHiddenBias(boolean b)
 	{
 		this.hiddenBias = b;
-		
+
 	}
 
 	public void setOutputActivation(ActivationFunction activation)
 	{
 		this.outputActivation = activation;
-		
+
 	}
 
 	public void setHiddenActiviation(ActivationFunction activation)
 	{
 		this.hiddenActivation = activation;
-		
+
 	}
 
 	public void setInputActivation(ActivationFunction activation)
@@ -111,19 +115,19 @@ public class ClassificationNetworkConf extends NetworkConf
 	public void setInputNeuronCount(int i)
 	{
 		this.inputNeuronCount = i;
-		
+
 	}
 
 	public void setHiddenNeuronCount(int i)
 	{
 		this.hiddenNeuronCount = i;
-		
+
 	}
 
 	public void setOutputNeuronCount(int i)
 	{
 		this.outputNeuronCount = i;
-		
+
 	}
 
 	public void setBasicMLInput(double[][] ds)
@@ -134,19 +138,17 @@ public class ClassificationNetworkConf extends NetworkConf
 	public void setBasicIdealMLOutput(double[][] ds)
 	{
 		this.basicIdealOutput = ds;
-		
+
 	}
 
 	public int getNumberOfCategories()
 	{
 		return numOfCategories;
 	}
-	
+
 	public void setNumberOfCategories(int num)
 	{
 		this.numOfCategories = num;
 	}
-	
-	
 
 }
