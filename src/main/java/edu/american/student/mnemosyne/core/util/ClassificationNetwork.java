@@ -7,7 +7,6 @@ import edu.american.student.mnemosyne.conf.ClassificationNetworkConf;
 
 public class ClassificationNetwork
 {
-
 	public static BasicNetwork constructNetworks(ClassificationNetworkConf conf)
 	{
 		BasicNetwork network = new BasicNetwork();

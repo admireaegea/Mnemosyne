@@ -13,9 +13,9 @@ public class TrainProcessTest
 	public static void beforeClass() throws Exception
 	{
 		MnemosyneAccumuloAdministrator.setup();
-		TestHelper.constructTestClassificationNetwork();
 		TestHelper.ingestTestArtifacts();
 		TestHelper.buildArtifacts();
+		TestHelper.constructBaseClassificationNetwork();
 	}
 	@Test
 	public void test() throws Exception

@@ -1,5 +1,6 @@
 package edu.american.student.mnemosyne.core.util;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -7,7 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.accumulo.core.util.Pair;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.xml.sax.SAXException;
 
 import edu.american.student.mnemosyne.core.model.Artifact;
 
@@ -37,7 +40,7 @@ public class ArtifactForeman
 		aForeman.connect();
 	}
 
-	public List<Artifact> returnArtifacts()
+	public List<Artifact> returnArtifacts() throws ParserConfigurationException, SAXException, IOException
 	{
 		List<Artifact> toReturn = new ArrayList<Artifact>();
 		Iterator<Entry<String, Map<Integer, String>>> it =artifactMap.entrySet().iterator();

@@ -136,7 +136,7 @@ public class MnemosyneConstants
 	}
 	static ArrayList<Path> toReturn = new ArrayList<Path>();
     private static ArrayList<Path> walk(File dir) {
-        String pattern = "";
+        String pattern = ".xml";
         File listFile[] = dir.listFiles();
         if (listFile != null) {
             for (int i=0; i<listFile.length; i++) {

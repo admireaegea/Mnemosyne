@@ -1,7 +1,5 @@
 package edu.american.student.mnemosyne.core;
 
-import static org.junit.Assert.*;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -18,8 +16,10 @@ public class ArtifactBuilderProcessTest
 	public static void setUpBeforeClass() throws Exception
 	{
 		MnemosyneAccumuloAdministrator.setup();
-		TestHelper.constructTestClassificationNetwork();
 		TestHelper.ingestTestArtifacts();
+		ArtifactBuilderProcess pro = new ArtifactBuilderProcess();
+		pro.setup();
+		pro.process();
 	}
 
 	@AfterClass
@@ -40,9 +40,7 @@ public class ArtifactBuilderProcessTest
 	@Test
 	public void test() throws Exception
 	{
-		ArtifactBuilderProcess pro = new ArtifactBuilderProcess();
-		pro.setup();
-		pro.process();
+		//TODO MAKE TEST
 	}
 
 }

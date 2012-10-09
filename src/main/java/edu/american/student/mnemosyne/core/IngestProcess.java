@@ -39,7 +39,7 @@ public class IngestProcess implements MnemosyneProcess
 			uuid = UUID.randomUUID().toString();	
 			HadoopForeman hForeman = new HadoopForeman();
 			HadoopJobConfiguration conf = new HadoopJobConfiguration();
-			conf.setJobName(HadoopJobConfiguration.buildJobName(IngestProcess.class));
+			conf.setJobName(HadoopJobConfiguration.buildJobName(this.getClass()));
 			conf.setMapperClass(IngestMapper.class);
 			conf.setInputFormatClass(TextInputFormat.class);
 			conf.overridePathToProcess(path);

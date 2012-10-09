@@ -1,6 +1,5 @@
 package edu.american.student.mnemosyne.core;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -18,59 +17,52 @@ import edu.american.student.mnemosyne.conf.HadoopJobConfiguration;
 import edu.american.student.mnemosyne.core.framework.MnemosyneProcess;
 import edu.american.student.mnemosyne.core.model.Artifact;
 import edu.american.student.mnemosyne.core.util.AccumuloForeman;
-import edu.american.student.mnemosyne.core.util.ArtifactForeman;
 import edu.american.student.mnemosyne.core.util.HadoopForeman;
 
 public class ArtifactBuilderProcess implements MnemosyneProcess
 {
-	static ArtifactForeman artifactForeman = new ArtifactForeman();
 	
-	public void process() throws IOException, InterruptedException, ClassNotFoundException
+
+	public void process() throws Exception
 	{
 		HadoopForeman hForeman = new HadoopForeman();
 		HadoopJobConfiguration conf = new HadoopJobConfiguration();
-		conf.setJobName(HadoopJobConfiguration.buildJobName(TrainProcess.class));
+		conf.setJobName(HadoopJobConfiguration.buildJobName(this.getClass()));
 		conf.setMapperClass(ArtifactBuilderMapper.class);
 		conf.overrideDefaultTable(AccumuloForeman.getArtifactRepositoryName());
-		Collection<Pair<Text,Text>> cfPairs = new ArrayList<Pair<Text,Text>>();
-		cfPairs.add(new Pair<Text,Text>(new Text("RAW_BYTES"),null));
+		Collection<Pair<Text, Text>> cfPairs = new ArrayList<Pair<Text, Text>>();
+		cfPairs.add(new Pair<Text, Text>(new Text("RAW_BYTES"), null));
 		conf.fetchColumns(cfPairs);
 		conf.setInputFormatClass(AccumuloInputFormat.class);
 		conf.setOutputFormatClass(AccumuloOutputFormat.class);
 		hForeman.runJob(conf);
-		
-		List<Artifact> artifacts =artifactForeman.returnArtifacts();
-		for(Artifact artifact: artifacts)
+
+		List<Artifact> artifacts = artifactForeman.returnArtifacts();
+		for (Artifact artifact : artifacts)
 		{
-			List<String> fields = artifact.getFields();
-			for(String field: fields)
+			String definitions = artifact.grabDefinitions();
+			aForeman.add(AccumuloForeman.getArtifactRepositoryName(), artifact.getArtifactId(), artifact.getArtifactId(), "DEFINITIONS", definitions);
+			List<String> sets = artifact.grabSets();
+			for (int j = 0; j < sets.size(); j++)
 			{
-				aForeman.add(AccumuloForeman.getArtifactRepositoryName(), artifact.getArtifactId(), field, "", artifact.getValue(field));
+				aForeman.add(AccumuloForeman.getArtifactRepositoryName(), artifact.getArtifactId(), artifact.getArtifactId()+":"+"FIELD", "SET" + j, sets.get(j));
 			}
+
 		}
-		//lay each artifact into accumulo
-		/*
-		 * ROW= artifactId
-		 * CF = field name
-		 * CQ = ?
-		 * Value = value
-		 */
-		
+
 	}
 
 	public void setup() throws Exception
 	{
 		artifactForeman.connect();
-		aForeman.connect();
 	}
-	
+
 	public static class ArtifactBuilderMapper extends Mapper<Key, Value, Writable, Writable>
 	{
 		@Override
 		public void map(Key ik, Value iv, Context context)
 		{
-			System.out.println(ik.toString()+" "+iv.toString());
-			artifactForeman.register(ik.getRow().toString(),Integer.parseInt(ik.getColumnQualifier().toString()),iv.toString());
+			artifactForeman.register(ik.getRow().toString(), Integer.parseInt(ik.getColumnQualifier().toString()), iv.toString());
 		}
 	}
 

@@ -8,9 +8,6 @@ public abstract class NNProcessor
 {
 	//TODO remove old paradigm stuff
 	
-	public abstract void constructNetworks() throws IOException, TableNotFoundException, ClassNotFoundException;
+	public abstract void constructNetworks(String artifactId) throws IOException, TableNotFoundException, ClassNotFoundException;
 	
-	public abstract void assignNodes();
-	
-	public abstract void process();
 }

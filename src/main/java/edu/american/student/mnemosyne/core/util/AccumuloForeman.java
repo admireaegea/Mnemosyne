@@ -27,6 +27,7 @@ import org.apache.accumulo.core.security.ColumnVisibility;
 import org.apache.hadoop.io.Text;
 import org.encog.neural.networks.BasicNetwork;
 
+import edu.american.student.mnemosyne.conf.ClassificationNetworkConf;
 import edu.american.student.mnemosyne.core.framework.ArtifactRepository;
 import edu.american.student.mnemosyne.core.framework.BaseNetworkRepository;
 
@@ -187,7 +188,7 @@ public class AccumuloForeman
 		return toRet;
 	}
 
-	public void saveNetwork(String TABLE_TO_SAVE, String FAMILY_NAME, Serializable network, int networkId) throws IOException
+	public void saveNetwork(String TABLE_TO_SAVE, String FAMILY_NAME, String artifactId, BasicNetwork network) throws IOException
 	{
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ObjectOutputStream out = new ObjectOutputStream(baos);
@@ -195,12 +196,12 @@ public class AccumuloForeman
 		out.close();
 		byte[] arr = baos.toByteArray();
 		System.out.println(arr.length);
-		this.addBytes(TABLE_TO_SAVE, MnemosyneConstants.getNeuralNetworkRowName(), FAMILY_NAME, networkId + "", arr);
+		this.addBytes(TABLE_TO_SAVE, artifactId, FAMILY_NAME, artifactId, arr);
 	}
 
-	public BasicNetwork inflateNetwork(String tableName, String fam) throws TableNotFoundException, IOException, ClassNotFoundException
+	public BasicNetwork inflateNetwork(String tableName, String fam, String artifactId) throws TableNotFoundException, IOException, ClassNotFoundException
 	{
-		List<Entry<Key, Value>> rows = this.fetchByColumnFamily(tableName, fam);
+		List<Entry<Key, Value>> rows = this.fetchByQualifier(tableName, fam, artifactId);
 		for (Entry<Key, Value> entry : rows)
 		{
 			byte[] arr = entry.getValue().get();
@@ -215,14 +216,14 @@ public class AccumuloForeman
 		return this.getTableOps().exists(name);
 	}
 
-	public void assertBaseNetwork(BasicNetwork network) throws IOException
+	public void assertBaseNetwork(BasicNetwork network, String artifactId) throws IOException
 	{
-		this.saveNetwork(AccumuloForeman.getBaseNetworkRepositoryName(), AccumuloForeman.getBaseNetworkRepository().getRawBytesField(), network, 0);
+		this.saveNetwork(AccumuloForeman.getBaseNetworkRepositoryName(), AccumuloForeman.getBaseNetworkRepository().getRawBytesField(), artifactId,network);
 	}
 
-	public BasicNetwork getBaseNetwork() throws TableNotFoundException, IOException, ClassNotFoundException
+	public BasicNetwork getBaseNetwork(String artifactId) throws TableNotFoundException, IOException, ClassNotFoundException
 	{
-		return this.inflateNetwork(AccumuloForeman.getBaseNetworkRepositoryName(), AccumuloForeman.getBaseNetworkRepository().getRawBytesField());
+		return this.inflateNetwork(AccumuloForeman.getBaseNetworkRepositoryName(), AccumuloForeman.getBaseNetworkRepository().getRawBytesField(),artifactId);
 	}
 
 	public static String getArtifactRepositoryName()
@@ -243,5 +244,17 @@ public class AccumuloForeman
 	public static ArtifactRepository getArtifactRepository()
 	{
 		return new ArtifactRepository();
+	}
+
+	public ClassificationNetworkConf getBaseNetworkConf()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public long getBaseNetworkError()
+	{
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

@@ -4,6 +4,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import edu.american.student.mnemosyne.core.BaseNetworkBuilderProcessTest;
 import edu.american.student.mnemosyne.core.HadoopForemanTest;
 import edu.american.student.mnemosyne.core.IngestProcessTest;
 import edu.american.student.mnemosyne.core.PropertiesLoaderTest;
@@ -13,7 +14,8 @@ import edu.american.student.mnemosyne.core.PropertiesLoaderTest;
 ({
 	PropertiesLoaderTest.class,
 	HadoopForemanTest.class,
-	IngestProcessTest.class
+	IngestProcessTest.class,
+	BaseNetworkBuilderProcessTest.class
 })
 public class CoreTestSuite
 {
