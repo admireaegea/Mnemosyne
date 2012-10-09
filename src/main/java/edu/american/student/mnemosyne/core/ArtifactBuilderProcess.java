@@ -38,6 +38,7 @@ public class ArtifactBuilderProcess implements MnemosyneProcess
 		hForeman.runJob(conf);
 
 		List<Artifact> artifacts = artifactForeman.returnArtifacts();
+		artifactForeman.persistArtifacts();
 		for (Artifact artifact : artifacts)
 		{
 			String definitions = artifact.grabDefinitions();

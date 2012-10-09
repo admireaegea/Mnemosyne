@@ -9,7 +9,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.accumulo.core.data.Value;
 import org.apache.accumulo.core.util.Pair;
+import org.apache.hadoop.io.Text;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -171,5 +173,25 @@ public class Artifact
 			toReturn.add("("+inputs.get(i)+")"+"("+outputs.get(i)+")");
 		}
 		return toReturn;
+	}
+
+	public static Artifact inflate(String artifactId, String serialized)
+	{
+		Artifact toReturn = new Artifact();
+		toReturn.setArtifactId(artifactId);
+		String[] fields = serialized.split("\\)");
+		for(String fieldPair: fields)
+		{
+			String[] values = fieldPair.replace("\\(", "").split(",");
+			toReturn.addToFieldMap(values[0],values[1]);
+		}
+		return toReturn;
+	}
+
+	private void addToFieldMap(String field, String value)
+	{
+		fields.add(field);
+		fieldMap.add(new Pair<String,String>(field,value));
+		
 	}
 }

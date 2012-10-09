@@ -10,6 +10,9 @@ import java.util.Map.Entry;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.accumulo.core.client.TableNotFoundException;
+import org.apache.accumulo.core.data.Key;
+import org.apache.accumulo.core.data.Value;
 import org.xml.sax.SAXException;
 
 import edu.american.student.mnemosyne.core.model.Artifact;
@@ -40,27 +43,61 @@ public class ArtifactForeman
 		aForeman.connect();
 	}
 
-	public List<Artifact> returnArtifacts() throws ParserConfigurationException, SAXException, IOException
+	public List<Artifact> returnArtifacts() throws ParserConfigurationException, SAXException, IOException, TableNotFoundException
 	{
 		List<Artifact> toReturn = new ArrayList<Artifact>();
 		Iterator<Entry<String, Map<Integer, String>>> it =artifactMap.entrySet().iterator();
-		Artifact toAdd = new Artifact();
+		if(it.hasNext())
+		{
+			Artifact toAdd = new Artifact();
+			while(it.hasNext())
+			{
+				Entry<String, Map<Integer, String>> entry = it.next();
+				toAdd.setArtifactId(entry.getKey());
+				Iterator<Entry<Integer,String>> internalIt = entry.getValue().entrySet().iterator();
+				while(internalIt.hasNext())
+				{
+					Entry<Integer,String> internalEntry =internalIt.next();
+					toAdd.addLine(internalEntry.getKey(),internalEntry.getValue());
+				}
+				toReturn.add(toAdd);
+			}
+			for(Artifact artifact: toReturn)
+			{
+				artifact.finalizeStructure();
+			}
+		}
+		else
+		{
+			List<Entry<Key, Value>> entries = aForeman.fetchByColumnFamily(AccumuloForeman.getArtifactRepositoryName(), "ARTIFACT_ENTRY");
+			
+			for(Entry<Key,Value> entry: entries)
+			{
+				toReturn.add(Artifact.inflate(entry.getKey().getRow().toString(),entry.getValue().toString()));
+			}
+		}
+		
+		return toReturn;
+	}
+
+	public void persistArtifacts()
+	{
+		Iterator<Entry<String, Map<Integer, String>>> it = artifactMap.entrySet().iterator();
+		
 		while(it.hasNext())
 		{
-			Entry<String, Map<Integer, String>> entry = it.next();
-			toAdd.setArtifactId(entry.getKey());
-			Iterator<Entry<Integer,String>> internalIt = entry.getValue().entrySet().iterator();
+			Entry<String,Map<Integer,String>> entry = it.next();
+			String artifactId = entry.getKey();
+			String serialized = "";
+			Iterator<Entry<Integer,String>> internalIt =entry.getValue().entrySet().iterator();
 			while(internalIt.hasNext())
 			{
-				Entry<Integer,String> internalEntry =internalIt.next();
-				toAdd.addLine(internalEntry.getKey(),internalEntry.getValue());
+				Entry<Integer,String> internalEntry = internalIt.next();
+				serialized+="("+internalEntry.getKey()+","+internalEntry.getValue()+")";
 			}
-			toReturn.add(toAdd);
+			aForeman.connect();
+			aForeman.add(AccumuloForeman.getArtifactRepositoryName(), artifactId, "ARTIFACT_ENTRY",artifactId, serialized);
 		}
-		for(Artifact artifact: toReturn)
-		{
-			artifact.finalizeStructure();
-		}
-		return toReturn;
+		
 	}
 }
