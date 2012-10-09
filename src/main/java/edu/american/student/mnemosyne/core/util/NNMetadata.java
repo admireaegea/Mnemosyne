@@ -88,5 +88,13 @@ public class NNMetadata
 	{
 		return fieldMap.get("fileName");
 	}
+	public int getInputMax()
+	{
+		return (int)Double.parseDouble(fieldMap.get("inputmax").get(0));
+	}
+	public int getOutputMax()
+	{
+		return (int)Double.parseDouble(fieldMap.get("outputmax").get(0));
+	}
 
 }

@@ -1,14 +1,20 @@
 package edu.american.student.mnemosyne.core;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
+import org.encog.engine.network.activation.ActivationSigmoid;
+import org.encog.neural.networks.BasicNetwork;
+import org.encog.neural.networks.layers.BasicLayer;
+import org.encog.neural.networks.layers.Layer;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import edu.american.student.mnemosyne.core.model.Artifact;
 import edu.american.student.mnemosyne.core.util.AccumuloForeman;
 import edu.american.student.mnemosyne.core.util.ArtifactForeman;
 import edu.american.student.mnemosyne.core.util.MnemosyneAccumuloAdministrator;
@@ -48,8 +54,25 @@ public class BaseNetworkBuilderProcessTest
 	@Test
 	public void test() throws Exception
 	{
-		String artifactId =aForeman.fetchByColumnFamily(AccumuloForeman.getArtifactRepositoryName(), "RAW_BYTES").get(0).getKey().getRow().toString();
-		assertNotNull(aForeman.getBaseNetwork(artifactId));
+		List<Artifact> artifacts = artifactForeman.returnArtifacts();
+		for(Artifact artifact:artifacts)
+		{
+			System.out.println(artifact.getArtifactId());
+			BasicNetwork network =aForeman.getBaseNetwork(artifact.getArtifactId());
+			BasicNetwork newNetwork = new BasicNetwork();
+			List<Layer> layers= network.getStructure().getLayers();
+			for(Layer layer:layers)
+			{
+				System.out.println("adding layer");
+				newNetwork.addLayer(layer);
+			}
+			//newNetwork.addLayer(new BasicLayer(new ActivationSigmoid(),true,3));
+			network.getStructure().finalizeStructure();
+			System.out.println("LC "+network.getLayerCount());
+			assertNotNull(network);
+			
+		}
+	//	assertNotNull(aForeman.getBaseNetwork(artifactId));
 	}
 
 }

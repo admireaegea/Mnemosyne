@@ -202,6 +202,8 @@ public class AccumuloForeman
 		out.close();
 		arr = baos.toByteArray();
 		this.addBytes(TABLE_TO_SAVE, artifactId, "BASE_CONFIGURATION", artifactId, arr);
+		
+		this.add(TABLE_TO_SAVE,artifactId, "BASE_ERROR", artifactId, "1");
 	}
 
 	public BasicNetwork inflateNetwork(String tableName, String fam, String artifactId) throws TableNotFoundException, IOException, ClassNotFoundException
@@ -268,13 +270,13 @@ public class AccumuloForeman
 		return null;
 	}
 
-	public long getBaseNetworkError(String artifactId)
+	public long getBaseNetworkError(String artifactId) throws TableNotFoundException
 	{
 		return this.inflateNetworkError(artifactId);
 	}
 
-	private long inflateNetworkError(String artifactId)
+	private long inflateNetworkError(String artifactId) throws TableNotFoundException
 	{
-		return 1;
+		return Long.parseLong(this.fetchByQualifier(AccumuloForeman.getBaseNetworkRepositoryName(), "BASE_ERROR", artifactId).get(0).getValue().toString());
 	}
 }

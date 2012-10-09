@@ -22,6 +22,7 @@ import edu.american.student.mnemosyne.core.framework.MnemosyneProcess;
 import edu.american.student.mnemosyne.core.framework.NNProcessor;
 import edu.american.student.mnemosyne.core.model.Artifact;
 import edu.american.student.mnemosyne.core.util.AccumuloForeman;
+import edu.american.student.mnemosyne.core.util.BinaryUtils;
 import edu.american.student.mnemosyne.core.util.HadoopForeman;
 import edu.american.student.mnemosyne.core.util.NNMetadata;
 import edu.american.student.mnemosyne.core.util.NNProcessorFactory;
@@ -61,8 +62,8 @@ public class BaseNetworkBuilderProcess implements MnemosyneProcess
 		public void map(Key ik, Value iv, Context context)
 		{
 			NNMetadata metadata = NNMetadata.inflate(iv.toString(),ik.getRow().toString());
-			int inputNeuronCount =metadata.getInputNameFields().size();
-			int num = metadata.getOutputNameFields().size();
+			int inputNeuronCount =BinaryUtils.toBinary(new double[]{metadata.getInputMax()}).length;
+			int num = BinaryUtils.toBinary(new double[]{metadata.getOutputMax()}).length;
 			
 			ClassificationNetworkConf conf = new ClassificationNetworkConf();
 			conf.setInputActivation(null);
@@ -97,6 +98,12 @@ public class BaseNetworkBuilderProcess implements MnemosyneProcess
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		}
+
+		private int calculateNeuronCount(int size)
+		{
+			// TODO Auto-generated method stub
+			return 0;
 		}
 	}
 

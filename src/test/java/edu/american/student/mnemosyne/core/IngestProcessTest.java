@@ -44,10 +44,10 @@ public class IngestProcessTest
 	}
 
 	@Test
-	public void test() throws Exception
+	public void ingestProcessTest() throws Exception
 	{
 		List<Entry<Key,Value>> results = aForeman.fetchByQualifier(AccumuloForeman.getArtifactRepositoryName(), "RAW_BYTES", "0");
-		assertEquals("It appears there aren't two artifacts with a line 0",results.size(),2);
+		assertEquals("It appears there aren't two artifacts with line 0",results.size(),2);
 	}
 
 }

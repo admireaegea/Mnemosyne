@@ -19,6 +19,7 @@ import org.junit.Test;
 import edu.american.student.mnemosyne.conf.HadoopJobConfiguration;
 import edu.american.student.mnemosyne.core.util.AccumuloForeman;
 import edu.american.student.mnemosyne.core.util.HadoopForeman;
+import edu.american.student.mnemosyne.core.util.MnemosyneAccumuloAdministrator;
 
 public class HadoopForemanTest
 {
@@ -29,7 +30,7 @@ public class HadoopForemanTest
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception
 	{
-
+		
 		aForeman.connect();
 		aForeman.makeTable(time + "");
 		aForeman.add(time + "", "ROW", "FAM", "QUAL", "VALUE");
@@ -39,7 +40,7 @@ public class HadoopForemanTest
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception
 	{
-		aForeman.deleteTable(time + "");
+		MnemosyneAccumuloAdministrator.setup();
 	}
 
 	@Before
