@@ -1,8 +1,12 @@
 package edu.american.student.mnemosyne.core.util;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+
+import org.apache.hadoop.fs.Path;
 
 
 public class MnemosyneConstants
@@ -112,4 +116,40 @@ public class MnemosyneConstants
 		String toReturn = (String)properties.get("defaultAuths");
 		return toReturn;
 	}
+	
+	public static String getMnemosyneHome()
+	{
+		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
+		String toReturn = (String)properties.get("mnemosyneHome");
+		return toReturn;
+	}
+
+	public static String getIngestDirectory()
+	{
+		return MnemosyneConstants.getMnemosyneHome()+"ingest/";
+	}
+
+	public static Path[] getAllIngestableFiles()
+	{
+		ArrayList<Path> paths = walk(new File(MnemosyneConstants.getIngestDirectory()));
+		return paths.toArray(new Path[paths.size()]);
+	}
+	static ArrayList<Path> toReturn = new ArrayList<Path>();
+    private static ArrayList<Path> walk(File dir) {
+        String pattern = "";
+        File listFile[] = dir.listFiles();
+        if (listFile != null) {
+            for (int i=0; i<listFile.length; i++) {
+                if (listFile[i].isDirectory()) {
+                    walk(listFile[i]);
+                } else {
+                    if (listFile[i].getName().endsWith(pattern)) {
+                        System.out.println(listFile[i].getPath());
+                        toReturn.add(new Path(listFile[i].getPath()));
+                    }
+                }
+            }
+        }
+        return toReturn;
+    }
 }

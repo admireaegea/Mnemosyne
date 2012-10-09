@@ -22,15 +22,15 @@ public class TrainProcess implements MnemosyneProcess
 	{
 		HadoopForeman hForeman = new HadoopForeman();
 		HadoopJobConfiguration conf = new HadoopJobConfiguration();
-		conf.setJobName("TRAIN PROCESS");
-		conf.setMapperClass(MyMapper.class);
-		conf.overrideDefaultTable("ARTIFACT_TABLE");
+		conf.setJobName(HadoopJobConfiguration.buildJobName(TrainProcess.class));
+		conf.setMapperClass(NNTrainMapper.class);
+		conf.overrideDefaultTable(AccumuloForeman.getArtifactRepositoryName());
 		conf.setInputFormatClass(AccumuloInputFormat.class);
 		conf.setOutputFormatClass(AccumuloOutputFormat.class);
 		hForeman.runJob(conf);
 	}
 	
-	public static class MyMapper extends Mapper<Key, Value, Writable, Writable>
+	public static class NNTrainMapper extends Mapper<Key, Value, Writable, Writable>
 	{
 		private AccumuloForeman aForeman = new AccumuloForeman();
 		@Override
@@ -56,6 +56,12 @@ public class TrainProcess implements MnemosyneProcess
 			}
 			
 		}
+	}
+
+	public void setup() throws Exception
+	{
+		// TODO Auto-generated method stub
+		
 	}
 
 	

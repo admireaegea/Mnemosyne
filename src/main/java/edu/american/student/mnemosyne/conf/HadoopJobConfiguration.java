@@ -1,9 +1,8 @@
 package edu.american.student.mnemosyne.conf;
 
 import org.apache.accumulo.core.security.Authorizations;
-import org.apache.hadoop.mapreduce.InputFormat;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.OutputFormat;
 import org.apache.hadoop.mapreduce.Reducer;
 
 import edu.american.student.mnemosyne.core.util.MnemosyneConstants;
@@ -14,14 +13,14 @@ public class HadoopJobConfiguration
 	private String jobName = "DefaultJobName";
 	private Class<? extends Mapper<?, ?, ?, ?>> mapperClass;
 	private Class<? extends Reducer<?,?,?,?>> reducerClass;
-	private Class<? extends InputFormat<?, ?>> inputClass;
-	private Class<? extends OutputFormat<?, ?>> outputClass;
+	private Class<?> inputClass;
+	private Class<?> outputClass;
 	private Class<?> outputKeyClass;
 	private Class<?> outputValueClass;
 	private int numOfReduceTasks = 0;
 	private String defaultTable = MnemosyneConstants.getDefaultTable();
 	private Authorizations defaultAuths = new Authorizations(MnemosyneConstants.getDefaultAuths());
-
+	private Path pathToProcess = null;
 	public String getJobName()
 	{
 		return jobName;
@@ -42,24 +41,24 @@ public class HadoopJobConfiguration
 		this.mapperClass = mapperClass;
 	}
 
-	public Class<? extends InputFormat<?, ?>> getInputFormatClass()
+	public Class<?> getInputFormatClass()
 	{
 		return inputClass;
 	}
 
-	public void setInputFormatClass(Class<? extends InputFormat<?, ?>> inputClass)
+	public void setInputFormatClass(Class<?> inputClass)
 	{
 		this.inputClass = inputClass;
 	}
 
-	public Class<? extends OutputFormat<?, ?>> getOutputFormatClass()
+	public Class<?> getOutputFormatClass()
 	{
 		return this.outputClass;
 	}
 
-	public void setOutputFormatClass(Class<? extends OutputFormat<?, ?>> outputClass)
+	public void setOutputFormatClass(@SuppressWarnings("rawtypes") Class class1)
 	{
-		this.outputClass = outputClass;
+		this.outputClass = class1;
 	}
 
 	public Class<?> getOutputKeyClass()
@@ -119,6 +118,21 @@ public class HadoopJobConfiguration
 	public void setReducerClass(Class<? extends Reducer<?,?,?,?>> reducerClass)
 	{
 		this.reducerClass = reducerClass;
+	}
+
+	public static String buildJobName(Class<?> className)
+	{
+		return className.getSimpleName();
+	}
+
+	public void overridePathToProcess(Path path)
+	{
+		this.pathToProcess = path;
+	}
+	
+	public Path getPathToProcess()
+	{
+		return this.pathToProcess;
 	}
 
 }

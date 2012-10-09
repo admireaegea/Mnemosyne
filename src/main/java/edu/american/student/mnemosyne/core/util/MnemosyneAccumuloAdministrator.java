@@ -12,7 +12,7 @@ public class MnemosyneAccumuloAdministrator
 		AccumuloForeman aForeman = new AccumuloForeman();
 		aForeman.connect();
 		aForeman.deleteTables();
-		aForeman.makeTable("BASE_NETWORK");
-		aForeman.makeTable("ARTIFACT_TABLE");
+		aForeman.makeTable(AccumuloForeman.getBaseNetworkRepositoryName());
+		aForeman.makeTable(AccumuloForeman.getArtifactRepositoryName());
 	}
 }
