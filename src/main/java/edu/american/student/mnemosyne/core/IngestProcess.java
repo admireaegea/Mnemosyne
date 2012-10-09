@@ -51,6 +51,8 @@ public class IngestProcess implements MnemosyneProcess
 		}
 
 	}
+	
+	
 
 	public static class IngestMapper extends Mapper<LongWritable, Text, Text, IntWritable>
 	{

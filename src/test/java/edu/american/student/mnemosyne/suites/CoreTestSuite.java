@@ -5,11 +5,15 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 import edu.american.student.mnemosyne.core.HadoopForemanTest;
+import edu.american.student.mnemosyne.core.IngestProcessTest;
+import edu.american.student.mnemosyne.core.PropertiesLoaderTest;
 
 @RunWith(Suite.class)
 @SuiteClasses
 ({
-	HadoopForemanTest.class
+	PropertiesLoaderTest.class,
+	HadoopForemanTest.class,
+	IngestProcessTest.class
 })
 public class CoreTestSuite
 {

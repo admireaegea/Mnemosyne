@@ -2,30 +2,24 @@ package edu.american.student.mnemosyne.core;
 
 import static org.junit.Assert.*;
 
-import java.util.List;
-import java.util.Map.Entry;
-
-import org.apache.accumulo.core.data.Key;
-import org.apache.accumulo.core.data.Value;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import edu.american.student.mnemosyne.core.util.AccumuloForeman;
 import edu.american.student.mnemosyne.core.util.MnemosyneAccumuloAdministrator;
 import edu.american.student.mnemosyne.util.TestHelper;
 
-public class IngestProcessTest
+public class ArtifactBuilderProcessTest
 {
-	static AccumuloForeman aForeman = new AccumuloForeman();
+
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception
 	{
 		MnemosyneAccumuloAdministrator.setup();
+		TestHelper.constructTestClassificationNetwork();
 		TestHelper.ingestTestArtifacts();
-		aForeman.connect();
 	}
 
 	@AfterClass
@@ -46,8 +40,9 @@ public class IngestProcessTest
 	@Test
 	public void test() throws Exception
 	{
-		List<Entry<Key,Value>> results = aForeman.fetchByQualifier(AccumuloForeman.getArtifactRepositoryName(), "RAW_BYTES", "0");
-		assertEquals("It appears there aren't two artifacts with a line 0",results.size(),2);
+		ArtifactBuilderProcess pro = new ArtifactBuilderProcess();
+		pro.setup();
+		pro.process();
 	}
 
 }

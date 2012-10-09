@@ -49,7 +49,11 @@ public class HadoopForeman
 		{
 			AccumuloInputFormat.setInputInfo(conf1, MnemosyneConstants.getAccumuloUser(), MnemosyneConstants.getAccumuloPassword().getBytes(),  conf.getDefaultTable(), conf.getDefaultAuths());
 			AccumuloInputFormat.setZooKeeperInstance(conf1,MnemosyneConstants.getZookeeperInstanceName(), MnemosyneConstants.getZookeeperInstance());
-		
+			
+		}
+		if(conf.getFetchColumns() != null)
+		{
+			AccumuloInputFormat.fetchColumns(conf1, conf.getFetchColumns());
 		}
 		else if(conf.getInputFormatClass() == TextInputFormat.class)
 		{

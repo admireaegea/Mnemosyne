@@ -29,7 +29,7 @@ public class HadoopForemanTest
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception
 	{
-		
+
 		aForeman.connect();
 		aForeman.makeTable(time + "");
 		aForeman.add(time + "", "ROW", "FAM", "QUAL", "VALUE");
@@ -39,7 +39,7 @@ public class HadoopForemanTest
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception
 	{
-		 aForeman.deleteTable(time+"");
+		aForeman.deleteTable(time + "");
 	}
 
 	@Before
@@ -61,7 +61,7 @@ public class HadoopForemanTest
 		hConfig.setMapperClass(MyMapper.class);
 		hConfig.setInputFormatClass(AccumuloInputFormat.class);
 		hConfig.setOutputFormatClass(AccumuloOutputFormat.class);
-		
+
 		hConfig.overrideDefaultTable(time + "");
 
 		HadoopForeman hForeman = new HadoopForeman();
@@ -74,8 +74,8 @@ public class HadoopForemanTest
 		public void map(Key ik, Value iv, Context context)
 		{
 			System.out.println(ik.toString() + " " + iv.toString());
+
 		}
 	}
-
 
 }

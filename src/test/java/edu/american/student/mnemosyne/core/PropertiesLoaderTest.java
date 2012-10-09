@@ -1,6 +1,6 @@
 package edu.american.student.mnemosyne.core;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -8,7 +8,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import edu.american.student.mnemosyne.core.util.AccumuloForeman;
 import edu.american.student.mnemosyne.core.util.MnemosyneConstants;
 
 public class PropertiesLoaderTest
@@ -35,13 +34,17 @@ public class PropertiesLoaderTest
 	}
 
 	@Test
-	public void test()
+	public void loadPropertiesTest()
 	{
-		System.out.println(MnemosyneConstants.getAccumuloInstance()+" "+MnemosyneConstants.getAccumuloPassword());
-		AccumuloForeman aForeman = new AccumuloForeman();
-		aForeman.connect();
-		
-		
+		assertNotNull(MnemosyneConstants.getAccumuloInstance());
+		assertNotNull(MnemosyneConstants.getAccumuloPassword());
+		assertNotNull(MnemosyneConstants.getAccumuloUser());
+		assertNotNull(MnemosyneConstants.getAllIngestableFiles());
+		assertNotNull(MnemosyneConstants.getDefaultAuths());
+		assertNotNull(MnemosyneConstants.getDefaultTable());
+		assertNotNull(MnemosyneConstants.getMnemosyneHome());
+		assertNotNull(MnemosyneConstants.getZookeeperInstance());
+		assertNotNull(MnemosyneConstants.getZookeeperInstanceName());
 	}
 
 }

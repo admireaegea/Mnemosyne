@@ -1,7 +1,11 @@
 package edu.american.student.mnemosyne.conf;
 
+import java.util.Collection;
+
 import org.apache.accumulo.core.security.Authorizations;
+import org.apache.accumulo.core.util.Pair;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 
@@ -21,6 +25,7 @@ public class HadoopJobConfiguration
 	private String defaultTable = MnemosyneConstants.getDefaultTable();
 	private Authorizations defaultAuths = new Authorizations(MnemosyneConstants.getDefaultAuths());
 	private Path pathToProcess = null;
+	private Collection<Pair<Text,Text>> cfPairs;
 	public String getJobName()
 	{
 		return jobName;
@@ -133,6 +138,16 @@ public class HadoopJobConfiguration
 	public Path getPathToProcess()
 	{
 		return this.pathToProcess;
+	}
+
+	public Collection<Pair<Text, Text>> getFetchColumns()
+	{
+		return cfPairs;
+	}
+	
+	public void fetchColumns(Collection<Pair<Text,Text>> pairs)
+	{
+		this.cfPairs = pairs;
 	}
 
 }

@@ -6,7 +6,7 @@ import org.junit.Test;
 import edu.american.student.mnemosyne.core.util.MnemosyneAccumuloAdministrator;
 import edu.american.student.mnemosyne.util.TestHelper;
 
-public class HadoopProcessorTest
+public class TrainProcessTest
 {
 	
 	@BeforeClass
@@ -15,13 +15,13 @@ public class HadoopProcessorTest
 		MnemosyneAccumuloAdministrator.setup();
 		TestHelper.constructTestClassificationNetwork();
 		TestHelper.ingestTestArtifacts();
+		TestHelper.buildArtifacts();
 	}
 	@Test
 	public void test() throws Exception
 	{
 		TrainProcess pro = new TrainProcess();
 		pro.process();
-		//each mapper should 
 	}
 
 

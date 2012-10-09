@@ -6,8 +6,8 @@ import org.apache.accumulo.core.client.TableNotFoundException;
 import org.encog.engine.network.activation.ActivationSigmoid;
 
 import edu.american.student.mnemosyne.conf.ClassificationNetworkConf;
+import edu.american.student.mnemosyne.core.IngestProcess;
 import edu.american.student.mnemosyne.core.framework.NNProcessor;
-import edu.american.student.mnemosyne.core.util.AccumuloForeman;
 import edu.american.student.mnemosyne.core.util.NNProcessorFactory;
 
 public class TestHelper
@@ -39,9 +39,14 @@ public class TestHelper
 	
 	public static void ingestTestArtifacts() throws Exception
 	{
-		AccumuloForeman aForeman = new AccumuloForeman();
-		aForeman.connect();
-		aForeman.add("ARTIFACT_TABLE", "ROW", "FAM", "QUAL", "VALUE");
+		IngestProcess pro = new IngestProcess();
+		pro.setup();
+		pro.process();
 	}
 	
+	
+	public static void buildArtifacts() throws Exception
+	{
+		
+	}
 }
