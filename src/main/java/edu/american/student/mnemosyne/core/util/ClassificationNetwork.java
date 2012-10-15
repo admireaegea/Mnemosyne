@@ -1,12 +1,15 @@
 package edu.american.student.mnemosyne.core.util;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Random;
 
+import org.apache.accumulo.core.util.Pair;
 import org.encog.engine.network.activation.ActivationFunction;
 import org.encog.neural.flat.FlatNetwork;
 import org.encog.neural.networks.BasicNetwork;
 import org.encog.neural.networks.layers.BasicLayer;
+import org.encog.neural.networks.structure.NetworkCODEC;
 
 import edu.american.student.mnemosyne.conf.ClassificationNetworkConf;
 
@@ -27,7 +30,20 @@ public class ClassificationNetwork
 
 		return network;
 	}
-	public static BasicNetwork addLayerToNetwork(BasicNetwork network, BasicLayer layer)
+	
+	/**
+	 * This function is far from perfect. But is used as a demonstration.
+	 * 
+	 * One of the main problems is that it adds this new layer right after the input layer....
+	 * 
+	 * which I imagine severs the links between the old hidden lay0
+	 * FIXME:
+	 * @param network
+	 * @param conf
+	 * @param layer
+	 * @return
+	 */
+	public static BasicNetwork addLayerToNetwork(BasicNetwork network,ClassificationNetworkConf conf, BasicLayer layer)
 	{
 		FlatNetwork toCopy = network.getStructure().getFlat();
 		FlatNetwork toInstall = new FlatNetwork();
@@ -133,6 +149,7 @@ public class ClassificationNetwork
 		
 		for(int i= toInstallLayerOutput.length - (toCopy.getOutputCount()+1);i<toInstallLayerOutput.length;i++)
 		{
+			System.out.println(toCopyLayerOutput.length);
 			toInstallLayerOutput[i]= toCopyLayerOutput[i-(toCopy.getOutputCount()+1)];
 		}
 		for(int i=0;i<toCopyWeights.length;i++)
@@ -152,7 +169,6 @@ public class ClassificationNetwork
 		{
 			toInstallLayerSums[i]=toCopyLayerSums[i-layer.getTotalCount()];
 		}
-
 		toInstall.setBiasActivation(toInstallBiasActivations);
 		toInstall.setActivationFunctions(toInstallFunc);
 		toInstall.setContextTargetOffset(toInstallTargetOffset);
@@ -166,10 +182,23 @@ public class ClassificationNetwork
 		toInstall.setWeightIndex(toInstallWeightIndex);
 		toInstall.setWeights(toInstallWeights);
 		toInstall.setLayerSums(toInstallLayerSums);
+		compare(toCopy,toInstall);
 		BasicNetwork toReturn = new BasicNetwork();
-		toReturn.getStructure().setFlat(toInstall);
-		System.out.println(toReturn.getStructure().getLayers().size());
+		BasicLayer input = new BasicLayer(conf.getInputActivation(), conf.getInputBias(), conf.getInputNeuronCount());
+		BasicLayer output = new BasicLayer(conf.getOutputActivation(), conf.getOutputBias(), conf.getOutputNeuronCount());
+		
+		//construct the input
+		toReturn.addLayer(input);
+		//construct hidden
+		for(int i=0;i<network.getLayerCount()-2+1;i++)
+		{
+			BasicLayer hidden = new BasicLayer(conf.getHiddenActivation(), conf.getHiddenBias(), conf.getNumberOfCategories());
+			toReturn.addLayer(hidden);
+		}
+		//construct output
+		toReturn.addLayer(output);
 		toReturn.getStructure().finalizeStructure();
+		NetworkCODEC.arrayToNetwork(toInstall.encodeNetwork(),toReturn);
 		return toReturn;
 
 	}
@@ -182,25 +211,25 @@ public class ClassificationNetwork
 	 */
 	private static void compare(FlatNetwork toCopy, FlatNetwork toInstall)
 	{
-		print(toCopy.getActivationFunctions(), "COPY ACTIVATION FUNCTIONS", toInstall.getActivationFunctions(), "INSTALL ACTIVATION FUNCTIONS", "ACTIVATION FUNCTIONS:");
-		print(new Object[]{ toCopy.getBeginTraining() }, "COPY BEGIN TRAINING", new Object[]{ toInstall.getBeginTraining() }, "INSTALL BEGIN TRAINING", "BEGIN TRAINING:");
-		print(getArray(toCopy.getBiasActivation()), "COPY BIAS ACTIVATIONS:", getArray(toInstall.getBiasActivation()), "INSTALL BIAS ACTIVATIONS:", "BIAS ACTIVATIONS:");
-		print(getArray(new Double[]{ new Double(toCopy.getConnectionLimit()) }), "COPY CONNECTION LIMIT", getArray(new Double[]{ new Double(toInstall.getConnectionLimit()) }), "INSTALL CONNECTION LIMIT", "CONNECTION LIMIT:");
-		print(getArray(toCopy.getContextTargetOffset()), "COPY CONTEXT TARGET OFFSET", getArray(toInstall.getContextTargetOffset()), "INSTALL CONTEXT TARGET OFFSET", "CONTEXT TARGET OFFSET:");
-		print(getArray(toCopy.getContextTargetSize()), "COPY CONTEXT TARGET SIZE", getArray(toInstall.getContextTargetSize()), "INSTALL CONTEXT TARGET SIZE", "CONTEXT TARGET SIZE:");
-		print(getArray(new int[]{ toCopy.getEndTraining() }), "COPY END TRAINING", getArray(new int[]{ toInstall.getEndTraining() }), "INSTALL END TRAINING", "END TRAINGING:");
-		print(getArray(new boolean[]{ toCopy.getHasContext() }), "COPY HAS CONTEXT", getArray(new boolean[]{ toInstall.getHasContext() }), "INSTALL HAS CONTEXT", "HAS CONTEXT:");
-		print(getArray(new int[]{ toCopy.getInputCount() }), "COPY INPUT COUNT", getArray(new int[]{ toInstall.getInputCount() }), "INSTALL INPUT COUNT", "INPUT COUNT:");
-		print(getArray(toCopy.getLayerContextCount()), "COPY LAYER CONTEXT COUNT", getArray(toInstall.getLayerContextCount()), "INSTALL LAYER CONTEXT COUNT", "LAYER CONTEXT COUNT:");
-		print(getArray(toCopy.getLayerFeedCounts()), "COPY LAYER FEED COUNT", getArray(toInstall.getLayerFeedCounts()), "INSTALL LAYER FEED COUNT", "LAYER FEED COUNT:");
-		print(getArray(toCopy.getLayerIndex()), "COPY LAYER INDEX", getArray(toInstall.getLayerIndex()), "INSTALL LAYER INDEX", "LAYER INDEX:");
-		print(getArray(new int[]{ toCopy.getOutputCount() }), "COPY OUTPUT COUNT", getArray(new int[]{ toInstall.getOutputCount() }), "INSTALL OUTPUT COUNT", "OUTPUT COUNT:");
+		//print(toCopy.getActivationFunctions(), "COPY ACTIVATION FUNCTIONS", toInstall.getActivationFunctions(), "INSTALL ACTIVATION FUNCTIONS", "ACTIVATION FUNCTIONS:");
+		//print(new Object[]{ toCopy.getBeginTraining() }, "COPY BEGIN TRAINING", new Object[]{ toInstall.getBeginTraining() }, "INSTALL BEGIN TRAINING", "BEGIN TRAINING:");
+		//print(getArray(toCopy.getBiasActivation()), "COPY BIAS ACTIVATIONS:", getArray(toInstall.getBiasActivation()), "INSTALL BIAS ACTIVATIONS:", "BIAS ACTIVATIONS:");
+		//print(getArray(new Double[]{ new Double(toCopy.getConnectionLimit()) }), "COPY CONNECTION LIMIT", getArray(new Double[]{ new Double(toInstall.getConnectionLimit()) }), "INSTALL CONNECTION LIMIT", "CONNECTION LIMIT:");
+		//print(getArray(toCopy.getContextTargetOffset()), "COPY CONTEXT TARGET OFFSET", getArray(toInstall.getContextTargetOffset()), "INSTALL CONTEXT TARGET OFFSET", "CONTEXT TARGET OFFSET:");
+	//	print(getArray(toCopy.getContextTargetSize()), "COPY CONTEXT TARGET SIZE", getArray(toInstall.getContextTargetSize()), "INSTALL CONTEXT TARGET SIZE", "CONTEXT TARGET SIZE:");
+	//	print(getArray(new int[]{ toCopy.getEndTraining() }), "COPY END TRAINING", getArray(new int[]{ toInstall.getEndTraining() }), "INSTALL END TRAINING", "END TRAINGING:");
+	//	print(getArray(new boolean[]{ toCopy.getHasContext() }), "COPY HAS CONTEXT", getArray(new boolean[]{ toInstall.getHasContext() }), "INSTALL HAS CONTEXT", "HAS CONTEXT:");
+	//	print(getArray(new int[]{ toCopy.getInputCount() }), "COPY INPUT COUNT", getArray(new int[]{ toInstall.getInputCount() }), "INSTALL INPUT COUNT", "INPUT COUNT:");
+	//	print(getArray(toCopy.getLayerContextCount()), "COPY LAYER CONTEXT COUNT", getArray(toInstall.getLayerContextCount()), "INSTALL LAYER CONTEXT COUNT", "LAYER CONTEXT COUNT:");
+	//	print(getArray(toCopy.getLayerFeedCounts()), "COPY LAYER FEED COUNT", getArray(toInstall.getLayerFeedCounts()), "INSTALL LAYER FEED COUNT", "LAYER FEED COUNT:");
+	//	print(getArray(toCopy.getLayerIndex()), "COPY LAYER INDEX", getArray(toInstall.getLayerIndex()), "INSTALL LAYER INDEX", "LAYER INDEX:");
+	//	print(getArray(new int[]{ toCopy.getOutputCount() }), "COPY OUTPUT COUNT", getArray(new int[]{ toInstall.getOutputCount() }), "INSTALL OUTPUT COUNT", "OUTPUT COUNT:");
 		//print(getArray(), "", getArray(), "", "");
-		print(getArray(toCopy.getLayerOutput()),"COPY LAYER OUTPUT",getArray(toInstall.getLayerOutput()),"INSTALL LAYER OUTPUT","LAYER OUTPUT:");
-		print(getArray(toCopy.getLayerCounts()), "COPY LAYER COUNTS", getArray(toInstall.getLayerCounts()), "INSTALL LAYER COUNTS", "LAYER COUNTS:");
-		print(getArray(toCopy.getWeightIndex()),"COPY WEIGHT INDEX",getArray(toInstall.getWeightIndex()),"INSTALL WEIGHT INDEX","WEIGHT INDEX:");
-		print(getArray(toCopy.getWeights()), "COPY WEIGHTS", getArray(toInstall.getWeights()), "INSTALL WEIGHTS", "WEIGHTS:");
-		print(getArray(toCopy.getLayerSums()), "COPY LAYER SUMS", getArray(toInstall.getLayerSums()), "INSTALL LAYER SUMS", "LAYER SUMS");
+		//print(getArray(toCopy.getLayerOutput()),"COPY LAYER OUTPUT",getArray(toInstall.getLayerOutput()),"INSTALL LAYER OUTPUT","LAYER OUTPUT:");
+	//	print(getArray(toCopy.getLayerCounts()), "COPY LAYER COUNTS", getArray(toInstall.getLayerCounts()), "INSTALL LAYER COUNTS", "LAYER COUNTS:");
+	//	print(getArray(toCopy.getWeightIndex()),"COPY WEIGHT INDEX",getArray(toInstall.getWeightIndex()),"INSTALL WEIGHT INDEX","WEIGHT INDEX:");
+	//	print(getArray(toCopy.getWeights()), "COPY WEIGHTS", getArray(toInstall.getWeights()), "INSTALL WEIGHTS", "WEIGHTS:");
+	//	print(getArray(toCopy.getLayerSums()), "COPY LAYER SUMS", getArray(toInstall.getLayerSums()), "INSTALL LAYER SUMS", "LAYER SUMS");
 	}
 
 	private final static Class<?>[] ARRAY_PRIMITIVE_TYPES =

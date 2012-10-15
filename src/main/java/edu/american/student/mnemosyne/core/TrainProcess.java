@@ -12,9 +12,11 @@ import org.apache.accumulo.core.util.Pair;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.encog.engine.network.activation.ActivationSigmoid;
 import org.encog.ml.data.MLDataSet;
 import org.encog.ml.data.basic.BasicMLDataSet;
 import org.encog.neural.networks.BasicNetwork;
+import org.encog.neural.networks.ContainsFlat;
 import org.encog.neural.networks.layers.BasicLayer;
 import org.encog.neural.networks.training.propagation.resilient.ResilientPropagation;
 
@@ -79,14 +81,7 @@ public class TrainProcess implements MnemosyneProcess
 				double[] input = NNInput.inflate(iv.toString());
 				double[] output = NNOutput.inflate(iv.toString());
 				MLDataSet trainingSet = new BasicMLDataSet(new double[][]{ input }, new double[][]{ output });
-				new BasicLayer(baseConf.getHiddenActivation(), baseConf.getHiddenBias(), baseConf.getHiddenNeuronCount() * 2).setNetwork(base);
-				new BasicLayer(baseConf.getHiddenActivation(), baseConf.getHiddenBias(), baseConf.getHiddenNeuronCount() * 2).setNetwork(base);
-
-				new BasicLayer(baseConf.getHiddenActivation(), baseConf.getHiddenBias(), baseConf.getHiddenNeuronCount() * 2).setNetwork(base);
-
-				final ResilientPropagation train = new ResilientPropagation(base, trainingSet);
-				int layerCount = base.getLayerCount();
-				System.out.println("layer count "+layerCount);
+				final ResilientPropagation train = new ResilientPropagation(ClassificationNetwork.addLayerToNetwork(base,baseConf, new BasicLayer(new ActivationSigmoid(),true,baseConf.getNumberOfCategories() )), trainingSet);
 				int epoch = 1;
 				try
 				{

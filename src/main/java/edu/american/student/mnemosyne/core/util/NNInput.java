@@ -10,7 +10,7 @@ public class NNInput
 		double[] toReturn = new double[inputs.length];
 		for(int i=0;i<inputs.length;i++)
 		{
-			System.out.println(inputs[i].replace("(", ""));
+		
 			toReturn[i]=Double.parseDouble(inputs[i].replace("(", ""));
 		}
 		
