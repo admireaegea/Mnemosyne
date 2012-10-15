@@ -1,5 +1,6 @@
 package edu.american.student.mnemosyne.core;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -81,7 +82,8 @@ public class TrainProcess implements MnemosyneProcess
 				double[] input = NNInput.inflate(iv.toString());
 				double[] output = NNOutput.inflate(iv.toString());
 				MLDataSet trainingSet = new BasicMLDataSet(new double[][]{ input }, new double[][]{ output });
-				final ResilientPropagation train = new ResilientPropagation(ClassificationNetwork.addLayerToNetwork(base,baseConf, new BasicLayer(new ActivationSigmoid(),true,baseConf.getNumberOfCategories() )), trainingSet);
+				BasicNetwork modified =ClassificationNetwork.addLayerToNetwork(base,baseConf, new BasicLayer(new ActivationSigmoid(),true,baseConf.getNumberOfCategories() ));
+				final ResilientPropagation train = new ResilientPropagation(modified, trainingSet);
 				int epoch = 1;
 				try
 				{
@@ -92,10 +94,20 @@ public class TrainProcess implements MnemosyneProcess
 						System.out.println("Epoch #" + epoch + " Error:" + train.getError());
 						epoch++;
 					}
-					while (train.getError() > error * .000000000000000000001);
+					while (train.getError() >aerror);
+					aerror = aerror*.5;
 				}
 				catch (Exception e)
 				{
+					e.printStackTrace();
+				}
+				try
+				{
+					aForeman.assertBaseNetwork(modified, ik.getRow().toString(), baseConf);
+				}
+				catch (IOException e)
+				{
+					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 
@@ -103,10 +115,10 @@ public class TrainProcess implements MnemosyneProcess
 
 		}
 	}
-
+	static double aerror;
 	public void setup() throws Exception
 	{
-		// TODO Auto-generated method stub
+		aerror =.5;
 
 	}
 
