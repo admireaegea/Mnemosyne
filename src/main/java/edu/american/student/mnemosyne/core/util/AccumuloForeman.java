@@ -25,6 +25,7 @@ import org.apache.accumulo.core.security.Authorizations;
 import org.apache.accumulo.core.security.ColumnVisibility;
 import org.apache.hadoop.io.Text;
 import org.encog.neural.networks.BasicNetwork;
+import org.encog.util.obj.SerializeObject;
 
 import edu.american.student.mnemosyne.conf.ClassificationNetworkConf;
 import edu.american.student.mnemosyne.core.framework.ArtifactRepository;

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Random;
 
 import org.apache.accumulo.core.client.TableNotFoundException;
 import org.apache.accumulo.core.client.mapreduce.AccumuloInputFormat;
@@ -78,6 +79,8 @@ public class BaseNetworkBuilderProcess implements MnemosyneProcess
 			conf.setOutputNeuronCount(num);
 			
 			conf.setNumberOfCategories(num);
+			conf.setBasicMLInput(getRandomArray(inputNeuronCount));
+			conf.setBasicIdealMLOutput(getRandomArray(inputNeuronCount));
 			NNProcessor processor = NNProcessorFactory.getProcessorBean(conf);
 			try
 			{
@@ -100,11 +103,16 @@ public class BaseNetworkBuilderProcess implements MnemosyneProcess
 			}
 		}
 
-		private int calculateNeuronCount(int size)
+		private double[][] getRandomArray(int inputNeuronCount)
 		{
-			// TODO Auto-generated method stub
-			return 0;
+			double[][] toReturn = new double[1][inputNeuronCount];
+			for(int i=0;i<inputNeuronCount;i++)
+			{
+				toReturn[0][i]=new Random().nextDouble();
+			}
+			return toReturn;
 		}
+
 	}
 
 }

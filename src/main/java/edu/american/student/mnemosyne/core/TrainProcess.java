@@ -16,7 +16,6 @@ import org.encog.ml.data.MLDataSet;
 import org.encog.ml.data.basic.BasicMLDataSet;
 import org.encog.neural.networks.BasicNetwork;
 import org.encog.neural.networks.layers.BasicLayer;
-import org.encog.neural.networks.layers.Layer;
 import org.encog.neural.networks.training.propagation.resilient.ResilientPropagation;
 
 import edu.american.student.mnemosyne.conf.ClassificationNetworkConf;
@@ -24,6 +23,7 @@ import edu.american.student.mnemosyne.conf.HadoopJobConfiguration;
 import edu.american.student.mnemosyne.core.framework.MnemosyneProcess;
 import edu.american.student.mnemosyne.core.model.Artifact;
 import edu.american.student.mnemosyne.core.util.AccumuloForeman;
+import edu.american.student.mnemosyne.core.util.ClassificationNetwork;
 import edu.american.student.mnemosyne.core.util.HadoopForeman;
 import edu.american.student.mnemosyne.core.util.NNInput;
 import edu.american.student.mnemosyne.core.util.NNOutput;
@@ -35,25 +35,26 @@ public class TrainProcess implements MnemosyneProcess
 	{
 		artifactForeman.connect();
 		List<Artifact> artifacts = artifactForeman.returnArtifacts();
-		for(Artifact artifact: artifacts)
+		for (Artifact artifact : artifacts)
 		{
 			HadoopForeman hForeman = new HadoopForeman();
 			HadoopJobConfiguration conf = new HadoopJobConfiguration();
 			conf.setJobName(HadoopJobConfiguration.buildJobName(this.getClass()));
 			conf.setMapperClass(NNTrainMapper.class);
 			conf.overrideDefaultTable(AccumuloForeman.getArtifactRepositoryName());
-			Collection<Pair<Text,Text>> cfPairs = new ArrayList<Pair<Text,Text>>();
-			cfPairs.add(new Pair<Text,Text>(new Text(artifact.getArtifactId()+":FIELD"),null));
+			Collection<Pair<Text, Text>> cfPairs = new ArrayList<Pair<Text, Text>>();
+			cfPairs.add(new Pair<Text, Text>(new Text(artifact.getArtifactId() + ":FIELD"), null));
 			conf.fetchColumns(cfPairs);
 			conf.setInputFormatClass(AccumuloInputFormat.class);
 			conf.setOutputFormatClass(AccumuloOutputFormat.class);
 			hForeman.runJob(conf);
 		}
 	}
-	
+
 	public static class NNTrainMapper extends Mapper<Key, Value, Writable, Writable>
 	{
 		private AccumuloForeman aForeman = new AccumuloForeman();
+
 		@Override
 		public void map(Key ik, Value iv, Context context)
 		{
@@ -68,53 +69,44 @@ public class TrainProcess implements MnemosyneProcess
 				baseConf = aForeman.getBaseNetworkConf(ik.getRow().toString());
 				error = aForeman.getBaseNetworkError(ik.getRow().toString());
 			}
-			catch (Exception e){}
-			System.out.println("base? "+base ==null);
-			System.out.println("conf? "+baseConf == null);
-			System.out.println("error?"+ error);
-			if(base != null)
+			catch (Exception e)
 			{
-				//train shit
+			}
+			if (base != null)
+			{
+				// train shit
 				System.out.println("Training ...");
 				double[] input = NNInput.inflate(iv.toString());
 				double[] output = NNOutput.inflate(iv.toString());
-				
-				//base.addLayer(new BasicLayer(baseConf.getHiddenActivation(),baseConf.getHiddenBias(),baseConf.getHiddenNeuronCount()*2));
-				MLDataSet trainingSet = new BasicMLDataSet(new double[][]{input},new double[][]{output});
-				List<Layer> layers = base.getStructure().getLayers();
-				BasicNetwork newNetwork = new BasicNetwork();
-				for(Layer layer:layers)
-				{
-					System.out.println("adding layer");
-					newNetwork.addLayer(layer);
-				}
-				//newNetwork.addLayer(new BasicLayer(baseConf.getHiddenActivation(),baseConf.getHiddenBias(),baseConf.getHiddenNeuronCount()*2));
-				newNetwork.getStructure().finalizeStructure();
-	
+				MLDataSet trainingSet = new BasicMLDataSet(new double[][]{ input }, new double[][]{ output });
+				BasicNetwork newNetwork = ClassificationNetwork.addLayerToNetwork(base, new BasicLayer(baseConf.getHiddenActivation(), baseConf.getHiddenBias(), baseConf.getHiddenNeuronCount() * 2));
 				final ResilientPropagation train = new ResilientPropagation(newNetwork, trainingSet);
-				int epoch =1;
-			try{
-				
-				do {
-					train.iteration();
-					System.out.println("Epoch #" + epoch + " Error:" + train.getError());
-					epoch++;
-				} while(train.getError()>error*.000000000000000000001);
-			}catch(Exception e)
-			{
-				e.printStackTrace();
+				int epoch = 1;
+				try
+				{
+
+					do
+					{
+						train.iteration();
+						System.out.println("Epoch #" + epoch + " Error:" + train.getError());
+						epoch++;
+					}
+					while (train.getError() > error * .000000000000000000001);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+
 			}
-				
-			}
-			
+
 		}
 	}
 
 	public void setup() throws Exception
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
-	
 }

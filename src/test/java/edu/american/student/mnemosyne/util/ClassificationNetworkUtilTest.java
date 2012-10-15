@@ -1,18 +1,10 @@
-package edu.american.student.mnemosyne.core;
+package edu.american.student.mnemosyne.util;
 
-import static org.junit.Assert.*;
-
-import java.io.File;
 import java.util.List;
 
 import org.encog.engine.network.activation.ActivationSigmoid;
-import org.encog.ml.data.MLDataSet;
-import org.encog.ml.data.basic.BasicMLDataSet;
 import org.encog.neural.networks.BasicNetwork;
 import org.encog.neural.networks.layers.BasicLayer;
-import org.encog.neural.networks.layers.Layer;
-import org.encog.neural.networks.training.propagation.resilient.ResilientPropagation;
-import org.encog.util.obj.SerializeObject;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -23,13 +15,15 @@ import edu.american.student.mnemosyne.conf.ClassificationNetworkConf;
 import edu.american.student.mnemosyne.core.model.Artifact;
 import edu.american.student.mnemosyne.core.util.AccumuloForeman;
 import edu.american.student.mnemosyne.core.util.ArtifactForeman;
+import edu.american.student.mnemosyne.core.util.ClassificationNetwork;
 import edu.american.student.mnemosyne.core.util.MnemosyneAccumuloAdministrator;
-import edu.american.student.mnemosyne.util.TestHelper;
 
-public class BaseNetworkBuilderProcessTest
+public class ClassificationNetworkUtilTest
 {
+
 	static AccumuloForeman aForeman = new AccumuloForeman();
 	static ArtifactForeman artifactForeman = new ArtifactForeman();
+	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception
 	{
@@ -39,7 +33,6 @@ public class BaseNetworkBuilderProcessTest
 		TestHelper.constructBaseClassificationNetwork();
 		aForeman.connect();
 		artifactForeman.connect();
-
 	}
 
 	@AfterClass
@@ -58,21 +51,17 @@ public class BaseNetworkBuilderProcessTest
 	}
 
 	@Test
-	public void test() throws Exception
+	public void test() throws Exception 
 	{
 		List<Artifact> artifacts = artifactForeman.returnArtifacts();
 		for(Artifact artifact:artifacts)
 		{
 			System.out.println(artifact.getArtifactId());
 			BasicNetwork network =aForeman.getBaseNetwork(artifact.getArtifactId());
-			// train the neural network
 			ClassificationNetworkConf conf= aForeman.getBaseNetworkConf(artifact.getArtifactId());
-			assertNotNull("conf is null",conf);
-			assertNotNull(network);
+			ClassificationNetwork.addLayerToNetwork(network,new BasicLayer(new ActivationSigmoid(),true,conf.getNumberOfCategories()));
 		
 		}
 	}
-			
-
 
 }
