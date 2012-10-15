@@ -79,8 +79,14 @@ public class TrainProcess implements MnemosyneProcess
 				double[] input = NNInput.inflate(iv.toString());
 				double[] output = NNOutput.inflate(iv.toString());
 				MLDataSet trainingSet = new BasicMLDataSet(new double[][]{ input }, new double[][]{ output });
-				BasicNetwork newNetwork = ClassificationNetwork.addLayerToNetwork(base, new BasicLayer(baseConf.getHiddenActivation(), baseConf.getHiddenBias(), baseConf.getHiddenNeuronCount() * 2));
-				final ResilientPropagation train = new ResilientPropagation(newNetwork, trainingSet);
+				new BasicLayer(baseConf.getHiddenActivation(), baseConf.getHiddenBias(), baseConf.getHiddenNeuronCount() * 2).setNetwork(base);
+				new BasicLayer(baseConf.getHiddenActivation(), baseConf.getHiddenBias(), baseConf.getHiddenNeuronCount() * 2).setNetwork(base);
+
+				new BasicLayer(baseConf.getHiddenActivation(), baseConf.getHiddenBias(), baseConf.getHiddenNeuronCount() * 2).setNetwork(base);
+
+				final ResilientPropagation train = new ResilientPropagation(base, trainingSet);
+				int layerCount = base.getLayerCount();
+				System.out.println("layer count "+layerCount);
 				int epoch = 1;
 				try
 				{

@@ -1,5 +1,7 @@
 package edu.american.student.mnemosyne.util;
 
+import static org.junit.Assert.*;
+
 import java.util.List;
 
 import org.encog.engine.network.activation.ActivationSigmoid;
@@ -59,8 +61,8 @@ public class ClassificationNetworkUtilTest
 			System.out.println(artifact.getArtifactId());
 			BasicNetwork network =aForeman.getBaseNetwork(artifact.getArtifactId());
 			ClassificationNetworkConf conf= aForeman.getBaseNetworkConf(artifact.getArtifactId());
-			ClassificationNetwork.addLayerToNetwork(network,new BasicLayer(new ActivationSigmoid(),true,conf.getNumberOfCategories()));
-		
+			BasicNetwork networkPrime = ClassificationNetwork.addLayerToNetwork(network,new BasicLayer(new ActivationSigmoid(),true,conf.getNumberOfCategories()));
+			assertNotNull(networkPrime);
 		}
 	}
 
