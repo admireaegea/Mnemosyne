@@ -70,13 +70,11 @@ public class ArtifactForeman
 		else
 		{
 			List<Entry<Key, Value>> entries = aForeman.fetchByColumnFamily(AccumuloForeman.getArtifactRepositoryName(), "ARTIFACT_ENTRY");
-			
 			for(Entry<Key,Value> entry: entries)
 			{
 				toReturn.add(Artifact.inflate(entry.getKey().getRow().toString(),entry.getValue().toString()));
 			}
 		}
-		
 		return toReturn;
 	}
 

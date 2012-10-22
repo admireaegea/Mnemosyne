@@ -183,7 +183,10 @@ public class Artifact
 		for(String fieldPair: fields)
 		{
 			String[] values = fieldPair.replace("\\(", "").split(",");
-			toReturn.addToFieldMap(values[0],values[1]);
+			if(values.length>1)
+			{
+				toReturn.addToFieldMap(values[0],values[1]);
+			}
 		}
 		return toReturn;
 	}
