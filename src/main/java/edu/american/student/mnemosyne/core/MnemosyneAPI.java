@@ -1,6 +1,7 @@
 package edu.american.student.mnemosyne.core;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -14,6 +15,7 @@ import org.xml.sax.SAXException;
 import edu.american.student.mnemosyne.core.model.Artifact;
 import edu.american.student.mnemosyne.core.util.AccumuloForeman;
 import edu.american.student.mnemosyne.core.util.ArtifactForeman;
+import edu.american.student.mnemosyne.core.util.NNInput;
 
 public  abstract class MnemosyneAPI
 {
@@ -44,25 +46,38 @@ public  abstract class MnemosyneAPI
 	
 	public MLData getMLDataInput(List<String> inputFields)
 	{
-		
-		double[] values = new double[inputFields.size()];
-		for(int i=0;i<values.length;i++)
+		ArrayList<double[]> values = new ArrayList<double[]>();
+		int totalSize = 0;
+		for(int i=0;i<inputFields.size();i++)
 		{
 			System.out.print(inputFields.get(i)+"=");
 			Scanner in = new Scanner(System.in);
 			boolean gotInput = false;
-			while(in.hasNextDouble() && !gotInput)
+			while( !gotInput)
 			{
 				if(!gotInput)
 				{
-					values[i]=Double.parseDouble(in.next());
+					double[] input = NNInput.inflate(in.next());
+					totalSize +=input.length;
+					values.add(input);
 				}
 				gotInput=true;
 			}
 			
 			System.out.print("\n");
 		}
-		MLData toReturn= new BasicMLData(values);
+		double[] binaryValues = new double[totalSize];
+		int master = 0;
+		for(double[] binary: values)
+		{
+			for(double bit: binary)
+			{
+				binaryValues[master]=bit;
+				master++;
+			}
+		}
+		
+		MLData toReturn= new BasicMLData(binaryValues);
 		return toReturn;
 	}
 }

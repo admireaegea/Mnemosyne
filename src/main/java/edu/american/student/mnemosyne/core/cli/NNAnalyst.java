@@ -18,6 +18,7 @@ import edu.american.student.mnemosyne.core.MnemosyneAPI;
 import edu.american.student.mnemosyne.core.util.AccumuloForeman;
 import edu.american.student.mnemosyne.core.util.CLIConstants;
 import edu.american.student.mnemosyne.core.util.NNMetadata;
+import edu.american.student.mnemosyne.core.util.NNOutput;
 
 public class NNAnalyst  extends MnemosyneAPI implements CLI
 {
@@ -38,18 +39,18 @@ public class NNAnalyst  extends MnemosyneAPI implements CLI
 		{
 			System.out.println("CALCULATE");
 			String artifactId = getOptionArtifact();
-			BasicNetwork n = aForeman.inflateNetwork(AccumuloForeman.getBaseNetworkRepositoryName(), "BASE_NETWORK", artifactId);
+			BasicNetwork n = aForeman.getBaseNetwork(artifactId);
 			List<Entry<Key,Value>> metadata = aForeman.fetchByColumnFamily(AccumuloForeman.getArtifactRepositoryName(), artifactId);
 			for(Entry<Key,Value> entry : metadata)
 			{
 				NNMetadata data = NNMetadata.inflate(entry.getValue().toString(),entry.getKey().getRow().toString());
+				System.out.println(n==null);
+				System.out.println(data == null	);;
 				MLData result = n.compute(getMLDataInput(data.getInputNameFields()));
 				System.out.println("### RESULT ###");
 				double[] results = result.getData();
-				for(double res: results)
-				{
-					System.out.println(res);
-				}
+				String stringResults = NNOutput.combine(results,data);
+				System.out.println(stringResults);
 				break;
 			}
 		}
