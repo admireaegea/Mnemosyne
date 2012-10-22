@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.accumulo.core.client.TableNotFoundException;
 import org.apache.accumulo.core.client.mapreduce.AccumuloInputFormat;
 import org.apache.accumulo.core.client.mapreduce.AccumuloOutputFormat;
 import org.apache.accumulo.core.data.Key;
@@ -17,7 +18,6 @@ import org.encog.engine.network.activation.ActivationSigmoid;
 import org.encog.ml.data.MLDataSet;
 import org.encog.ml.data.basic.BasicMLDataSet;
 import org.encog.neural.networks.BasicNetwork;
-import org.encog.neural.networks.ContainsFlat;
 import org.encog.neural.networks.layers.BasicLayer;
 import org.encog.neural.networks.training.propagation.resilient.ResilientPropagation;
 
@@ -34,6 +34,7 @@ import edu.american.student.mnemosyne.core.util.NNOutput;
 public class TrainProcess implements MnemosyneProcess
 {
 
+	private static int round =0;
 	public void process() throws Exception
 	{
 		artifactForeman.connect();
@@ -65,7 +66,7 @@ public class TrainProcess implements MnemosyneProcess
 			System.out.println("Grabbing the base network...");
 			BasicNetwork base = null;
 			ClassificationNetworkConf baseConf = null;
-			long error = 1;
+			double error = 1;
 			try
 			{
 				base = aForeman.getBaseNetwork(ik.getRow().toString());
@@ -77,25 +78,55 @@ public class TrainProcess implements MnemosyneProcess
 			}
 			if (base != null)
 			{
-				// train shit
 				System.out.println("Training ...");
+				long start = System.currentTimeMillis();
+				long timeout = 1000*60;
 				double[] input = NNInput.inflate(iv.toString());
 				double[] output = NNOutput.inflate(iv.toString());
-				MLDataSet trainingSet = new BasicMLDataSet(new double[][]{ input }, new double[][]{ output });
+				MLDataSet trainingSet = null;
+				try
+				{
+					trainingSet = constructTrainingSet(ik.getRow().toString(),input,output);
+				}
+				catch (TableNotFoundException e2)
+				{
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
+				catch (IOException e2)
+				{
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
+				catch (ClassNotFoundException e2)
+				{
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
 				BasicNetwork modified =ClassificationNetwork.addLayerToNetwork(base,baseConf, new BasicLayer(new ActivationSigmoid(),true,baseConf.getNumberOfCategories() ));
 				final ResilientPropagation train = new ResilientPropagation(modified, trainingSet);
 				int epoch = 1;
 				try
 				{
-
+					error = aForeman.getBaseNetworkError(ik.getRow().toString());
+				}
+				catch (TableNotFoundException e1)
+				{
+					e1.printStackTrace();
+				}
+				try
+				{
+					long elapsed = System.currentTimeMillis() - start;
 					do
 					{
 						train.iteration();
-						System.out.println("Epoch #" + epoch + " Error:" + train.getError());
+						elapsed = System.currentTimeMillis() - start;
+						System.out.println("Round:"+round+" Epoch #" + epoch + " Error:" + train.getError()+" acceptable error:"+error+" Elapsed:"+elapsed+" Timeout:"+(elapsed>timeout));
 						epoch++;
 					}
-					while (train.getError() >aerror);
-					aerror = aerror*.5;
+					while (train.getError() >error && (elapsed < timeout));
+					round++;
+					start=System.currentTimeMillis();
 				}
 				catch (Exception e)
 				{
@@ -104,21 +135,52 @@ public class TrainProcess implements MnemosyneProcess
 				try
 				{
 					aForeman.assertBaseNetwork(modified, ik.getRow().toString(), baseConf);
+					aForeman.assertBaseNetworkError(train.getError(),ik.getRow().toString());
 				}
 				catch (IOException e)
 				{
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 
 			}
 
 		}
+
+		private MLDataSet constructTrainingSet(String artifactId, double[] input, double[] output) throws TableNotFoundException, IOException, ClassNotFoundException
+		{
+			
+			ArrayList<double[][]> formerIn = aForeman.getPastTrainingInput(artifactId);
+			ArrayList<double[][]> formerOut = aForeman.getPastTrainingOutput(artifactId);
+			aForeman.addTrainingData(artifactId, new double[][]{input}, new double[][]{output});
+			double[][] newIn = new double[formerIn.size()+1][input.length];
+			double[][] newOut = new double[formerOut.size()+1][output.length];
+			for(double[][] in: formerIn)
+			{
+				for(int i = 0;i<in.length;i++)
+				{
+					newIn[i]=in[i];
+				}
+			}
+			newIn[newIn.length-1] = input;
+			
+			for(double[][] out: formerOut)
+			{
+				for(int i = 0;i<out.length;i++)
+				{
+					newOut[i]=out[i];
+				}
+			}
+			newOut[newOut.length-1] = output;
+//			System.out.println(input.length+" "+newIn.length);
+			//fill in new arrays
+			MLDataSet trainingSet = new BasicMLDataSet(newIn,newOut);
+			return trainingSet;
+		}
 	}
 	static double aerror;
 	public void setup() throws Exception
 	{
-		aerror =.5;
+		aerror =.000005;
 
 	}
 

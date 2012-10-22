@@ -25,7 +25,6 @@ import org.apache.accumulo.core.security.Authorizations;
 import org.apache.accumulo.core.security.ColumnVisibility;
 import org.apache.hadoop.io.Text;
 import org.encog.neural.networks.BasicNetwork;
-import org.encog.util.obj.SerializeObject;
 
 import edu.american.student.mnemosyne.conf.ClassificationNetworkConf;
 import edu.american.student.mnemosyne.core.framework.ArtifactRepository;
@@ -271,13 +270,71 @@ public class AccumuloForeman
 		return null;
 	}
 
-	public long getBaseNetworkError(String artifactId) throws TableNotFoundException
+	public double getBaseNetworkError(String artifactId) throws TableNotFoundException
 	{
 		return this.inflateNetworkError(artifactId);
 	}
 
-	private long inflateNetworkError(String artifactId) throws TableNotFoundException
+	private double inflateNetworkError(String artifactId) throws TableNotFoundException
 	{
-		return Long.parseLong(this.fetchByQualifier(AccumuloForeman.getBaseNetworkRepositoryName(), "BASE_ERROR", artifactId).get(0).getValue().toString());
+		return Double.parseDouble(this.fetchByQualifier(AccumuloForeman.getBaseNetworkRepositoryName(), "BASE_ERROR", artifactId).get(0).getValue().toString());
+	}
+
+	public void assertBaseNetworkError(double error, String artifactId)
+	{
+		this.add(AccumuloForeman.getBaseNetworkRepositoryName(), artifactId, "BASE_ERROR", artifactId, error+"");
+	}
+
+	public void addTrainingData(String artifactId, double[][] input, double[][] output) throws IOException
+	{
+		InputOutputHolder holder = new InputOutputHolder(input,output);
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ObjectOutputStream out = new ObjectOutputStream(baos);
+		out.writeObject(holder);
+		out.close();
+		byte[] arr = baos.toByteArray();
+		this.addBytes("BASE_NETWORK", artifactId, "TRAIN_DATA", artifactId+System.currentTimeMillis()+"", arr);
+	}
+	
+	public ArrayList<double[][]> getPastTrainingInput(String artifactId) throws TableNotFoundException, IOException, ClassNotFoundException
+	{
+		List<Entry<Key, Value>> entries = this.fetchByColumnFamily("BASE_NETWORK", "TRAIN_DATA");
+		ArrayList<double[][]> pastInputs = new ArrayList<double[][]>();
+		for(Entry<Key,Value> entry: entries	)
+		{
+			Key key = entry.getKey();
+			Text cq = key.getColumnQualifier();
+			if(cq.toString().startsWith(artifactId))
+			{
+				Value val = entry.getValue();
+				byte[] arr = val.get();
+				ObjectInputStream objectIn = new ObjectInputStream(new ByteArrayInputStream(arr));
+				InputOutputHolder store = (InputOutputHolder) objectIn.readObject();
+				pastInputs.add(store.getInput());
+			}
+		
+		}
+		return pastInputs;
+	}
+
+	public ArrayList<double[][]> getPastTrainingOutput(String artifactId) throws TableNotFoundException, IOException, ClassNotFoundException
+	{
+		List<Entry<Key, Value>> entries = this.fetchByColumnFamily("BASE_NETWORK", "TRAIN_DATA");
+		ArrayList<double[][]> pastOutputs = new ArrayList<double[][]>();
+		for(Entry<Key,Value> entry: entries	)
+		{
+			Key key = entry.getKey();
+			Text cq = key.getColumnQualifier();
+			if(cq.toString().startsWith(artifactId))
+			{
+				Value val = entry.getValue();
+				byte[] arr = val.get();
+				ObjectInputStream objectIn = new ObjectInputStream(new ByteArrayInputStream(arr));
+				InputOutputHolder store = (InputOutputHolder) objectIn.readObject();
+				pastOutputs.add(store.getOutput());
+			}
+		
+		}
+		return pastOutputs;
 	}
 }

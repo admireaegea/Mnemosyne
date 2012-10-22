@@ -1,10 +1,8 @@
 package edu.american.student.mnemosyne.core.util;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Random;
 
-import org.apache.accumulo.core.util.Pair;
 import org.encog.engine.network.activation.ActivationFunction;
 import org.encog.neural.flat.FlatNetwork;
 import org.encog.neural.networks.BasicNetwork;
