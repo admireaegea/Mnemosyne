@@ -1,6 +1,6 @@
 package edu.american.student.mnemosyne.core;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 import java.util.Map.Entry;

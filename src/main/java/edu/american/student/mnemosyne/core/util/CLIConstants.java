@@ -3,7 +3,8 @@ package edu.american.student.mnemosyne.core.util;
 public enum CLIConstants
 {
 
-	CALCULATE("c");
+	START("s"),
+	INGEST("i");
 	
 	String title;
 	CLIConstants(String title)

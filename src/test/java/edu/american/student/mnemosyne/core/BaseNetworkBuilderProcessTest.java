@@ -1,18 +1,10 @@
 package edu.american.student.mnemosyne.core;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
-import java.io.File;
 import java.util.List;
 
-import org.encog.engine.network.activation.ActivationSigmoid;
-import org.encog.ml.data.MLDataSet;
-import org.encog.ml.data.basic.BasicMLDataSet;
 import org.encog.neural.networks.BasicNetwork;
-import org.encog.neural.networks.layers.BasicLayer;
-import org.encog.neural.networks.layers.Layer;
-import org.encog.neural.networks.training.propagation.resilient.ResilientPropagation;
-import org.encog.util.obj.SerializeObject;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

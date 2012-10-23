@@ -10,11 +10,11 @@ import java.util.Map.Entry;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.accumulo.core.client.TableNotFoundException;
 import org.apache.accumulo.core.data.Key;
 import org.apache.accumulo.core.data.Value;
 import org.xml.sax.SAXException;
 
+import edu.american.student.mnemosyne.core.exception.DataspaceException;
 import edu.american.student.mnemosyne.core.model.Artifact;
 
 public class ArtifactForeman
@@ -38,12 +38,12 @@ public class ArtifactForeman
 		}
 	}
 
-	public void connect()
+	public void connect() throws DataspaceException
 	{
 		aForeman.connect();
 	}
 
-	public List<Artifact> returnArtifacts() throws ParserConfigurationException, SAXException, IOException, TableNotFoundException
+	public List<Artifact> returnArtifacts() throws  DataspaceException
 	{
 		List<Artifact> toReturn = new ArrayList<Artifact>();
 		Iterator<Entry<String, Map<Integer, String>>> it =artifactMap.entrySet().iterator();
@@ -64,7 +64,25 @@ public class ArtifactForeman
 			}
 			for(Artifact artifact: toReturn)
 			{
-				artifact.finalizeStructure();
+				try
+				{
+					artifact.finalizeStructure();
+				}
+				catch (ParserConfigurationException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				catch (SAXException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				catch (IOException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 		else
@@ -78,7 +96,7 @@ public class ArtifactForeman
 		return toReturn;
 	}
 
-	public void persistArtifacts()
+	public void persistArtifacts() throws DataspaceException
 	{
 		Iterator<Entry<String, Map<Integer, String>>> it = artifactMap.entrySet().iterator();
 		

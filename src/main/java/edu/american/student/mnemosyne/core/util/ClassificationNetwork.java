@@ -233,6 +233,7 @@ public class ClassificationNetwork
 	private final static Class<?>[] ARRAY_PRIMITIVE_TYPES =
 	{ int[].class, float[].class, double[].class, boolean[].class, byte[].class, short[].class, long[].class, char[].class };
 
+	@SuppressWarnings("unused")
 	private static Object[] getArray(Object val)
 	{
 		if(val != null)
