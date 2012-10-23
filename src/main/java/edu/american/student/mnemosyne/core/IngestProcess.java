@@ -47,7 +47,7 @@ public class IngestProcess implements MnemosyneProcess
 			conf.overridePathToProcess(path);
 			conf.setOutputFormatClass(NullOutputFormat.class);
 			conf.setOutputKeyClass(Text.class);
-			conf.setOutputValueCLass(IntWritable.class);
+			conf.setOutputValueClass(IntWritable.class);
 			hForeman.runJob(conf);
 		
 		}

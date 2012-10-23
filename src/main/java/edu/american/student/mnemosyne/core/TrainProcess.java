@@ -52,7 +52,7 @@ public class TrainProcess implements MnemosyneProcess
 			conf.overrideDefaultTable(AccumuloForeman.getArtifactRepositoryName());
 			Collection<Pair<Text, Text>> cfPairs = new ArrayList<Pair<Text, Text>>();
 			cfPairs.add(new Pair<Text, Text>(new Text(artifact.getArtifactId() + ":FIELD"), null));
-			conf.fetchColumns(cfPairs);
+			conf.setFetchColumns(cfPairs);
 			conf.setInputFormatClass(AccumuloInputFormat.class);
 			conf.setOutputFormatClass(AccumuloOutputFormat.class);
 			hForeman.runJob(conf);
