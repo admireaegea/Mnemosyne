@@ -17,6 +17,8 @@ import org.encog.engine.network.activation.ActivationSigmoid;
 
 import edu.american.student.mnemosyne.conf.ClassificationNetworkConf;
 import edu.american.student.mnemosyne.conf.HadoopJobConfiguration;
+import edu.american.student.mnemosyne.core.exception.ArtifactException;
+import edu.american.student.mnemosyne.core.exception.ProcessException;
 import edu.american.student.mnemosyne.core.exception.RepositoryException;
 import edu.american.student.mnemosyne.core.framework.MnemosyneProcess;
 import edu.american.student.mnemosyne.core.framework.NNProcessor;
@@ -30,7 +32,7 @@ import edu.american.student.mnemosyne.core.util.NNProcessorFactory;
 public class BaseNetworkBuilderProcess implements MnemosyneProcess
 {
 
-	public void process() throws Exception
+	public void process() throws ProcessException
 	{
 		List<Artifact> artifacts = artifactForeman.returnArtifacts();
 		for (Artifact artifact : artifacts)
@@ -50,7 +52,7 @@ public class BaseNetworkBuilderProcess implements MnemosyneProcess
 
 	}
 
-	public void setup() throws Exception
+	public void setup() throws ArtifactException
 	{
 		artifactForeman.connect();
 

@@ -1,6 +1,5 @@
 package edu.american.student.mnemosyne.core;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -14,6 +13,7 @@ import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.NullOutputFormat;
 
 import edu.american.student.mnemosyne.conf.HadoopJobConfiguration;
+import edu.american.student.mnemosyne.core.exception.ProcessException;
 import edu.american.student.mnemosyne.core.exception.RepositoryException;
 import edu.american.student.mnemosyne.core.framework.MnemosyneProcess;
 import edu.american.student.mnemosyne.core.util.AccumuloForeman;
@@ -25,7 +25,7 @@ public class IngestProcess implements MnemosyneProcess
 	static String uuid;
 	static List<Integer> linesProcessed = new ArrayList<Integer>();
 	static Path[] pathsToProcess;
-	public void setup() throws Exception
+	public void setup() throws ProcessException
 	{
 		uuid = UUID.randomUUID().toString();
 		aForeman.connect();
@@ -33,7 +33,7 @@ public class IngestProcess implements MnemosyneProcess
 
 	}
 
-	public void process() throws IOException, InterruptedException, ClassNotFoundException
+	public void process() throws ProcessException
 	{
 		for(Path path: pathsToProcess)
 		{

@@ -4,6 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -16,9 +18,11 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import edu.american.student.mnemosyne.core.exception.ArtifactException;
+
 public class Artifact
 {
-
+	private static final Logger log = Logger.getLogger(Artifact.class.getName());
 	private List<String> fields = new ArrayList<String>();
 	private List<Pair<String, String>> fieldMap = new ArrayList<Pair<String, String>>();
 	private String artifactId = "";
@@ -74,7 +78,7 @@ public class Artifact
 
 	}
 
-	public void finalizeStructure() throws ParserConfigurationException, SAXException, IOException
+	public void finalizeStructure() throws  ArtifactException
 	{
 		StringBuilder sb = new StringBuilder();
 		for (String line : organizedFile)
@@ -88,13 +92,35 @@ public class Artifact
 		constructFieldMap(sb.toString());
 	}
 
-	private void constructFieldMap(String fullFile) throws ParserConfigurationException, SAXException, IOException
+	private void constructFieldMap(String fullFile) throws ArtifactException
 	{
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		DocumentBuilder db = dbf.newDocumentBuilder();
-		Document dom = db.parse(new ByteArrayInputStream(fullFile.getBytes()));
-		Element docEle = dom.getDocumentElement();
-		walk(docEle);
+		try
+		{
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			DocumentBuilder db = dbf.newDocumentBuilder();
+			Document dom = db.parse(new ByteArrayInputStream(fullFile.getBytes()));
+			Element docEle = dom.getDocumentElement();
+			walk(docEle);
+		}
+		catch (IOException e)
+		{
+			String gripe = "Could not parse artifact XML";
+			log.log(Level.SEVERE, gripe,e);
+			throw new ArtifactException(gripe,e);
+		}
+		catch (ParserConfigurationException e)
+		{
+			String gripe = "Could not parse artifact XML";
+			log.log(Level.SEVERE, gripe,e);
+			throw new ArtifactException(gripe,e);
+		}
+		catch (SAXException e)
+		{
+			String gripe = "Could not parse artifact XML";
+			log.log(Level.SEVERE, gripe,e);
+			throw new ArtifactException(gripe,e);
+		}
+
 	}
 
 	private void walk(Node node)
@@ -102,8 +128,8 @@ public class Artifact
 		if (node.getNodeValue() != (null) && node.getNodeValue().trim().length() > 0)
 		{
 			String namespace = constructNameSpace(node, "");
-		
-			if(!fields.contains(namespace))
+
+			if (!fields.contains(namespace))
 			{
 				fields.add(namespace);
 			}
@@ -145,15 +171,15 @@ public class Artifact
 	public String grabDefinitions()
 	{
 		List<String> fields = this.getFields();
-		String toReturn="";
-		for(String field: fields)
+		String toReturn = "";
+		for (String field : fields)
 		{
-			if(field.startsWith("mnemosyne|definitions"))
+			if (field.startsWith("mnemosyne|definitions"))
 			{
-				List<String> values =this.getValue(field);
-				for(String value:values)
+				List<String> values = this.getValue(field);
+				for (String value : values)
 				{
-					toReturn+="("+field+")"+"{"+value+"}"+"~";
+					toReturn += "(" + field + ")" + "{" + value + "}" + "~";
 				}
 			}
 		}
@@ -163,12 +189,12 @@ public class Artifact
 	public List<String> grabSets()
 	{
 		List<String> inputs = this.getValue("mnemosyne|set|input");
-		
+
 		List<String> outputs = this.getValue("mnemosyne|set|output");
 		List<String> toReturn = new ArrayList<String>();
-		for(int i=0;i<inputs.size();i++)
+		for (int i = 0; i < inputs.size(); i++)
 		{
-			toReturn.add("("+inputs.get(i)+")"+"("+outputs.get(i)+")");
+			toReturn.add("(" + inputs.get(i) + ")" + "(" + outputs.get(i) + ")");
 		}
 		return toReturn;
 	}
@@ -178,12 +204,12 @@ public class Artifact
 		Artifact toReturn = new Artifact();
 		toReturn.setArtifactId(artifactId);
 		String[] fields = serialized.split("\\)");
-		for(String fieldPair: fields)
+		for (String fieldPair : fields)
 		{
 			String[] values = fieldPair.replace("\\(", "").split(",");
-			if(values.length>1)
+			if (values.length > 1)
 			{
-				toReturn.addToFieldMap(values[0],values[1]);
+				toReturn.addToFieldMap(values[0], values[1]);
 			}
 		}
 		return toReturn;
@@ -192,7 +218,7 @@ public class Artifact
 	private void addToFieldMap(String field, String value)
 	{
 		fields.add(field);
-		fieldMap.add(new Pair<String,String>(field,value));
-		
+		fieldMap.add(new Pair<String, String>(field, value));
+
 	}
 }

@@ -10,6 +10,7 @@ public class BinaryUtils
 		ArrayList<Double> binaryDoubles = new ArrayList<Double>();
 		for(double value: toReturn)
 		{
+			//TODO FIXME
 			String binaryString = String.format("%5s", Long.toBinaryString((long)value)).replace(' ', '0');
 			char[] binaryArr =binaryString.toCharArray();
 			for(char chara: binaryArr)

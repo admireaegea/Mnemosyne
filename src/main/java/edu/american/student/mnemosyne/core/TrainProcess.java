@@ -21,6 +21,7 @@ import org.encog.neural.networks.training.propagation.resilient.ResilientPropaga
 
 import edu.american.student.mnemosyne.conf.ClassificationNetworkConf;
 import edu.american.student.mnemosyne.conf.HadoopJobConfiguration;
+import edu.american.student.mnemosyne.core.exception.ProcessException;
 import edu.american.student.mnemosyne.core.exception.RepositoryException;
 import edu.american.student.mnemosyne.core.framework.MnemosyneProcess;
 import edu.american.student.mnemosyne.core.model.Artifact;
@@ -35,7 +36,7 @@ public class TrainProcess implements MnemosyneProcess
 
 	private static int round = 0;
 
-	public void process() throws Exception
+	public void process() throws ProcessException
 	{
 		artifactForeman.connect();
 		List<Artifact> artifacts = artifactForeman.returnArtifacts();
@@ -163,7 +164,7 @@ public class TrainProcess implements MnemosyneProcess
 
 	static double aerror;
 
-	public void setup() throws Exception
+	public void setup() throws ProcessException
 	{
 		aerror = .000005;
 

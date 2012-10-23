@@ -2,131 +2,116 @@ package edu.american.student.mnemosyne.core.util;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 import org.apache.hadoop.fs.Path;
 
-
 public class MnemosyneConstants
 {
-	//TODO remove hardcoded shit
-	public static String mnemosyneSite  = "conf.mnemosyne-site";
-	
+	public static String mnemosyneSite = "conf.mnemosyne-site";
+
 	public static String getAccumuloInstance()
 	{
 		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
-		String toReturn = (String)properties.get("accumuloInstance");
+		String toReturn = (String) properties.get("accumuloInstance");
 		return toReturn;
 	}
-	
+
 	public static String getAccumuloPassword()
 	{
 		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
-		String toReturn = (String)properties.get("accumuloPassword");
+		String toReturn = (String) properties.get("accumuloPassword");
 		return toReturn;
 	}
-	
+
 	public static String getDefaultTable()
 	{
 		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
-		String toReturn = (String)properties.get("defaultTable");
+		String toReturn = (String) properties.get("defaultTable");
 		return toReturn;
 	}
-	
+
 	public static String getZookeeperInstance()
 	{
 		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
-		String toReturn = (String)properties.get("zookeeperInstance");
+		String toReturn = (String) properties.get("zookeeperInstance");
 		return toReturn;
 	}
 
 	public static String getZookeeperInstanceName()
 	{
 		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
-		String toReturn = (String)properties.get("zookeeperInstanceName");
+		String toReturn = (String) properties.get("zookeeperInstanceName");
 		return toReturn;
 	}
+
 	public static String getAccumuloUser()
 	{
 		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
-		String toReturn = (String)properties.get("accumuloUser");
+		String toReturn = (String) properties.get("accumuloUser");
 		return toReturn;
 	}
 
 	public static String getNeuralNetworkRowName()
 	{
 		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
-		String toReturn = (String)properties.get("networkRowName");
+		String toReturn = (String) properties.get("networkRowName");
 		return toReturn;
 	}
 
 	public static int getNetworksPerNode()
 	{
 		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
-		String toReturn = (String)properties.get("networksPerNode");
+		String toReturn = (String) properties.get("networksPerNode");
 		return Integer.parseInt(toReturn);
 	}
 
 	public static int getNumberOfNodes()
 	{
 		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
-		String toReturn = (String)properties.get("numberOfNodes");
+		String toReturn = (String) properties.get("numberOfNodes");
 		return Integer.parseInt(toReturn);
 	}
 
 	public static double[][] getTestInput()
 	{
-		double[][] toReturn = {{0,0},{0,1},{1,0},{1,1}};
+		double[][] toReturn =
+		{
+		{ 0, 0 },
+		{ 0, 1 },
+		{ 1, 0 },
+		{ 1, 1 } };
 		return toReturn;
 	}
 
 	public static double[][] getTestIdeal()
 	{
-		double[][] toReturn = {{0,0},{1,0},{0,1},{1,1}};
-		return toReturn;
-	}
-
-	public static double[][] getRandomIdeal(int id)
-	{
-		init();
-		return randomIdeal.get(id);
-	}
-
-	static Map<Integer,double[][]> randomIdeal= new HashMap<Integer,double[][]>();
-	static double x1 =.4; static double y1=.4;
-	static double x2 = .6;static double y2=.4;
-	static double x3 = .4;static double y3=.6;
-	static double x4= .6; static double y4=.6;
-	private static void init()
-	{
-		int id = 0;
-		//{{0,0},{1,0},{0,1},{1,1}};
-		double[][] value = {{.4,.4},{.6,.4},{.4,.6},{.6,.6}};
-		if(randomIdeal.get(id) != null)
+		double[][] toReturn =
 		{
-			randomIdeal.put(id, value);
-		}
+		{ 0, 0 },
+		{ 1, 0 },
+		{ 0, 1 },
+		{ 1, 1 } };
+		return toReturn;
 	}
 
 	public static String getDefaultAuths()
 	{
 		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
-		String toReturn = (String)properties.get("defaultAuths");
+		String toReturn = (String) properties.get("defaultAuths");
 		return toReturn;
 	}
-	
+
 	public static String getMnemosyneHome()
 	{
 		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
-		String toReturn = (String)properties.get("mnemosyneHome");
+		String toReturn = (String) properties.get("mnemosyneHome");
 		return toReturn;
 	}
 
 	public static String getIngestDirectory()
 	{
-		return MnemosyneConstants.getMnemosyneHome()+"ingest/";
+		return MnemosyneConstants.getMnemosyneHome() + "ingest/";
 	}
 
 	public static Path[] getAllIngestableFiles()
@@ -134,22 +119,31 @@ public class MnemosyneConstants
 		ArrayList<Path> paths = walk(new File(MnemosyneConstants.getIngestDirectory()));
 		return paths.toArray(new Path[paths.size()]);
 	}
+
 	static ArrayList<Path> toReturn = new ArrayList<Path>();
-    private static ArrayList<Path> walk(File dir) {
-        String pattern = ".xml";
-        File listFile[] = dir.listFiles();
-        if (listFile != null) {
-            for (int i=0; i<listFile.length; i++) {
-                if (listFile[i].isDirectory()) {
-                    walk(listFile[i]);
-                } else {
-                    if (listFile[i].getName().endsWith(pattern)) {
-                        System.out.println(listFile[i].getPath());
-                        toReturn.add(new Path(listFile[i].getPath()));
-                    }
-                }
-            }
-        }
-        return toReturn;
-    }
+
+	private static ArrayList<Path> walk(File dir)
+	{
+		String pattern = ".xml";
+		File listFile[] = dir.listFiles();
+		if (listFile != null)
+		{
+			for (int i = 0; i < listFile.length; i++)
+			{
+				if (listFile[i].isDirectory())
+				{
+					walk(listFile[i]);
+				}
+				else
+				{
+					if (listFile[i].getName().endsWith(pattern))
+					{
+						System.out.println(listFile[i].getPath());
+						toReturn.add(new Path(listFile[i].getPath()));
+					}
+				}
+			}
+		}
+		return toReturn;
+	}
 }

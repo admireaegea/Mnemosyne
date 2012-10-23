@@ -14,6 +14,8 @@ import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import edu.american.student.mnemosyne.conf.HadoopJobConfiguration;
+import edu.american.student.mnemosyne.core.exception.ArtifactException;
+import edu.american.student.mnemosyne.core.exception.ProcessException;
 import edu.american.student.mnemosyne.core.framework.MnemosyneProcess;
 import edu.american.student.mnemosyne.core.model.Artifact;
 import edu.american.student.mnemosyne.core.util.AccumuloForeman;
@@ -23,7 +25,7 @@ public class ArtifactBuilderProcess implements MnemosyneProcess
 {
 	
 
-	public void process() throws Exception
+	public void process() throws ProcessException
 	{
 		HadoopForeman hForeman = new HadoopForeman();
 		HadoopJobConfiguration conf = new HadoopJobConfiguration();
@@ -53,7 +55,7 @@ public class ArtifactBuilderProcess implements MnemosyneProcess
 
 	}
 
-	public void setup() throws Exception
+	public void setup() throws ArtifactException
 	{
 		artifactForeman.connect();
 	}

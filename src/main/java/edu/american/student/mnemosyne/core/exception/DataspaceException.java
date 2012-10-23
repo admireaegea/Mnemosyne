@@ -1,6 +1,6 @@
 package edu.american.student.mnemosyne.core.exception;
 
-public abstract class DataspaceException extends Exception
+public abstract class DataspaceException extends ProcessException
 {
 
 	public DataspaceException(String message)
