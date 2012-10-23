@@ -17,6 +17,7 @@ import edu.american.student.mnemosyne.core.exception.ProcessException;
 import edu.american.student.mnemosyne.core.exception.RepositoryException;
 import edu.american.student.mnemosyne.core.framework.MnemosyneProcess;
 import edu.american.student.mnemosyne.core.util.AccumuloForeman;
+import edu.american.student.mnemosyne.core.util.ArtifactIdFactory;
 import edu.american.student.mnemosyne.core.util.HadoopForeman;
 import edu.american.student.mnemosyne.core.util.MnemosyneConstants;
 
@@ -62,7 +63,7 @@ public class IngestProcess implements MnemosyneProcess
 		{
 			try
 			{
-				aForeman.add(AccumuloForeman.getArtifactRepositoryName(), "ARTIFACT_" + uuid, "RAW_BYTES", ik.toString(), iv.toString());
+				aForeman.add(AccumuloForeman.getArtifactRepositoryName(), ArtifactIdFactory.buildArtifactId(uuid), AccumuloForeman.getArtifactRepository().rawBytes(), ik.toString(), iv.toString());
 			}
 			catch (RepositoryException e)
 			{

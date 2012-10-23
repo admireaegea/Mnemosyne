@@ -33,7 +33,7 @@ public class ArtifactBuilderProcess implements MnemosyneProcess
 		conf.setMapperClass(ArtifactBuilderMapper.class);
 		conf.overrideDefaultTable(AccumuloForeman.getArtifactRepositoryName());
 		Collection<Pair<Text, Text>> cfPairs = new ArrayList<Pair<Text, Text>>();
-		cfPairs.add(new Pair<Text, Text>(new Text("RAW_BYTES"), null));
+		cfPairs.add(new Pair<Text, Text>(new Text(AccumuloForeman.getArtifactRepository().rawBytes()), null));
 		conf.fetchColumns(cfPairs);
 		conf.setInputFormatClass(AccumuloInputFormat.class);
 		conf.setOutputFormatClass(AccumuloOutputFormat.class);

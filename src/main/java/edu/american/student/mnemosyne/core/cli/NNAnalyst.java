@@ -15,8 +15,8 @@ import org.encog.ml.data.MLData;
 import org.encog.neural.networks.BasicNetwork;
 
 import edu.american.student.mnemosyne.core.IngestProcess;
-import edu.american.student.mnemosyne.core.MnemosyneAPI;
 import edu.american.student.mnemosyne.core.exception.DataspaceException;
+import edu.american.student.mnemosyne.core.framework.MnemosyneAPI;
 import edu.american.student.mnemosyne.core.util.AccumuloForeman;
 import edu.american.student.mnemosyne.core.util.CLIConstants;
 import edu.american.student.mnemosyne.core.util.MnemosyneConstants;

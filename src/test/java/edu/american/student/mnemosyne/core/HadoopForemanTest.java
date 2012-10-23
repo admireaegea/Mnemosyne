@@ -17,6 +17,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import edu.american.student.mnemosyne.conf.HadoopJobConfiguration;
+import edu.american.student.mnemosyne.core.exception.HadoopException;
 import edu.american.student.mnemosyne.core.util.AccumuloForeman;
 import edu.american.student.mnemosyne.core.util.HadoopForeman;
 import edu.american.student.mnemosyne.core.util.MnemosyneAccumuloAdministrator;
@@ -54,7 +55,7 @@ public class HadoopForemanTest
 	}
 
 	@Test
-	public void hadoopForemanTest() throws IOException, InterruptedException, ClassNotFoundException
+	public void hadoopForemanTest() throws IOException, InterruptedException, ClassNotFoundException, HadoopException
 	{
 		HadoopJobConfiguration hConfig = new HadoopJobConfiguration();
 		hConfig.setJobName("Hadoop Test");

@@ -281,9 +281,10 @@ public class AccumuloForeman
 			out.writeObject(conf);
 			out.close();
 			arr = baos.toByteArray();
-			this.addBytes(TABLE_TO_SAVE, artifactId, "BASE_CONFIGURATION", artifactId, arr);
 
-			this.add(TABLE_TO_SAVE, artifactId, "BASE_ERROR", artifactId, "1");
+			this.addBytes(TABLE_TO_SAVE, artifactId, AccumuloForeman.getBaseNetworkRepository().baseConfiguration(), artifactId, arr);
+
+			this.add(TABLE_TO_SAVE, artifactId, AccumuloForeman.getBaseNetworkRepository().baseError(), artifactId, "1");
 		}
 		catch (IOException e)
 		{
@@ -365,7 +366,7 @@ public class AccumuloForeman
 
 	private ClassificationNetworkConf inflateNetworkConfiguration(String artifactId) throws RepositoryException
 	{
-		List<Entry<Key, Value>> rows = this.fetchByQualifier(AccumuloForeman.getBaseNetworkRepositoryName(), "BASE_CONFIGURATION", artifactId);
+		List<Entry<Key, Value>> rows = this.fetchByQualifier(AccumuloForeman.getBaseNetworkRepositoryName(), AccumuloForeman.getBaseNetworkRepository().baseConfiguration(), artifactId);
 		try
 		{
 			for (Entry<Key, Value> entry : rows)
@@ -397,12 +398,12 @@ public class AccumuloForeman
 
 	private double inflateNetworkError(String artifactId) throws RepositoryException
 	{
-		return Double.parseDouble(this.fetchByQualifier(AccumuloForeman.getBaseNetworkRepositoryName(), "BASE_ERROR", artifactId).get(0).getValue().toString());
+		return Double.parseDouble(this.fetchByQualifier(AccumuloForeman.getBaseNetworkRepositoryName(), AccumuloForeman.getBaseNetworkRepository().baseError(), artifactId).get(0).getValue().toString());
 	}
 
 	public void assertBaseNetworkError(double error, String artifactId) throws RepositoryException
 	{
-		this.add(AccumuloForeman.getBaseNetworkRepositoryName(), artifactId, "BASE_ERROR", artifactId, error + "");
+		this.add(AccumuloForeman.getBaseNetworkRepositoryName(), artifactId, AccumuloForeman.getBaseNetworkRepository().baseError(), artifactId, error + "");
 	}
 
 	public void addTrainingData(String artifactId, double[][] input, double[][] output) throws RepositoryException
@@ -415,7 +416,7 @@ public class AccumuloForeman
 			out.writeObject(holder);
 			out.close();
 			byte[] arr = baos.toByteArray();
-			this.addBytes("BASE_NETWORK", artifactId, "TRAIN_DATA", artifactId + System.currentTimeMillis() + "", arr);
+			this.addBytes(AccumuloForeman.getBaseNetworkRepositoryName(), artifactId, AccumuloForeman.getBaseNetworkRepository().trainData(), artifactId + System.currentTimeMillis() + "", arr);
 		}
 		catch (IOException e)
 		{
@@ -427,7 +428,7 @@ public class AccumuloForeman
 
 	public ArrayList<double[][]> getPastTrainingInput(String artifactId) throws RepositoryException
 	{
-		List<Entry<Key, Value>> entries = this.fetchByColumnFamily("BASE_NETWORK", "TRAIN_DATA");
+		List<Entry<Key, Value>> entries = this.fetchByColumnFamily(AccumuloForeman.getBaseNetworkRepository().baseNetwork(), AccumuloForeman.getBaseNetworkRepository().trainData());
 		ArrayList<double[][]> pastInputs = new ArrayList<double[][]>();
 		for (Entry<Key, Value> entry : entries)
 		{
@@ -463,7 +464,7 @@ public class AccumuloForeman
 
 	public ArrayList<double[][]> getPastTrainingOutput(String artifactId) throws RepositoryException
 	{
-		List<Entry<Key, Value>> entries = this.fetchByColumnFamily("BASE_NETWORK", "TRAIN_DATA");
+		List<Entry<Key, Value>> entries = this.fetchByColumnFamily(AccumuloForeman.getBaseNetworkRepository().baseNetwork(), AccumuloForeman.getBaseNetworkRepository().trainData());
 		ArrayList<double[][]> pastOutputs = new ArrayList<double[][]>();
 		for (Entry<Key, Value> entry : entries)
 		{

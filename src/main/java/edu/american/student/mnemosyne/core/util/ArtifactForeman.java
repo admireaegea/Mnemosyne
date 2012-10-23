@@ -81,7 +81,7 @@ public class ArtifactForeman
 			List<Entry<Key, Value>> entries;
 			try
 			{
-				entries = aForeman.fetchByColumnFamily(AccumuloForeman.getArtifactRepositoryName(), "ARTIFACT_ENTRY");
+				entries = aForeman.fetchByColumnFamily(AccumuloForeman.getArtifactRepositoryName(), AccumuloForeman.getArtifactRepository().artifactEntry());
 				for (Entry<Key, Value> entry : entries)
 				{
 					toReturn.add(Artifact.inflate(entry.getKey().getRow().toString(), entry.getValue().toString()));
@@ -116,7 +116,7 @@ public class ArtifactForeman
 			try
 			{
 				aForeman.connect();
-				aForeman.add(AccumuloForeman.getArtifactRepositoryName(), artifactId, "ARTIFACT_ENTRY", artifactId, serialized);
+				aForeman.add(AccumuloForeman.getArtifactRepositoryName(), artifactId, AccumuloForeman.getArtifactRepository().artifactEntry(), artifactId, serialized);
 
 			}
 			catch (RepositoryException e)

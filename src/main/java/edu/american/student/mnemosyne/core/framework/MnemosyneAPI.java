@@ -1,4 +1,4 @@
-package edu.american.student.mnemosyne.core;
+package edu.american.student.mnemosyne.core.framework;
 
 import java.util.ArrayList;
 import java.util.List;
