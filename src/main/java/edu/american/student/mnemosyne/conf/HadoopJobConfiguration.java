@@ -27,7 +27,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 import edu.american.student.mnemosyne.core.util.MnemosyneConstants;
 
 /**
- * 
+ * A configuration object for running a Hadoop Job
  * @author cam
  *
  */

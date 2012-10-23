@@ -21,22 +21,35 @@ import edu.american.student.mnemosyne.core.model.Artifact;
 import edu.american.student.mnemosyne.core.util.AccumuloForeman;
 import edu.american.student.mnemosyne.core.util.HadoopForeman;
 
+/**
+ * This process builds and persists artifacts gathered from the IngestProcess in the ARTIFACT_TABLE
+ * @author cam
+ *
+ */
 public class ArtifactBuilderProcess implements MnemosyneProcess
 {
 	
-
+	/**
+	 * Calls the MR Process to look over RAW BYTES asserted from IngestProcess in the ARTIFACT_TABLE
+	 * 
+	 * The MR Process created ARTIFACT_ENTRYs which the ArtifactForman then persists
+	 */
 	public void process() throws ProcessException
 	{
 		HadoopForeman hForeman = new HadoopForeman();
 		HadoopJobConfiguration conf = new HadoopJobConfiguration();
+		
 		conf.setJobName(HadoopJobConfiguration.buildJobName(this.getClass()));
 		conf.setMapperClass(ArtifactBuilderMapper.class);
 		conf.overrideDefaultTable(AccumuloForeman.getArtifactRepositoryName());
+		
 		Collection<Pair<Text, Text>> cfPairs = new ArrayList<Pair<Text, Text>>();
 		cfPairs.add(new Pair<Text, Text>(new Text(AccumuloForeman.getArtifactRepository().rawBytes()), null));
 		conf.setFetchColumns(cfPairs);
+		
 		conf.setInputFormatClass(AccumuloInputFormat.class);
 		conf.setOutputFormatClass(AccumuloOutputFormat.class);
+		
 		hForeman.runJob(conf);
 
 		List<Artifact> artifacts = artifactForeman.returnArtifacts();
@@ -55,17 +68,28 @@ public class ArtifactBuilderProcess implements MnemosyneProcess
 
 	}
 
+	/**
+	 * Connect to the ArtifactForman
+	 */
 	public void setup() throws ArtifactException
 	{
 		artifactForeman.connect();
 	}
 
+	/**
+	 * For every RAW_BYTES entry in ARTIFACT_TABLE, register that artifact with the artifact foreman
+	 * @author cam
+	 *
+	 */
 	public static class ArtifactBuilderMapper extends Mapper<Key, Value, Writable, Writable>
 	{
 		@Override
 		public void map(Key ik, Value iv, Context context)
 		{
-			artifactForeman.register(ik.getRow().toString(), Integer.parseInt(ik.getColumnQualifier().toString()), iv.toString());
+			String row = ik.getRow().toString();//This is the Artifact ID
+			int lineNumber = Integer.parseInt(ik.getColumnQualifier().toString());
+			String raw = iv.toString();
+			artifactForeman.register(row, lineNumber, raw);
 		}
 	}
 
