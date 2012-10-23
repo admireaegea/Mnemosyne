@@ -1,13 +1,16 @@
 package edu.american.student.mnemosyne.core.framework;
 
+import edu.american.student.mnemosyne.core.util.MnemosyneConstants;
+
 public class BaseNetworkRepository implements AccumuloTable
 {
-	private String repositoryName = "BASE_NETWORK";
-	private String rawBytesField = "RAW_BYTES";
-	private String baseConfiguration = "BASE_CONFIGURATION";
-	private String baseError = "BASE_ERROR";
-	private String trainData ="TRAIN_DATA";
-	private String baseNetwork = "BASE_NETWORK";
+	private String repositoryName = MnemosyneConstants.getBaseNetworkRepositoryName();
+	private String rawBytesField = MnemosyneConstants.getBaseNetworkTableRawBytes();
+	private String baseConfiguration = MnemosyneConstants.getBaseNetworkTableConfiguration();
+	private String baseError = MnemosyneConstants.getBaseNetworkTableError();
+	private String trainData = MnemosyneConstants.getBaseNetworkTableTrainData();
+	private String baseNetwork = MnemosyneConstants.getBaseNetworkTableBaseNetwork();
+	
 	@Override
 	public String toString()
 	{

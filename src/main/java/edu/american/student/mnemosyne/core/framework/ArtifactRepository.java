@@ -1,11 +1,13 @@
 package edu.american.student.mnemosyne.core.framework;
 
+import edu.american.student.mnemosyne.core.util.MnemosyneConstants;
+
 public class ArtifactRepository implements AccumuloTable
 {
 
-	private String repositoryName = "ARTIFACT_TABLE";
-	private String rawBytes = "RAW_BYTES";
-	private String artifactEntry = "ARTIFACT_ENTRY";
+	private String repositoryName = MnemosyneConstants.getArtifactTableName();
+	private String rawBytes = MnemosyneConstants.getArtifactTableRawBytes();
+	private String artifactEntry = MnemosyneConstants.getArtifactTableArtifactEntry();
 	
 	@Override
 	public String toString()

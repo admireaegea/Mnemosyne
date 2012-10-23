@@ -146,4 +146,67 @@ public class MnemosyneConstants
 		}
 		return toReturn;
 	}
+
+	public static String getArtifactTableName()
+	{
+		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
+		String toReturn = (String) properties.get("artifactTable");
+		return toReturn;
+	}
+
+	public static String getArtifactTableRawBytes()
+	{
+		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
+		String toReturn = (String) properties.get("artifactTableRawBytes");
+		return toReturn;
+	}
+
+	public static String getArtifactTableArtifactEntry()
+	{
+		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
+		String toReturn = (String) properties.get("artifactTableArtifactEntry");
+		return toReturn;
+	}
+
+	public static String getBaseNetworkRepositoryName()
+	{
+		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
+		String toReturn = (String) properties.get("baseNetworkTable");
+		return toReturn;
+	}
+
+	public static String getBaseNetworkTableRawBytes()
+	{
+		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
+		String toReturn = (String) properties.get("baseNetworkTableRawBytes");
+		return toReturn;
+	}
+
+	public static String getBaseNetworkTableConfiguration()
+	{
+		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
+		String toReturn = (String) properties.get("baseNetworkTableConfiguration");
+		return toReturn;
+	}
+
+	public static String getBaseNetworkTableError()
+	{
+		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
+		String toReturn = (String) properties.get("baseNetworkTableError");
+		return toReturn;
+	}
+
+	public static String getBaseNetworkTableTrainData()
+	{
+		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
+		String toReturn = (String) properties.get("baseNetworkTableTrainData");
+		return toReturn;
+	}
+
+	public static String getBaseNetworkTableBaseNetwork()
+	{
+		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
+		String toReturn = (String) properties.get("baseNetworkTableBaseNetwork");
+		return toReturn;
+	}
 }
