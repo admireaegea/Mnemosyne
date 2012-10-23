@@ -17,7 +17,7 @@ import org.encog.engine.network.activation.ActivationSigmoid;
 
 import edu.american.student.mnemosyne.conf.ClassificationNetworkConf;
 import edu.american.student.mnemosyne.conf.HadoopJobConfiguration;
-import edu.american.student.mnemosyne.core.exception.DataspaceException;
+import edu.american.student.mnemosyne.core.exception.RepositoryException;
 import edu.american.student.mnemosyne.core.framework.MnemosyneProcess;
 import edu.american.student.mnemosyne.core.framework.NNProcessor;
 import edu.american.student.mnemosyne.core.model.Artifact;
@@ -88,7 +88,7 @@ public class BaseNetworkBuilderProcess implements MnemosyneProcess
 				NNProcessor processor = NNProcessorFactory.getProcessorBean(conf);
 				processor.constructNetworks(metadata.getArtifactId());
 			}
-			catch (DataspaceException e)
+			catch (RepositoryException e)
 			{
 				// TODO Auto-generated catch block
 				e.printStackTrace();

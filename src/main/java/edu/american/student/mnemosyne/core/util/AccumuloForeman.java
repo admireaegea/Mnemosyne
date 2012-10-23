@@ -33,7 +33,7 @@ import org.apache.hadoop.io.Text;
 import org.encog.neural.networks.BasicNetwork;
 
 import edu.american.student.mnemosyne.conf.ClassificationNetworkConf;
-import edu.american.student.mnemosyne.core.exception.DataspaceException;
+import edu.american.student.mnemosyne.core.exception.RepositoryException;
 import edu.american.student.mnemosyne.core.framework.ArtifactRepository;
 import edu.american.student.mnemosyne.core.framework.BaseNetworkRepository;
 
@@ -41,7 +41,7 @@ public class AccumuloForeman
 {
 
 	private Connector conn;
-	private Logger log = Logger.getLogger(AccumuloForeman.class.getName());
+	private static final Logger log = Logger.getLogger(AccumuloForeman.class.getName());
 
 	public AccumuloForeman()
 	{
@@ -49,7 +49,7 @@ public class AccumuloForeman
 	}
 
 	@SuppressWarnings("deprecation")
-	public boolean connect() throws DataspaceException
+	public boolean connect() throws RepositoryException
 	{
 		try
 		{
@@ -60,40 +60,40 @@ public class AccumuloForeman
 		{
 			String gripe = "Could not connect the Accumulo Foreman. Check the configuration files.";
 			log.log(Level.SEVERE, gripe, e);
-			throw new DataspaceException(gripe, e);
+			throw new RepositoryException(gripe, e);
 		}
 		catch (AccumuloSecurityException e)
 		{
 			String gripe = "Could not connect the Accumulo Foreman. Check the configuration files.";
 			log.log(Level.SEVERE, gripe, e);
-			throw new DataspaceException(gripe, e);
+			throw new RepositoryException(gripe, e);
 		}
 		return true;
 	}
 
-	public Connector getConnector() throws DataspaceException
+	public Connector getConnector() throws RepositoryException
 	{
 		if (conn == null)
 		{
 			String gripe = "Could not grab the Accumulo Connector. Check Accumulo.";
 			log.log(Level.SEVERE, gripe);
-			throw new DataspaceException(gripe);
+			throw new RepositoryException(gripe);
 		}
 		return conn;
 	}
 
-	public TableOperations getTableOps() throws DataspaceException
+	public TableOperations getTableOps() throws RepositoryException
 	{
 		if (conn == null || conn.tableOperations() == null)
 		{
 			String gripe = "Could not modify tables in Accumulo. Check Accumulo.";
 			log.log(Level.SEVERE, gripe);
-			throw new DataspaceException(gripe);
+			throw new RepositoryException(gripe);
 		}
 		return conn.tableOperations();
 	}
 
-	public boolean deleteTables() throws DataspaceException
+	public boolean deleteTables() throws RepositoryException
 	{
 		Map<String, String> tableMap = this.getTableOps().tableIdMap();
 		Iterator<Entry<String, String>> it = tableMap.entrySet().iterator();
@@ -109,7 +109,7 @@ public class AccumuloForeman
 		return true;
 	}
 
-	public boolean deleteTable(String name) throws DataspaceException
+	public boolean deleteTable(String name) throws RepositoryException
 	{
 		TableOperations tableOps = this.getTableOps();
 		try
@@ -120,13 +120,13 @@ public class AccumuloForeman
 		{
 			String gripe = "Could not delete this table from Accumulo:" + name;
 			log.log(Level.SEVERE, gripe, e);
-			throw new DataspaceException(gripe, e);
+			throw new RepositoryException(gripe, e);
 		}
 		catch (AccumuloSecurityException e)
 		{
 			String gripe = "Could not delete this table from Accumulo:" + name;
 			log.log(Level.SEVERE, gripe, e);
-			throw new DataspaceException(gripe, e);
+			throw new RepositoryException(gripe, e);
 		}
 		catch (TableNotFoundException e)
 		{
@@ -138,7 +138,7 @@ public class AccumuloForeman
 		return true;
 	}
 
-	public BatchWriter getBatchWriter(String tableName) throws DataspaceException
+	public BatchWriter getBatchWriter(String tableName) throws RepositoryException
 	{
 		long memBuf = 1000000L; // bytes to store before sending a batch
 		long timeout = 1000L; // milliseconds to wait before sending
@@ -153,12 +153,12 @@ public class AccumuloForeman
 		{
 			String gripe = "Could not write to " + tableName + " (It doesn't exist)";
 			log.log(Level.SEVERE, gripe, e);
-			throw new DataspaceException(gripe, e);
+			throw new RepositoryException(gripe, e);
 		}
 		return writer;
 	}
 
-	public void addBytes(String table, String row, String fam, String qual, byte[] value) throws DataspaceException
+	public void addBytes(String table, String row, String fam, String qual, byte[] value) throws RepositoryException
 	{
 
 		BatchWriter writer = this.getBatchWriter(table);
@@ -175,18 +175,18 @@ public class AccumuloForeman
 		{
 			String gripe = "Could not assert this mutation:table=" + table + " row=" + row + " fam=" + fam;
 			log.log(Level.SEVERE, gripe, e);
-			throw new DataspaceException(gripe, e);
+			throw new RepositoryException(gripe, e);
 		}
 
 	}
 
-	public void add(String table, String row, String fam, String qual, String value) throws DataspaceException
+	public void add(String table, String row, String fam, String qual, String value) throws RepositoryException
 	{
 		this.addBytes(table, row, fam, qual, value.getBytes());
 
 	}
 
-	public void makeTable(String tableName) throws DataspaceException
+	public void makeTable(String tableName) throws RepositoryException
 	{
 		TableOperations tableOps = this.getTableOps();
 		try
@@ -197,13 +197,13 @@ public class AccumuloForeman
 		{
 			String gripe = "Could not create table:" + tableName;
 			log.log(Level.SEVERE, gripe, e);
-			throw new DataspaceException(gripe, e);
+			throw new RepositoryException(gripe, e);
 		}
 		catch (AccumuloSecurityException e)
 		{
 			String gripe = "Could not create table:" + tableName;
 			log.log(Level.SEVERE, gripe, e);
-			throw new DataspaceException(gripe, e);
+			throw new RepositoryException(gripe, e);
 		}
 		catch (TableExistsException e)
 		{
@@ -216,7 +216,7 @@ public class AccumuloForeman
 
 	}
 
-	public List<Entry<Key, Value>> fetchByColumnFamily(String table, String fam) throws DataspaceException
+	public List<Entry<Key, Value>> fetchByColumnFamily(String table, String fam) throws RepositoryException
 	{
 		Authorizations auths = new Authorizations(MnemosyneConstants.getDefaultAuths());
 
@@ -235,13 +235,13 @@ public class AccumuloForeman
 		{
 			String gripe = "Couldn't fetch columns. (Table does not exist)";
 			log.log(Level.SEVERE, gripe, e);
-			throw new DataspaceException(gripe, e);
+			throw new RepositoryException(gripe, e);
 		}
 
 		return toRet;
 	}
 
-	public List<Entry<Key, Value>> fetchByQualifier(String table, String fam, String qual) throws DataspaceException
+	public List<Entry<Key, Value>> fetchByQualifier(String table, String fam, String qual) throws RepositoryException
 	{
 		Authorizations auths = new Authorizations(MnemosyneConstants.getDefaultAuths());
 		List<Entry<Key, Value>> toRet = new ArrayList<Entry<Key, Value>>();
@@ -259,13 +259,13 @@ public class AccumuloForeman
 		{
 			String gripe = "Could not fetch columns. (Table:" + table + " doesn't exist)";
 			log.log(Level.SEVERE, gripe, e);
-			throw new DataspaceException(gripe, e);
+			throw new RepositoryException(gripe, e);
 		}
 
 		return toRet;
 	}
 
-	public void saveNetwork(String TABLE_TO_SAVE, String FAMILY_NAME, String artifactId, BasicNetwork network, ClassificationNetworkConf conf) throws DataspaceException
+	public void saveNetwork(String TABLE_TO_SAVE, String FAMILY_NAME, String artifactId, BasicNetwork network, ClassificationNetworkConf conf) throws RepositoryException
 	{
 		try
 		{
@@ -289,12 +289,12 @@ public class AccumuloForeman
 		{
 			String gripe = "Could not save a base network in Accumulo.";
 			log.log(Level.SEVERE, gripe, e);
-			throw new DataspaceException(gripe, e);
+			throw new RepositoryException(gripe, e);
 		}
 
 	}
 
-	public BasicNetwork inflateNetwork(String tableName, String fam, String artifactId) throws DataspaceException
+	public BasicNetwork inflateNetwork(String tableName, String fam, String artifactId) throws RepositoryException
 	{
 		try
 		{
@@ -311,29 +311,29 @@ public class AccumuloForeman
 		{
 			String gripe = "Could not inflate a network from Accumulo";
 			log.log(Level.SEVERE, gripe, e);
-			throw new DataspaceException(gripe, e);
+			throw new RepositoryException(gripe, e);
 		}
 		catch (ClassNotFoundException e)
 		{
 			String gripe = "Attempted to inflate a network from Accumulo. It wasn't of type BaseNetwork";
 			log.log(Level.SEVERE, gripe, e);
-			throw new DataspaceException(gripe, e);
+			throw new RepositoryException(gripe, e);
 		}
 		return null;
 
 	}
 
-	public boolean tableExists(String name) throws DataspaceException
+	public boolean tableExists(String name) throws RepositoryException
 	{
 		return this.getTableOps().exists(name);
 	}
 
-	public void assertBaseNetwork(BasicNetwork network, String artifactId, ClassificationNetworkConf conf) throws DataspaceException
+	public void assertBaseNetwork(BasicNetwork network, String artifactId, ClassificationNetworkConf conf) throws RepositoryException
 	{
 		this.saveNetwork(AccumuloForeman.getBaseNetworkRepositoryName(), AccumuloForeman.getBaseNetworkRepository().getRawBytesField(), artifactId, network, conf);
 	}
 
-	public BasicNetwork getBaseNetwork(String artifactId) throws DataspaceException
+	public BasicNetwork getBaseNetwork(String artifactId) throws RepositoryException
 	{
 		return this.inflateNetwork(AccumuloForeman.getBaseNetworkRepositoryName(), AccumuloForeman.getBaseNetworkRepository().getRawBytesField(), artifactId);
 	}
@@ -358,12 +358,12 @@ public class AccumuloForeman
 		return new ArtifactRepository();
 	}
 
-	public ClassificationNetworkConf getBaseNetworkConf(String artifactId) throws DataspaceException
+	public ClassificationNetworkConf getBaseNetworkConf(String artifactId) throws RepositoryException
 	{
 		return this.inflateNetworkConfiguration(artifactId);
 	}
 
-	private ClassificationNetworkConf inflateNetworkConfiguration(String artifactId) throws DataspaceException
+	private ClassificationNetworkConf inflateNetworkConfiguration(String artifactId) throws RepositoryException
 	{
 		List<Entry<Key, Value>> rows = this.fetchByQualifier(AccumuloForeman.getBaseNetworkRepositoryName(), "BASE_CONFIGURATION", artifactId);
 		try
@@ -379,33 +379,33 @@ public class AccumuloForeman
 		{
 			String gripe = "Could not inflate the Base Network Configuration for " + artifactId;
 			log.log(Level.SEVERE, gripe, e);
-			throw new DataspaceException(gripe, e);
+			throw new RepositoryException(gripe, e);
 		}
 		catch (ClassNotFoundException e)
 		{
 			String gripe = "Attempted to inflate a Base Network Configuration that returned object not in type ClassificationNetworkConf";
 			log.log(Level.SEVERE, gripe, e);
-			throw new DataspaceException(gripe, e);
+			throw new RepositoryException(gripe, e);
 		}
 		return null;
 	}
 
-	public double getBaseNetworkError(String artifactId) throws DataspaceException
+	public double getBaseNetworkError(String artifactId) throws RepositoryException
 	{
 		return this.inflateNetworkError(artifactId);
 	}
 
-	private double inflateNetworkError(String artifactId) throws DataspaceException
+	private double inflateNetworkError(String artifactId) throws RepositoryException
 	{
 		return Double.parseDouble(this.fetchByQualifier(AccumuloForeman.getBaseNetworkRepositoryName(), "BASE_ERROR", artifactId).get(0).getValue().toString());
 	}
 
-	public void assertBaseNetworkError(double error, String artifactId) throws DataspaceException
+	public void assertBaseNetworkError(double error, String artifactId) throws RepositoryException
 	{
 		this.add(AccumuloForeman.getBaseNetworkRepositoryName(), artifactId, "BASE_ERROR", artifactId, error + "");
 	}
 
-	public void addTrainingData(String artifactId, double[][] input, double[][] output) throws DataspaceException
+	public void addTrainingData(String artifactId, double[][] input, double[][] output) throws RepositoryException
 	{
 		try
 		{
@@ -421,11 +421,11 @@ public class AccumuloForeman
 		{
 			String gripe = "Couldn't add training data for " + artifactId;
 			log.log(Level.SEVERE, gripe, e);
-			throw new DataspaceException(gripe, e);
+			throw new RepositoryException(gripe, e);
 		}
 	}
 
-	public ArrayList<double[][]> getPastTrainingInput(String artifactId) throws DataspaceException
+	public ArrayList<double[][]> getPastTrainingInput(String artifactId) throws RepositoryException
 	{
 		List<Entry<Key, Value>> entries = this.fetchByColumnFamily("BASE_NETWORK", "TRAIN_DATA");
 		ArrayList<double[][]> pastInputs = new ArrayList<double[][]>();
@@ -448,20 +448,20 @@ public class AccumuloForeman
 			{
 				String gripe = "Could not get this past training input :" + key.toString();
 				log.log(Level.SEVERE, gripe, e);
-				throw new DataspaceException(gripe, e);
+				throw new RepositoryException(gripe, e);
 			}
 			catch (ClassNotFoundException e)
 			{
 				String gripe = "Could not inflate this past training input:" + key.toString() + " (Inflated input is not of type InputOutputHolder)";
 				log.log(Level.SEVERE, gripe, e);
-				throw new DataspaceException(gripe, e);
+				throw new RepositoryException(gripe, e);
 			}
 
 		}
 		return pastInputs;
 	}
 
-	public ArrayList<double[][]> getPastTrainingOutput(String artifactId) throws DataspaceException
+	public ArrayList<double[][]> getPastTrainingOutput(String artifactId) throws RepositoryException
 	{
 		List<Entry<Key, Value>> entries = this.fetchByColumnFamily("BASE_NETWORK", "TRAIN_DATA");
 		ArrayList<double[][]> pastOutputs = new ArrayList<double[][]>();
@@ -483,13 +483,13 @@ public class AccumuloForeman
 				{
 					String gripe = "Could not get past training output:" + key.toString();
 					log.log(Level.SEVERE, gripe, e);
-					throw new DataspaceException(gripe, e);
+					throw new RepositoryException(gripe, e);
 				}
 				catch (ClassNotFoundException e)
 				{
 					String gripe = "Could not inflate a past training output:" + key.toString() + " (Type is not InputOutputHolder)";
 					log.log(Level.SEVERE, gripe, e);
-					throw new DataspaceException(gripe, e);
+					throw new RepositoryException(gripe, e);
 				}
 
 			}

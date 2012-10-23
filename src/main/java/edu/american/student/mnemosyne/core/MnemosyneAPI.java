@@ -7,6 +7,7 @@ import java.util.Scanner;
 import org.encog.ml.data.MLData;
 import org.encog.ml.data.basic.BasicMLData;
 
+import edu.american.student.mnemosyne.core.exception.ArtifactException;
 import edu.american.student.mnemosyne.core.exception.DataspaceException;
 import edu.american.student.mnemosyne.core.model.Artifact;
 import edu.american.student.mnemosyne.core.util.AccumuloForeman;
@@ -18,8 +19,8 @@ public  abstract class MnemosyneAPI
 	protected AccumuloForeman aForeman = new AccumuloForeman();
 	protected ArtifactForeman artifactForeman = new ArtifactForeman();
 	
-	public abstract void setup() throws DataspaceException;
-	public String getOptionArtifact() throws DataspaceException
+	public abstract void setup() throws  DataspaceException;
+	public String getOptionArtifact() throws ArtifactException
 	{
 		//this.artifactForeman.persistArtifacts();
 		List<Artifact> artifacts = this.artifactForeman.returnArtifacts();

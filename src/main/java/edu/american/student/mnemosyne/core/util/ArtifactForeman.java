@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -14,13 +16,15 @@ import org.apache.accumulo.core.data.Key;
 import org.apache.accumulo.core.data.Value;
 import org.xml.sax.SAXException;
 
-import edu.american.student.mnemosyne.core.exception.DataspaceException;
+import edu.american.student.mnemosyne.core.exception.ArtifactException;
+import edu.american.student.mnemosyne.core.exception.RepositoryException;
 import edu.american.student.mnemosyne.core.model.Artifact;
 
 public class ArtifactForeman
 {
 
 	private AccumuloForeman aForeman = new AccumuloForeman();
+	private static final Logger log = Logger.getLogger(ArtifactForeman.class.getName());
 	Map<String,Map<Integer,String>> artifactMap = new HashMap<String,Map<Integer,String>>();
 	
 	public void register(String artifactId,int position, String value)
@@ -38,12 +42,21 @@ public class ArtifactForeman
 		}
 	}
 
-	public void connect() throws DataspaceException
+	public void connect() throws ArtifactException
 	{
-		aForeman.connect();
+		try
+		{
+			aForeman.connect();
+		}
+		catch (RepositoryException e)
+		{
+			String gripe = "Could not connect the Artifact Foreman.";
+			log.log(Level.SEVERE,gripe,e);
+			throw new ArtifactException(gripe,e);
+		}
 	}
 
-	public List<Artifact> returnArtifacts() throws  DataspaceException
+	public List<Artifact> returnArtifacts() throws ArtifactException
 	{
 		List<Artifact> toReturn = new ArrayList<Artifact>();
 		Iterator<Entry<String, Map<Integer, String>>> it =artifactMap.entrySet().iterator();
@@ -70,33 +83,47 @@ public class ArtifactForeman
 				}
 				catch (ParserConfigurationException e)
 				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					String gripe ="Could not create artifacts from the dataspace.";
+					log.log(Level.SEVERE,gripe,e);
+					throw new ArtifactException(gripe,e);
 				}
 				catch (SAXException e)
 				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					String gripe ="Could not create artifacts from the dataspace.";
+					log.log(Level.SEVERE,gripe,e);
+					throw new ArtifactException(gripe,e);
 				}
 				catch (IOException e)
 				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					String gripe ="Could not create artifacts from the dataspace.";
+					log.log(Level.SEVERE,gripe,e);
+					throw new ArtifactException(gripe,e);
 				}
 			}
 		}
 		else
 		{
-			List<Entry<Key, Value>> entries = aForeman.fetchByColumnFamily(AccumuloForeman.getArtifactRepositoryName(), "ARTIFACT_ENTRY");
-			for(Entry<Key,Value> entry: entries)
+			List<Entry<Key, Value>> entries;
+			try
 			{
-				toReturn.add(Artifact.inflate(entry.getKey().getRow().toString(),entry.getValue().toString()));
+				entries = aForeman.fetchByColumnFamily(AccumuloForeman.getArtifactRepositoryName(), "ARTIFACT_ENTRY");
+				for(Entry<Key,Value> entry: entries)
+				{
+					toReturn.add(Artifact.inflate(entry.getKey().getRow().toString(),entry.getValue().toString()));
+				}
 			}
+			catch (RepositoryException e)
+			{
+				String gripe = "Could not return artifacts from the dataspace.";
+				log.log(Level.SEVERE,gripe,e);
+				throw new ArtifactException(gripe,e);
+			}
+
 		}
 		return toReturn;
 	}
 
-	public void persistArtifacts() throws DataspaceException
+	public void persistArtifacts() throws ArtifactException
 	{
 		Iterator<Entry<String, Map<Integer, String>>> it = artifactMap.entrySet().iterator();
 		
@@ -111,8 +138,18 @@ public class ArtifactForeman
 				Entry<Integer,String> internalEntry = internalIt.next();
 				serialized+="("+internalEntry.getKey()+","+internalEntry.getValue()+")";
 			}
-			aForeman.connect();
-			aForeman.add(AccumuloForeman.getArtifactRepositoryName(), artifactId, "ARTIFACT_ENTRY",artifactId, serialized);
+			try
+			{
+				aForeman.connect();
+				aForeman.add(AccumuloForeman.getArtifactRepositoryName(), artifactId, "ARTIFACT_ENTRY",artifactId, serialized);
+
+			}
+			catch (RepositoryException e)
+			{
+				String gripe = "Could not persist artifacts in the dataspace";
+				log.log(Level.SEVERE,gripe,e);
+				throw new ArtifactException(gripe,e);
+			}
 		}
 		
 	}

@@ -21,7 +21,7 @@ import org.encog.neural.networks.training.propagation.resilient.ResilientPropaga
 
 import edu.american.student.mnemosyne.conf.ClassificationNetworkConf;
 import edu.american.student.mnemosyne.conf.HadoopJobConfiguration;
-import edu.american.student.mnemosyne.core.exception.DataspaceException;
+import edu.american.student.mnemosyne.core.exception.RepositoryException;
 import edu.american.student.mnemosyne.core.framework.MnemosyneProcess;
 import edu.american.student.mnemosyne.core.model.Artifact;
 import edu.american.student.mnemosyne.core.util.AccumuloForeman;
@@ -66,7 +66,7 @@ public class TrainProcess implements MnemosyneProcess
 			{
 				aForeman.connect();
 			}
-			catch (DataspaceException e3)
+			catch (RepositoryException e3)
 			{
 				// TODO Auto-generated catch block
 				e3.printStackTrace();
@@ -117,7 +117,7 @@ public class TrainProcess implements MnemosyneProcess
 					aForeman.assertBaseNetwork(modified, ik.getRow().toString(), baseConf);
 					aForeman.assertBaseNetworkError(train.getError(), ik.getRow().toString());
 				}
-				catch (DataspaceException e2)
+				catch (RepositoryException e2)
 				{
 					// TODO Auto-generated catch block
 					e2.printStackTrace();
@@ -127,7 +127,7 @@ public class TrainProcess implements MnemosyneProcess
 
 		}
 
-		private MLDataSet constructTrainingSet(String artifactId, double[] input, double[] output) throws DataspaceException
+		private MLDataSet constructTrainingSet(String artifactId, double[] input, double[] output) throws RepositoryException
 		{
 
 			ArrayList<double[][]> formerIn = aForeman.getPastTrainingInput(artifactId);

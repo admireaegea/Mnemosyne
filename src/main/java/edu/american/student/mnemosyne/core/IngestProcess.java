@@ -14,7 +14,7 @@ import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.NullOutputFormat;
 
 import edu.american.student.mnemosyne.conf.HadoopJobConfiguration;
-import edu.american.student.mnemosyne.core.exception.DataspaceException;
+import edu.american.student.mnemosyne.core.exception.RepositoryException;
 import edu.american.student.mnemosyne.core.framework.MnemosyneProcess;
 import edu.american.student.mnemosyne.core.util.AccumuloForeman;
 import edu.american.student.mnemosyne.core.util.HadoopForeman;
@@ -64,7 +64,7 @@ public class IngestProcess implements MnemosyneProcess
 			{
 				aForeman.add(AccumuloForeman.getArtifactRepositoryName(), "ARTIFACT_" + uuid, "RAW_BYTES", ik.toString(), iv.toString());
 			}
-			catch (DataspaceException e)
+			catch (RepositoryException e)
 			{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
