@@ -212,7 +212,7 @@ public class AccumuloForeman
 			return;
 		}
 
-		System.out.println(tableName + " created ...");
+		log.log(Level.INFO,tableName + " created ...");
 
 	}
 

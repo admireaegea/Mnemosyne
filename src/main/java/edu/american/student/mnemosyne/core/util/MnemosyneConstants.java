@@ -3,13 +3,15 @@ package edu.american.student.mnemosyne.core.util;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.hadoop.fs.Path;
 
 public class MnemosyneConstants
 {
 	public static String mnemosyneSite = "conf.mnemosyne-site";
-
+	private final static Logger log = Logger.getLogger(MnemosyneConstants.class.getName());
 	public static String getAccumuloInstance()
 	{
 		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
@@ -138,7 +140,7 @@ public class MnemosyneConstants
 				{
 					if (listFile[i].getName().endsWith(pattern))
 					{
-						System.out.println(listFile[i].getPath());
+						log.log(Level.INFO, "Ingesting "+listFile[i].getPath());
 						toReturn.add(new Path(listFile[i].getPath()));
 					}
 				}

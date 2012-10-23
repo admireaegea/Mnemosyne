@@ -3,6 +3,8 @@ package edu.american.student.mnemosyne.core;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.accumulo.core.client.mapreduce.AccumuloInputFormat;
 import org.apache.accumulo.core.client.mapreduce.AccumuloOutputFormat;
@@ -35,7 +37,8 @@ public class TrainProcess implements MnemosyneProcess
 {
 
 	private static int round = 0;
-
+	private static final Logger log = Logger.getLogger(TrainProcess.class.getName());
+	
 	public void process() throws ProcessException
 	{
 		artifactForeman.connect();
@@ -72,7 +75,7 @@ public class TrainProcess implements MnemosyneProcess
 				// TODO Auto-generated catch block
 				e3.printStackTrace();
 			}
-			System.out.println("Grabbing the base network...");
+			log.log(Level.INFO,"Grabbing the base network...");
 			BasicNetwork base = null;
 			ClassificationNetworkConf baseConf = null;
 			double error = 1;
@@ -87,7 +90,7 @@ public class TrainProcess implements MnemosyneProcess
 			}
 			if (base != null)
 			{
-				System.out.println("Training ...");
+				log.log(Level.INFO,"Training ...");
 				long start = System.currentTimeMillis();
 				long timeout = 1000 * 60;
 				double[] input = NNInput.inflate(iv.toString());
@@ -108,7 +111,7 @@ public class TrainProcess implements MnemosyneProcess
 					{
 						train.iteration();
 						elapsed = System.currentTimeMillis() - start;
-						System.out.println("Round:" + round + " Epoch #" + epoch + " Error:" + train.getError() + " acceptable error:" + error + " Elapsed:" + elapsed + " Timeout:" + (elapsed > timeout));
+						log.log(Level.INFO,"Round:" + round + " Epoch #" + epoch + " Error:" + train.getError() + " acceptable error:" + error + " Elapsed:" + elapsed + " Timeout:" + (elapsed > timeout));
 						epoch++;
 					}
 					while (train.getError() > error && (elapsed < timeout));
@@ -155,7 +158,6 @@ public class TrainProcess implements MnemosyneProcess
 				}
 			}
 			newOut[newOut.length - 1] = output;
-			// System.out.println(input.length+" "+newIn.length);
 			// fill in new arrays
 			MLDataSet trainingSet = new BasicMLDataSet(newIn, newOut);
 			return trainingSet;

@@ -2,12 +2,9 @@ package edu.american.student.mnemosyne.core.util;
 
 import java.io.InputStream;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.Locale;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.ResourceBundle;
-import java.util.Set;
 
 public abstract class PropertyLoader
 {
@@ -94,15 +91,15 @@ public abstract class PropertyLoader
         return loadProperties (name,
             Thread.currentThread ().getContextClassLoader ());
     }
-	public static void test()
-	{
-		Properties prop = PropertyLoader.loadProperties("conf.mnemosyne-site.conf");
-		Set<java.util.Map.Entry<Object, Object>> penis = prop.entrySet();
-		Iterator<Entry<Object,Object>> it = penis.iterator();
-		while(it.hasNext())
-		{
-			Entry<Object,Object > entry = it.next();
-			System.out.println(entry.getKey()+" "+entry.getValue());
-		}
-	}
+//	public static void test()
+//	{
+//		Properties prop = PropertyLoader.loadProperties("conf.mnemosyne-site.conf");
+//		Set<java.util.Map.Entry<Object, Object>> penis = prop.entrySet();
+//		Iterator<Entry<Object,Object>> it = penis.iterator();
+//		while(it.hasNext())
+//		{
+//			Entry<Object,Object > entry = it.next();
+//			System.out.println(entry.getKey()+" "+entry.getValue());
+//		}
+//	}
 } // End of class

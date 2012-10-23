@@ -147,7 +147,6 @@ public class ClassificationNetwork
 		
 		for(int i= toInstallLayerOutput.length - (toCopy.getOutputCount()+1);i<toInstallLayerOutput.length;i++)
 		{
-			System.out.println(toCopyLayerOutput.length);
 			toInstallLayerOutput[i]= toCopyLayerOutput[i-(toCopy.getOutputCount()+1)];
 		}
 		for(int i=0;i<toCopyWeights.length;i++)
@@ -158,7 +157,6 @@ public class ClassificationNetwork
 		{
 			toInstallWeights[i]=new Random().nextDouble()- new Random().nextDouble();
 		}
-//		/toCopyLayerSums.length+layer.getTotalCount(
 		for(int i=0;i<toCopyLayerSums.length-toCopyLayerCounts[toCopyLayerCounts.length-1];i++)
 		{
 			toInstallLayerSums[i]=toCopyLayerSums[i];
