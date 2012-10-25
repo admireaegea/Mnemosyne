@@ -1,3 +1,18 @@
+/* Copyright 2012 Cameron Cook
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package edu.american.student.mnemosyne.core;
 
 import java.util.ArrayList;
@@ -32,13 +47,23 @@ import edu.american.student.mnemosyne.core.util.ClassificationNetwork;
 import edu.american.student.mnemosyne.core.util.HadoopForeman;
 import edu.american.student.mnemosyne.core.util.NNInput;
 import edu.american.student.mnemosyne.core.util.NNOutput;
-
+/**
+ * Process that trains the base network and grows it in parallel
+ * @author cam
+ *
+ */
 public class TrainProcess implements MnemosyneProcess
 {
 
+	/**
+	 * Represents the number of artifact inputs processed
+	 */
 	private static int round = 0;
 	private static final Logger log = Logger.getLogger(TrainProcess.class.getName());
-	
+	/**
+	 * For every artifact (therefore for every network)
+	 * Call the train mapper
+	 */
 	public void process() throws ProcessException
 	{
 		artifactForeman.connect();
@@ -59,6 +84,12 @@ public class TrainProcess implements MnemosyneProcess
 		}
 	}
 
+	/**
+	 * Inflates the base network, trains over the new input and all past input until an acceptable error is hit, or it times out.
+	 * Saves over the base network. 
+	 * @author cam
+	 *
+	 */
 	public static class NNTrainMapper extends Mapper<Key, Value, Writable, Writable>
 	{
 		private AccumuloForeman aForeman = new AccumuloForeman();

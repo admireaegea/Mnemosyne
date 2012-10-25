@@ -1,3 +1,18 @@
+/* Copyright 2012 Cameron Cook
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package edu.american.student.mnemosyne.core;
 
 import java.util.ArrayList;
@@ -29,9 +44,17 @@ import edu.american.student.mnemosyne.core.util.HadoopForeman;
 import edu.american.student.mnemosyne.core.util.NNMetadata;
 import edu.american.student.mnemosyne.core.util.NNProcessorFactory;
 
+/**
+ * This process constructs a base neural network for every artifact
+ * @author cam
+ *
+ */
 public class BaseNetworkBuilderProcess implements MnemosyneProcess
 {
 
+	/**
+	 * For every artifact, Build a bast network in Accumulo
+	 */
 	public void process() throws ProcessException
 	{
 		List<Artifact> artifacts = artifactForeman.returnArtifacts();
@@ -52,12 +75,20 @@ public class BaseNetworkBuilderProcess implements MnemosyneProcess
 
 	}
 
+	/**
+	 * Connect to the artifact foreman
+	 */
 	public void setup() throws ArtifactException
 	{
 		artifactForeman.connect();
 
 	}
 
+	/**
+	 * Mapper to inflate the inputs, outputs and metadata from ingest, then create a network and asser it
+	 * @author cam
+	 *
+	 */
 	public static class BaseNetworkBuilderMapper extends Mapper<Key, Value, Writable, Writable>
 	{
 		@Override

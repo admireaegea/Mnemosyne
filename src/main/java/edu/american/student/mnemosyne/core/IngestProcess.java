@@ -1,3 +1,18 @@
+/* Copyright 2012 Cameron Cook
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package edu.american.student.mnemosyne.core;
 
 import java.util.ArrayList;
@@ -21,11 +36,25 @@ import edu.american.student.mnemosyne.core.util.ArtifactIdFactory;
 import edu.american.student.mnemosyne.core.util.HadoopForeman;
 import edu.american.student.mnemosyne.core.util.MnemosyneConstants;
 
+/**
+ * Ingests an XML file in Mnemosyne XML and asserts its inputs and outputs into the dataspace
+ * @author cam
+ *
+ */
 public class IngestProcess implements MnemosyneProcess
 {
+	/**
+	 * The UUID used to make an artifact id 
+	 */
 	static String uuid;
 	static List<Integer> linesProcessed = new ArrayList<Integer>();
+	/**
+	 * Multiple files to ingest
+	 */
 	static Path[] pathsToProcess;
+	/**
+ 	* @see MnemosyneProcess
+ 	*/
 	public void setup() throws ProcessException
 	{
 		uuid = UUID.randomUUID().toString();
@@ -34,6 +63,10 @@ public class IngestProcess implements MnemosyneProcess
 
 	}
 
+	/**
+	 * for every path 
+	 * grab every line of the file, and throw it into accumulo
+	 */
 	public void process() throws ProcessException
 	{
 		for(Path path: pathsToProcess)
@@ -56,6 +89,11 @@ public class IngestProcess implements MnemosyneProcess
 	
 	
 
+	/**
+	 * Throws every line of a file into accumulo
+	 * @author cam
+	 *
+	 */
 	public static class IngestMapper extends Mapper<LongWritable, Text, Text, IntWritable>
 	{
 		@Override
@@ -67,7 +105,6 @@ public class IngestProcess implements MnemosyneProcess
 			}
 			catch (RepositoryException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
