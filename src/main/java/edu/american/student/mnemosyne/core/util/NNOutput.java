@@ -2,10 +2,12 @@ package edu.american.student.mnemosyne.core.util;
 
 import java.util.List;
 
+import edu.american.student.mnemosyne.conf.ClassificationNetworkConf;
+
 public class NNOutput
 {
 
-	public static double[] inflate(String value)
+	public static double[] inflate(ClassificationNetworkConf conf,String value)
 	{
 		String doubles = value.split("\\)")[1].replace("(", "");
 		String[] outputs = doubles.split(",");
@@ -14,7 +16,7 @@ public class NNOutput
 		{
 			toReturn[i] = Double.parseDouble(outputs[i]);
 		}
-		return BinaryUtils.toBinary(toReturn);
+		return BinaryUtils.toBinary(conf,toReturn,false);
 	}
 
 	public static String combine(double[] results, NNMetadata data)

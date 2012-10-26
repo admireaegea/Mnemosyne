@@ -10,67 +10,69 @@ import org.apache.hadoop.fs.Path;
 
 public class MnemosyneConstants
 {
-	public static String mnemosyneSite = "conf.mnemosyne-site";
+	public static  String confDir="";
+	public static String mnemosyneSite = confDir+"conf.mnemosyne-site";
 	private final static Logger log = Logger.getLogger(MnemosyneConstants.class.getName());
+	
 	public static String getAccumuloInstance()
 	{
-		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
+		Properties properties = PropertyLoader.loadProperties(confDir+mnemosyneSite);
 		String toReturn = (String) properties.get("accumuloInstance");
 		return toReturn;
 	}
 
 	public static String getAccumuloPassword()
 	{
-		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
+		Properties properties = PropertyLoader.loadProperties(confDir+mnemosyneSite);
 		String toReturn = (String) properties.get("accumuloPassword");
 		return toReturn;
 	}
 
 	public static String getDefaultTable()
 	{
-		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
+		Properties properties = PropertyLoader.loadProperties(confDir+mnemosyneSite);
 		String toReturn = (String) properties.get("defaultTable");
 		return toReturn;
 	}
 
 	public static String getZookeeperInstance()
 	{
-		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
+		Properties properties = PropertyLoader.loadProperties(confDir+mnemosyneSite);
 		String toReturn = (String) properties.get("zookeeperInstance");
 		return toReturn;
 	}
 
 	public static String getZookeeperInstanceName()
 	{
-		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
+		Properties properties = PropertyLoader.loadProperties(confDir+mnemosyneSite);
 		String toReturn = (String) properties.get("zookeeperInstanceName");
 		return toReturn;
 	}
 
 	public static String getAccumuloUser()
 	{
-		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
+		Properties properties = PropertyLoader.loadProperties(confDir+mnemosyneSite);
 		String toReturn = (String) properties.get("accumuloUser");
 		return toReturn;
 	}
 
 	public static String getNeuralNetworkRowName()
 	{
-		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
+		Properties properties = PropertyLoader.loadProperties(confDir+mnemosyneSite);
 		String toReturn = (String) properties.get("networkRowName");
 		return toReturn;
 	}
 
 	public static int getNetworksPerNode()
 	{
-		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
+		Properties properties = PropertyLoader.loadProperties(confDir+mnemosyneSite);
 		String toReturn = (String) properties.get("networksPerNode");
 		return Integer.parseInt(toReturn);
 	}
 
 	public static int getNumberOfNodes()
 	{
-		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
+		Properties properties = PropertyLoader.loadProperties(confDir+mnemosyneSite);
 		String toReturn = (String) properties.get("numberOfNodes");
 		return Integer.parseInt(toReturn);
 	}
@@ -99,14 +101,14 @@ public class MnemosyneConstants
 
 	public static String getDefaultAuths()
 	{
-		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
+		Properties properties = PropertyLoader.loadProperties(confDir+mnemosyneSite);
 		String toReturn = (String) properties.get("defaultAuths");
 		return toReturn;
 	}
 
 	public static String getMnemosyneHome()
 	{
-		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
+		Properties properties = PropertyLoader.loadProperties(confDir+mnemosyneSite);
 		String toReturn = (String) properties.get("mnemosyneHome");
 		return toReturn;
 	}
@@ -151,63 +153,63 @@ public class MnemosyneConstants
 
 	public static String getArtifactTableName()
 	{
-		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
+		Properties properties = PropertyLoader.loadProperties(confDir+mnemosyneSite);
 		String toReturn = (String) properties.get("artifactTable");
 		return toReturn;
 	}
 
 	public static String getArtifactTableRawBytes()
 	{
-		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
+		Properties properties = PropertyLoader.loadProperties(confDir+mnemosyneSite);
 		String toReturn = (String) properties.get("artifactTableRawBytes");
 		return toReturn;
 	}
 
 	public static String getArtifactTableArtifactEntry()
 	{
-		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
+		Properties properties = PropertyLoader.loadProperties(confDir+mnemosyneSite);
 		String toReturn = (String) properties.get("artifactTableArtifactEntry");
 		return toReturn;
 	}
 
 	public static String getBaseNetworkRepositoryName()
 	{
-		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
+		Properties properties = PropertyLoader.loadProperties(confDir+mnemosyneSite);
 		String toReturn = (String) properties.get("baseNetworkTable");
 		return toReturn;
 	}
 
 	public static String getBaseNetworkTableRawBytes()
 	{
-		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
+		Properties properties = PropertyLoader.loadProperties(confDir+mnemosyneSite);
 		String toReturn = (String) properties.get("baseNetworkTableRawBytes");
 		return toReturn;
 	}
 
 	public static String getBaseNetworkTableConfiguration()
 	{
-		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
+		Properties properties = PropertyLoader.loadProperties(confDir+mnemosyneSite);
 		String toReturn = (String) properties.get("baseNetworkTableConfiguration");
 		return toReturn;
 	}
 
 	public static String getBaseNetworkTableError()
 	{
-		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
+		Properties properties = PropertyLoader.loadProperties(confDir+mnemosyneSite);
 		String toReturn = (String) properties.get("baseNetworkTableError");
 		return toReturn;
 	}
 
 	public static String getBaseNetworkTableTrainData()
 	{
-		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
+		Properties properties = PropertyLoader.loadProperties(confDir+mnemosyneSite);
 		String toReturn = (String) properties.get("baseNetworkTableTrainData");
 		return toReturn;
 	}
 
 	public static String getBaseNetworkTableBaseNetwork()
 	{
-		Properties properties = PropertyLoader.loadProperties(mnemosyneSite);
+		Properties properties = PropertyLoader.loadProperties(confDir+mnemosyneSite);
 		String toReturn = (String) properties.get("baseNetworkTableBaseNetwork");
 		return toReturn;
 	}

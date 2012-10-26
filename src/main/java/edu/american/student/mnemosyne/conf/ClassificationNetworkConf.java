@@ -99,6 +99,13 @@ public class ClassificationNetworkConf extends NetworkConf implements java.io.Se
 	 */
 	private double error = .000005;
 	
+	private int inputMax =1;
+	private int outputMax = 1;
+	
+	private long timeout =60000;
+	
+	private int epochTimeout =10000;
+	
 	/**
 	 * Since this is a classification network , clarifying how many categories it is classifying into helps its creation
 	 */
@@ -339,6 +346,46 @@ public class ClassificationNetworkConf extends NetworkConf implements java.io.Se
 	public void setNumberOfCategories(int num)
 	{
 		this.numOfCategories = num;
+	}
+
+	public void setInputMax(int inputMax)
+	{
+		this.inputMax = inputMax;
+	}
+	
+	public int getInputMax()
+	{
+		return this.inputMax;
+	}
+	
+	public void setOutputMax(int outputMax)
+	{
+		this.outputMax = outputMax;
+	}
+	
+	public int getOutputMax()
+	{
+		return this.outputMax;
+	}
+
+	public long getTimeout()
+	{
+		return timeout;
+	}
+	
+	public void setTimeout(long time)
+	{
+		this.timeout = time;
+	}
+
+	public int getEpochTimeout()
+	{
+		return this.epochTimeout;
+	}
+	
+	public void setEpochTimeout(int epochTimeout)
+	{
+		this.epochTimeout = epochTimeout;
 	}
 
 }

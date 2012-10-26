@@ -5,10 +5,14 @@ import java.util.List;
 import java.util.Scanner;
 
 import org.encog.ml.data.MLData;
+import org.encog.ml.data.MLDataSet;
 import org.encog.ml.data.basic.BasicMLData;
+import org.encog.ml.data.basic.BasicMLDataSet;
 
+import edu.american.student.mnemosyne.conf.ClassificationNetworkConf;
 import edu.american.student.mnemosyne.core.exception.ArtifactException;
 import edu.american.student.mnemosyne.core.exception.DataspaceException;
+import edu.american.student.mnemosyne.core.exception.RepositoryException;
 import edu.american.student.mnemosyne.core.model.Artifact;
 import edu.american.student.mnemosyne.core.util.AccumuloForeman;
 import edu.american.student.mnemosyne.core.util.ArtifactForeman;
@@ -41,7 +45,7 @@ public  abstract class MnemosyneAPI
 		return artifacts.get(choice);
 	}
 	
-	public MLData getMLDataInput(List<String> inputFields)
+	public MLData getMLDataInput(ClassificationNetworkConf conf, List<String> inputFields)
 	{
 		ArrayList<double[]> values = new ArrayList<double[]>();
 		int totalSize = 0;
@@ -54,7 +58,7 @@ public  abstract class MnemosyneAPI
 			{
 				if(!gotInput)
 				{
-					double[] input = NNInput.inflate(in.next());
+					double[] input = NNInput.inflate(conf,in.next());
 					totalSize +=input.length;
 					values.add(input);
 				}

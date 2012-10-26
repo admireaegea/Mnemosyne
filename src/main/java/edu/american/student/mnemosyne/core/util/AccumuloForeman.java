@@ -2,6 +2,7 @@ package edu.american.student.mnemosyne.core.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -31,6 +32,7 @@ import org.apache.accumulo.core.security.Authorizations;
 import org.apache.accumulo.core.security.ColumnVisibility;
 import org.apache.hadoop.io.Text;
 import org.encog.neural.networks.BasicNetwork;
+import org.encog.util.obj.SerializeObject;
 
 import edu.american.student.mnemosyne.conf.ClassificationNetworkConf;
 import edu.american.student.mnemosyne.core.exception.RepositoryException;
@@ -426,6 +428,42 @@ public class AccumuloForeman
 		}
 	}
 
+	public ArrayList<InputOutputHolder> getInputOutputHolders(String artifactId) throws RepositoryException
+	{
+		List<Entry<Key, Value>> entries = this.fetchByColumnFamily(AccumuloForeman.getBaseNetworkRepository().baseNetwork(), AccumuloForeman.getBaseNetworkRepository().trainData());
+		ArrayList<InputOutputHolder> pastInputs = new ArrayList<InputOutputHolder>();
+		for (Entry<Key, Value> entry : entries)
+		{
+			Key key = entry.getKey();
+			Text cq = key.getColumnQualifier();
+			try
+			{
+				if (cq.toString().startsWith(artifactId))
+				{
+					Value val = entry.getValue();
+					byte[] arr = val.get();
+					ObjectInputStream objectIn = new ObjectInputStream(new ByteArrayInputStream(arr));
+					InputOutputHolder store = (InputOutputHolder) objectIn.readObject();
+					pastInputs.add(store);
+				}
+			}
+			catch (IOException e)
+			{
+				String gripe = "Could not get this past training input :" + key.toString();
+				log.log(Level.SEVERE, gripe, e);
+				throw new RepositoryException(gripe, e);
+			}
+			catch (ClassNotFoundException e)
+			{
+				String gripe = "Could not inflate this past training input:" + key.toString() + " (Inflated input is not of type InputOutputHolder)";
+				log.log(Level.SEVERE, gripe, e);
+				throw new RepositoryException(gripe, e);
+			}
+
+		}
+		return pastInputs;
+	}
+	
 	public ArrayList<double[][]> getPastTrainingInput(String artifactId) throws RepositoryException
 	{
 		List<Entry<Key, Value>> entries = this.fetchByColumnFamily(AccumuloForeman.getBaseNetworkRepository().baseNetwork(), AccumuloForeman.getBaseNetworkRepository().trainData());
@@ -497,5 +535,27 @@ public class AccumuloForeman
 
 		}
 		return pastOutputs;
+	}
+
+	
+	public void saveNetworkToFile(String fileName,String artifactId) throws RepositoryException
+	{
+		BasicNetwork n =this.inflateNetwork(AccumuloForeman.getBaseNetworkRepositoryName(), AccumuloForeman.getBaseNetworkRepository().baseNetwork(), artifactId);
+		try
+		{
+			SerializeObject.save(new File(fileName), n);
+		}
+		catch (IOException e)
+		{
+			String gripe = "Failed to save a network to a file";
+			log.log(Level.SEVERE,gripe,e);
+			throw new RepositoryException(gripe,e);
+		}
+	
+	}
+	public void assertInputOutputHolder(String artifactId,InputOutputHolder newHolder) throws RepositoryException
+	{
+		addTrainingData(artifactId,  newHolder.getInput(), newHolder.getOutput());
+		
 	}
 }

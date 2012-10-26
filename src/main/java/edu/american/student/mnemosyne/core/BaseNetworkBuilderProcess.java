@@ -95,12 +95,12 @@ public class BaseNetworkBuilderProcess implements MnemosyneProcess
 		public void map(Key ik, Value iv, Context context)
 		{
 			NNMetadata metadata = NNMetadata.inflate(iv.toString(), ik.getRow().toString());
-			int inputNeuronCount = BinaryUtils.toBinary(new double[]
-			{ metadata.getInputMax() }).length;
-			int num = BinaryUtils.toBinary(new double[]
-			{ metadata.getOutputMax() }).length;
+			int inputNeuronCount = BinaryUtils.toBinary(metadata.getInputMax(),new double[]{ metadata.getInputMax()},true).length;
+			int num = BinaryUtils.toBinary(metadata.getOutputMax(),new double[]{ metadata.getOutputMax() },false).length;
 
 			ClassificationNetworkConf conf = new ClassificationNetworkConf();
+			conf.setInputMax(metadata.getInputMax());
+			conf.setOutputMax(metadata.getOutputMax());
 			conf.setInputActivation(null);
 			conf.setInputBias(true);
 			conf.setInputNeuronCount(inputNeuronCount);

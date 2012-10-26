@@ -45,6 +45,7 @@ import edu.american.student.mnemosyne.core.model.Artifact;
 import edu.american.student.mnemosyne.core.util.AccumuloForeman;
 import edu.american.student.mnemosyne.core.util.ClassificationNetwork;
 import edu.american.student.mnemosyne.core.util.HadoopForeman;
+import edu.american.student.mnemosyne.core.util.InputOutputHolder;
 import edu.american.student.mnemosyne.core.util.NNInput;
 import edu.american.student.mnemosyne.core.util.NNOutput;
 /**
@@ -123,9 +124,10 @@ public class TrainProcess implements MnemosyneProcess
 			{
 				log.log(Level.INFO,"Training ...");
 				long start = System.currentTimeMillis();
-				long timeout = 1000 * 60;
-				double[] input = NNInput.inflate(iv.toString());
-				double[] output = NNOutput.inflate(iv.toString());
+				long timeout = baseConf.getTimeout();
+				int epochTimeout = baseConf.getEpochTimeout();
+				double[] input = NNInput.inflate(baseConf,iv.toString());
+				double[] output = NNOutput.inflate(baseConf,iv.toString());
 				MLDataSet trainingSet = null;
 
 				try
@@ -136,7 +138,7 @@ public class TrainProcess implements MnemosyneProcess
 					int epoch = 1;
 
 					error = aForeman.getBaseNetworkError(ik.getRow().toString());
-
+				
 					long elapsed = System.currentTimeMillis() - start;
 					do
 					{
@@ -145,7 +147,7 @@ public class TrainProcess implements MnemosyneProcess
 						log.log(Level.INFO,"Round:" + round + " Epoch #" + epoch + " Error:" + train.getError() + " acceptable error:" + error + " Elapsed:" + elapsed + " Timeout:" + (elapsed > timeout));
 						epoch++;
 					}
-					while (train.getError() > error && (elapsed < timeout));
+					while (train.getError() > error && ((elapsed )< timeout) && epoch < epochTimeout);
 					round++;
 					start = System.currentTimeMillis();
 
@@ -164,32 +166,34 @@ public class TrainProcess implements MnemosyneProcess
 
 		private MLDataSet constructTrainingSet(String artifactId, double[] input, double[] output) throws RepositoryException
 		{
-
-			ArrayList<double[][]> formerIn = aForeman.getPastTrainingInput(artifactId);
-			ArrayList<double[][]> formerOut = aForeman.getPastTrainingOutput(artifactId);
-			aForeman.addTrainingData(artifactId, new double[][]
-			{ input }, new double[][]
-			{ output });
-			double[][] newIn = new double[formerIn.size() + 1][input.length];
-			double[][] newOut = new double[formerOut.size() + 1][output.length];
-			for (double[][] in : formerIn)
+			InputOutputHolder newHolder = new InputOutputHolder(new double[][]{input},new double[][]{output});
+			aForeman.assertInputOutputHolder(artifactId,newHolder);
+			List<InputOutputHolder> holders = aForeman.getInputOutputHolders(artifactId);
+			double[][] newIn = new double[holders.size()][holders.get(0).getInput()[0].length];
+			double[][] newOut = new double[holders.size()][holders.get(0).getOutput()[0].length];
+			//fill in all the new inputs
+			//for every holder, put it into a double[][] for input output
+			for(int i=0;i<holders.size();i++)
 			{
-				for (int i = 0; i < in.length; i++)
+				InputOutputHolder indexed = holders.get(i);
+				double[][] toAdd= indexed.getInput();
+				for(int k=0;k<toAdd.length;k++)
 				{
-					newIn[i] = in[i];
+					for(int j=0;j<toAdd[k].length;j++)
+					{
+						newIn[i][j]=toAdd[k][j];
+					}
+				}
+				
+				double[][] out = indexed.getOutput();
+				for(int k=0;k<out.length;k++)
+				{
+					for(int j=0;j<out[k].length;j++)
+					{
+						newOut[i][j]=out[k][j];
+					}
 				}
 			}
-			newIn[newIn.length - 1] = input;
-
-			for (double[][] out : formerOut)
-			{
-				for (int i = 0; i < out.length; i++)
-				{
-					newOut[i] = out[i];
-				}
-			}
-			newOut[newOut.length - 1] = output;
-			// fill in new arrays
 			MLDataSet trainingSet = new BasicMLDataSet(newIn, newOut);
 			return trainingSet;
 		}

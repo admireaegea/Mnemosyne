@@ -29,7 +29,7 @@ import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import edu.american.student.mnemosyne.conf.HadoopJobConfiguration;
-import edu.american.student.mnemosyne.core.exception.ArtifactException;
+import edu.american.student.mnemosyne.core.exception.DataspaceException;
 import edu.american.student.mnemosyne.core.exception.ProcessException;
 import edu.american.student.mnemosyne.core.framework.MnemosyneProcess;
 import edu.american.student.mnemosyne.core.model.Artifact;
@@ -86,8 +86,9 @@ public class ArtifactBuilderProcess implements MnemosyneProcess
 	/**
 	 * Connect to the ArtifactForman
 	 */
-	public void setup() throws ArtifactException
+	public void setup() throws DataspaceException
 	{
+		aForeman.connect();
 		artifactForeman.connect();
 	}
 
