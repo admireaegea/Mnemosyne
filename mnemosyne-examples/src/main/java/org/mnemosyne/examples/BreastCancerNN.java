@@ -2,6 +2,11 @@ package org.mnemosyne.examples;
 
 import edu.american.student.mnemosyne.core.cli.NNAnalyst;
 
+/**
+ * 
+ * @author cam
+ *
+ */
 public class BreastCancerNN
 {
 
@@ -11,11 +16,14 @@ public class BreastCancerNN
 	 */
 	public static void main(String[] args) throws Exception
 	{
-
-		args = new String[]{""};
-		NNAnalyst analyst = new NNAnalyst(args);
-		
+		deployPseudoDistrubtedSystem();
 	
+	}
+
+	private static void deployPseudoDistrubtedSystem()
+	{
+		// TODO Auto-generated method stub
+		
 	}
 
 }
