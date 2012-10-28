@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.accumulo.core.client.mapreduce.AccumuloInputFormat;
 import org.apache.accumulo.core.client.mapreduce.AccumuloOutputFormat;
@@ -35,6 +37,7 @@ import edu.american.student.mnemosyne.conf.HadoopJobConfiguration;
 import edu.american.student.mnemosyne.core.exception.ArtifactException;
 import edu.american.student.mnemosyne.core.exception.ProcessException;
 import edu.american.student.mnemosyne.core.exception.RepositoryException;
+import edu.american.student.mnemosyne.core.exception.StopMapperException;
 import edu.american.student.mnemosyne.core.framework.MnemosyneProcess;
 import edu.american.student.mnemosyne.core.framework.NNProcessor;
 import edu.american.student.mnemosyne.core.model.Artifact;
@@ -51,9 +54,9 @@ import edu.american.student.mnemosyne.core.util.NNProcessorFactory;
  */
 public class BaseNetworkBuilderProcess implements MnemosyneProcess
 {
-
+	private final static Logger log = Logger.getLogger(BaseNetworkBuilderProcess.class.getName());
 	/**
-	 * For every artifact, Build a bast network in Accumulo
+	 * For every artifact, Build a base network in Accumulo
 	 */
 	public void process() throws ProcessException
 	{
@@ -112,9 +115,9 @@ public class BaseNetworkBuilderProcess implements MnemosyneProcess
 			conf.setOutputActivation(new ActivationSigmoid());
 			conf.setOutputNeuronCount(num);
 
-			conf.setNumberOfCategories(num);
-			conf.setBasicMLInput(getRandomArray(inputNeuronCount));
-			conf.setBasicIdealMLOutput(getRandomArray(inputNeuronCount));
+			conf.setNumberOfCategories(num);//FIXME:This is bogus now
+			conf.setBasicMLInput(this.getRandomArray(inputNeuronCount));//FIXME:This is bogus now
+			conf.setBasicIdealMLOutput(this.getRandomArray(num));//FIXME:This is bogus now
 
 			try
 			{
@@ -123,8 +126,9 @@ public class BaseNetworkBuilderProcess implements MnemosyneProcess
 			}
 			catch (RepositoryException e)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				String gripe = "Access to the Repository Services died";
+				log.log(Level.SEVERE,gripe,e);
+				throw new StopMapperException(gripe,e);
 			}
 
 		}

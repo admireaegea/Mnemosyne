@@ -40,6 +40,7 @@ import edu.american.student.mnemosyne.conf.ClassificationNetworkConf;
 import edu.american.student.mnemosyne.conf.HadoopJobConfiguration;
 import edu.american.student.mnemosyne.core.exception.ProcessException;
 import edu.american.student.mnemosyne.core.exception.RepositoryException;
+import edu.american.student.mnemosyne.core.exception.StopMapperException;
 import edu.american.student.mnemosyne.core.framework.MnemosyneProcess;
 import edu.american.student.mnemosyne.core.model.Artifact;
 import edu.american.student.mnemosyne.core.util.AccumuloForeman;
@@ -48,10 +49,12 @@ import edu.american.student.mnemosyne.core.util.HadoopForeman;
 import edu.american.student.mnemosyne.core.util.InputOutputHolder;
 import edu.american.student.mnemosyne.core.util.NNInput;
 import edu.american.student.mnemosyne.core.util.NNOutput;
+
 /**
  * Process that trains the base network and grows it in parallel
+ * 
  * @author cam
- *
+ * 
  */
 public class TrainProcess implements MnemosyneProcess
 {
@@ -61,9 +64,9 @@ public class TrainProcess implements MnemosyneProcess
 	 */
 	private static int round = 0;
 	private static final Logger log = Logger.getLogger(TrainProcess.class.getName());
+
 	/**
-	 * For every artifact (therefore for every network)
-	 * Call the train mapper
+	 * For every artifact (therefore for every network) Call the train mapper
 	 */
 	public void process() throws ProcessException
 	{
@@ -86,10 +89,12 @@ public class TrainProcess implements MnemosyneProcess
 	}
 
 	/**
-	 * Inflates the base network, trains over the new input and all past input until an acceptable error is hit, or it times out.
-	 * Saves over the base network. 
+	 * Inflates the base network, trains over the new input and all past input
+	 * until an acceptable error is hit, or it times out. Saves over the base
+	 * network.
+	 * 
 	 * @author cam
-	 *
+	 * 
 	 */
 	public static class NNTrainMapper extends Mapper<Key, Value, Writable, Writable>
 	{
@@ -101,96 +106,86 @@ public class TrainProcess implements MnemosyneProcess
 			try
 			{
 				aForeman.connect();
-			}
-			catch (RepositoryException e3)
-			{
-				// TODO Auto-generated catch block
-				e3.printStackTrace();
-			}
-			log.log(Level.INFO,"Grabbing the base network...");
-			BasicNetwork base = null;
-			ClassificationNetworkConf baseConf = null;
-			double error = 1;
-			try
-			{
+
+				log.log(Level.INFO, "Grabbing the base network...");
+				BasicNetwork base = null;
+				ClassificationNetworkConf baseConf = null;
+				double error = 1;
 				base = aForeman.getBaseNetwork(ik.getRow().toString());
 				baseConf = aForeman.getBaseNetworkConf(ik.getRow().toString());
 				error = aForeman.getBaseNetworkError(ik.getRow().toString());
-			}
-			catch (Exception e)
-			{
-			}
-			if (base != null)
-			{
-				log.log(Level.INFO,"Training ...");
-				long start = System.currentTimeMillis();
-				long timeout = baseConf.getTimeout();
-				int epochTimeout = baseConf.getEpochTimeout();
-				double[] input = NNInput.inflate(baseConf,iv.toString());
-				double[] output = NNOutput.inflate(baseConf,iv.toString());
-				MLDataSet trainingSet = null;
-
-				try
+				if (base != null)
 				{
+					log.log(Level.INFO, "Training ...");
+					long start = System.currentTimeMillis();
+					long timeout = baseConf.getTimeout();
+					int epochTimeout = baseConf.getEpochTimeout();
+					double[] input = NNInput.inflate(baseConf, iv.toString());
+					double[] output = NNOutput.inflate(baseConf, iv.toString());
+					MLDataSet trainingSet = null;
+
 					trainingSet = constructTrainingSet(ik.getRow().toString(), input, output);
 					BasicNetwork modified = ClassificationNetwork.addLayerToNetwork(base, baseConf, new BasicLayer(new ActivationSigmoid(), true, baseConf.getNumberOfCategories()));
 					final ResilientPropagation train = new ResilientPropagation(modified, trainingSet);
 					int epoch = 1;
 
 					error = aForeman.getBaseNetworkError(ik.getRow().toString());
-				
+
 					long elapsed = System.currentTimeMillis() - start;
 					do
 					{
 						train.iteration();
 						elapsed = System.currentTimeMillis() - start;
-						log.log(Level.INFO,"Round:" + round + " Epoch #" + epoch + " Error:" + train.getError() + " acceptable error:" + error + " Elapsed:" + elapsed + " Timeout:" + (elapsed > timeout));
+						log.log(Level.INFO, "Round:" + round + " Epoch #" + epoch + " Error:" + train.getError() + " acceptable error:" + error + " Elapsed:" + elapsed + " Timeout:" + (elapsed > timeout));
 						epoch++;
 					}
-					while (train.getError() > error && ((elapsed )< timeout) && epoch < epochTimeout);
+					while (train.getError() > error && ((elapsed) < timeout) && epoch < epochTimeout);
 					round++;
 					start = System.currentTimeMillis();
 
 					aForeman.assertBaseNetwork(modified, ik.getRow().toString(), baseConf);
 					aForeman.assertBaseNetworkError(train.getError(), ik.getRow().toString());
-				}
-				catch (RepositoryException e2)
-				{
-					// TODO Auto-generated catch block
-					e2.printStackTrace();
-				}
 
+				}
+			}
+			catch (RepositoryException e3)
+			{
+				String gripe = "Could not access Repository Services";
+				log.log(Level.SEVERE,gripe,e3);
+				throw new StopMapperException(gripe,e3);
 			}
 
 		}
 
 		private MLDataSet constructTrainingSet(String artifactId, double[] input, double[] output) throws RepositoryException
 		{
-			InputOutputHolder newHolder = new InputOutputHolder(new double[][]{input},new double[][]{output});
-			aForeman.assertInputOutputHolder(artifactId,newHolder);
+			InputOutputHolder newHolder = new InputOutputHolder(new double[][]
+			{ input }, new double[][]
+			{ output });
+			aForeman.assertInputOutputHolder(artifactId, newHolder);
 			List<InputOutputHolder> holders = aForeman.getInputOutputHolders(artifactId);
 			double[][] newIn = new double[holders.size()][holders.get(0).getInput()[0].length];
 			double[][] newOut = new double[holders.size()][holders.get(0).getOutput()[0].length];
-			//fill in all the new inputs
-			//for every holder, put it into a double[][] for input output
-			for(int i=0;i<holders.size();i++)
+			// fill in all the new inputs
+			// for every holder, put it into a double[][] for input output
+			for (int i = 0; i < holders.size(); i++)
 			{
 				InputOutputHolder indexed = holders.get(i);
-				double[][] toAdd= indexed.getInput();
-				for(int k=0;k<toAdd.length;k++)
+				double[][] toAdd = indexed.getInput();
+				for (int k = 0; k < toAdd.length; k++)
 				{
-					for(int j=0;j<toAdd[k].length;j++)
+					for (int j = 0; j < toAdd[k].length; j++)
 					{
-						newIn[i][j]=toAdd[k][j];
+						newIn[i][j] = toAdd[k][j];
 					}
 				}
-				
+
 				double[][] out = indexed.getOutput();
-				for(int k=0;k<out.length;k++)
+				for (int k = 0; k < out.length; k++)
 				{
-					for(int j=0;j<out[k].length;j++)
+					for (int j = 0; j < out[k].length; j++)
 					{
-						newOut[i][j]=out[k][j];
+						newOut[i][j] = out[k][j];
 					}
 				}
 			}

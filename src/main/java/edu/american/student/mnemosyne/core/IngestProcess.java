@@ -18,6 +18,8 @@ package edu.american.student.mnemosyne.core;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
@@ -30,6 +32,7 @@ import org.apache.hadoop.mapreduce.lib.output.NullOutputFormat;
 import edu.american.student.mnemosyne.conf.HadoopJobConfiguration;
 import edu.american.student.mnemosyne.core.exception.ProcessException;
 import edu.american.student.mnemosyne.core.exception.RepositoryException;
+import edu.american.student.mnemosyne.core.exception.StopMapperException;
 import edu.american.student.mnemosyne.core.framework.MnemosyneProcess;
 import edu.american.student.mnemosyne.core.util.AccumuloForeman;
 import edu.american.student.mnemosyne.core.util.ArtifactIdFactory;
@@ -48,6 +51,8 @@ public class IngestProcess implements MnemosyneProcess
 	 */
 	static String uuid;
 	static List<Integer> linesProcessed = new ArrayList<Integer>();
+	static String fileName="";
+	static Logger log = Logger.getLogger(IngestProcess.class.getName());
 	/**
 	 * Multiple files to ingest
 	 */
@@ -60,18 +65,19 @@ public class IngestProcess implements MnemosyneProcess
 		uuid = UUID.randomUUID().toString();
 		aForeman.connect();
 		pathsToProcess = MnemosyneConstants.getAllIngestableFiles();
-
 	}
 
 	/**
 	 * for every path 
 	 * grab every line of the file, and throw it into accumulo
 	 */
+	@SuppressWarnings("static-access")
 	public void process() throws ProcessException
 	{
 		for(Path path: pathsToProcess)
 		{
 			uuid = UUID.randomUUID().toString();	
+			this.fileName = path.getName();
 			HadoopForeman hForeman = new HadoopForeman();
 			HadoopJobConfiguration conf = new HadoopJobConfiguration();
 			conf.setJobName(HadoopJobConfiguration.buildJobName(this.getClass()));
@@ -101,12 +107,14 @@ public class IngestProcess implements MnemosyneProcess
 		{
 			try
 			{
-				aForeman.add(AccumuloForeman.getArtifactRepositoryName(), ArtifactIdFactory.buildArtifactId(uuid), AccumuloForeman.getArtifactRepository().rawBytes(), ik.toString(), iv.toString());
+				aForeman.add(AccumuloForeman.getArtifactRepositoryName(), ArtifactIdFactory.buildArtifactId(uuid,fileName), AccumuloForeman.getArtifactRepository().rawBytes(), ik.toString(), iv.toString());
 			}
 			catch (RepositoryException e)
 			{
-				e.printStackTrace();
-			}
+				String gripe = "Could not access the Repository Services";
+				log.log(Level.SEVERE,gripe,e);
+				throw new StopMapperException(gripe,e);
+			}	
 
 		}
 	}

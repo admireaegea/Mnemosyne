@@ -42,7 +42,11 @@ import edu.american.student.mnemosyne.core.util.MnemosyneAccumuloAdministrator;
 import edu.american.student.mnemosyne.core.util.MnemosyneConstants;
 import edu.american.student.mnemosyne.core.util.NNMetadata;
 import edu.american.student.mnemosyne.core.util.NNOutput;
-
+/**
+ * TODO NEEDS CLEANUP
+ * @author cam
+ *
+ */
 public class NNAnalyst  extends MnemosyneAPI implements CLI
 {
 	public NNAnalyst(String[] args) throws Exception

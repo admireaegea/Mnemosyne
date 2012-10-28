@@ -99,11 +99,24 @@ public class ClassificationNetworkConf extends NetworkConf implements java.io.Se
 	 */
 	private double error = .000005;
 	
+	/**
+	 * The maximum input value (for example, if an input is between 0-10000, the max input is 10000
+	 */
 	private int inputMax =1;
+	
+	/**
+	 * The maximum output value(for example, if an output is betwenn 0-10000, the max output is 10000
+	 */
 	private int outputMax = 1;
 	
+	/**
+	 * The amount of time to elapse before a training session times out (default: 1 minute)
+	 */
 	private long timeout =60000;
 	
+	/**
+	 * The amount of epochs before a training session times out (default:10000 epochs)
+	 */
 	private int epochTimeout =10000;
 	
 	/**
