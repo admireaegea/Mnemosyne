@@ -33,8 +33,8 @@ import edu.american.student.mnemosyne.core.exception.DataspaceException;
 import edu.american.student.mnemosyne.core.exception.ProcessException;
 import edu.american.student.mnemosyne.core.framework.MnemosyneProcess;
 import edu.american.student.mnemosyne.core.model.Artifact;
-import edu.american.student.mnemosyne.core.util.AccumuloForeman;
-import edu.american.student.mnemosyne.core.util.HadoopForeman;
+import edu.american.student.mnemosyne.core.util.foreman.AccumuloForeman;
+import edu.american.student.mnemosyne.core.util.foreman.HadoopForeman;
 
 /**
  * This process builds and persists artifacts gathered from the IngestProcess in the ARTIFACT_TABLE

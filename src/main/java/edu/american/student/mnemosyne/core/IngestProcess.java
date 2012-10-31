@@ -34,10 +34,10 @@ import edu.american.student.mnemosyne.core.exception.ProcessException;
 import edu.american.student.mnemosyne.core.exception.RepositoryException;
 import edu.american.student.mnemosyne.core.exception.StopMapperException;
 import edu.american.student.mnemosyne.core.framework.MnemosyneProcess;
-import edu.american.student.mnemosyne.core.util.AccumuloForeman;
-import edu.american.student.mnemosyne.core.util.ArtifactIdFactory;
-import edu.american.student.mnemosyne.core.util.HadoopForeman;
 import edu.american.student.mnemosyne.core.util.MnemosyneConstants;
+import edu.american.student.mnemosyne.core.util.factory.ArtifactIdFactory;
+import edu.american.student.mnemosyne.core.util.foreman.AccumuloForeman;
+import edu.american.student.mnemosyne.core.util.foreman.HadoopForeman;
 
 /**
  * Ingests an XML file in Mnemosyne XML and asserts its inputs and outputs into the dataspace

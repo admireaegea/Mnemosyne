@@ -31,14 +31,4 @@
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
-	<build>
-		<arguments>
-			<argument>PENIS=${my.path}</argument>
-		</arguments>
-		<resources>
-			<resource>
-				<directory>../Mnemosyne/src/main/resources/</directory>
-			</resource>
-		</resources>
-	</build>
 </project>

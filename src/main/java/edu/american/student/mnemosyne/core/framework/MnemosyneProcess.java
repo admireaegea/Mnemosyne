@@ -16,8 +16,8 @@
 package edu.american.student.mnemosyne.core.framework;
 
 import edu.american.student.mnemosyne.core.exception.ProcessException;
-import edu.american.student.mnemosyne.core.util.AccumuloForeman;
-import edu.american.student.mnemosyne.core.util.ArtifactForeman;
+import edu.american.student.mnemosyne.core.util.foreman.AccumuloForeman;
+import edu.american.student.mnemosyne.core.util.foreman.ArtifactForeman;
 
 public interface MnemosyneProcess
 {

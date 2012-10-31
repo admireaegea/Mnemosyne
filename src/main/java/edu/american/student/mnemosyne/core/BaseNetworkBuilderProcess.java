@@ -41,11 +41,11 @@ import edu.american.student.mnemosyne.core.exception.StopMapperException;
 import edu.american.student.mnemosyne.core.framework.MnemosyneProcess;
 import edu.american.student.mnemosyne.core.framework.NNProcessor;
 import edu.american.student.mnemosyne.core.model.Artifact;
-import edu.american.student.mnemosyne.core.util.AccumuloForeman;
+import edu.american.student.mnemosyne.core.model.NNMetadata;
 import edu.american.student.mnemosyne.core.util.BinaryUtils;
-import edu.american.student.mnemosyne.core.util.HadoopForeman;
-import edu.american.student.mnemosyne.core.util.NNMetadata;
-import edu.american.student.mnemosyne.core.util.NNProcessorFactory;
+import edu.american.student.mnemosyne.core.util.factory.NNProcessorFactory;
+import edu.american.student.mnemosyne.core.util.foreman.AccumuloForeman;
+import edu.american.student.mnemosyne.core.util.foreman.HadoopForeman;
 
 /**
  * This process constructs a base neural network for every artifact

@@ -26,9 +26,9 @@ import edu.american.student.mnemosyne.conf.ClassificationNetworkConf;
 import edu.american.student.mnemosyne.core.exception.ArtifactException;
 import edu.american.student.mnemosyne.core.exception.DataspaceException;
 import edu.american.student.mnemosyne.core.model.Artifact;
-import edu.american.student.mnemosyne.core.util.AccumuloForeman;
-import edu.american.student.mnemosyne.core.util.ArtifactForeman;
-import edu.american.student.mnemosyne.core.util.NNInput;
+import edu.american.student.mnemosyne.core.model.NNInput;
+import edu.american.student.mnemosyne.core.util.foreman.AccumuloForeman;
+import edu.american.student.mnemosyne.core.util.foreman.ArtifactForeman;
 
 public  abstract class MnemosyneAPI
 {

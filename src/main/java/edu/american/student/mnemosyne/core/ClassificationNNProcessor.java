@@ -19,9 +19,9 @@ import org.encog.neural.networks.BasicNetwork;
 
 import edu.american.student.mnemosyne.conf.ClassificationNetworkConf;
 import edu.american.student.mnemosyne.core.exception.RepositoryException;
+import edu.american.student.mnemosyne.core.framework.ClassificationNetwork;
 import edu.american.student.mnemosyne.core.framework.NNProcessor;
-import edu.american.student.mnemosyne.core.util.AccumuloForeman;
-import edu.american.student.mnemosyne.core.util.ClassificationNetwork;
+import edu.american.student.mnemosyne.core.util.foreman.AccumuloForeman;
 
 /**
  * 

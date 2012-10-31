@@ -13,8 +13,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import edu.american.student.mnemosyne.core.util.AccumuloForeman;
-import edu.american.student.mnemosyne.core.util.MnemosyneAccumuloAdministrator;
+import edu.american.student.mnemosyne.core.util.foreman.AccumuloForeman;
+import edu.american.student.mnemosyne.core.util.foreman.MnemosyneAccumuloAdministrator;
 import edu.american.student.mnemosyne.util.TestHelper;
 
 public class IngestProcessTest

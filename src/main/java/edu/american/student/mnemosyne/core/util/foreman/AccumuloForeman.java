@@ -13,7 +13,7 @@
  * limitations under the License.
  *
  */
-package edu.american.student.mnemosyne.core.util;
+package edu.american.student.mnemosyne.core.util.foreman;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -53,8 +53,10 @@ import edu.american.student.mnemosyne.conf.ClassificationNetworkConf;
 import edu.american.student.mnemosyne.core.exception.RepositoryException;
 import edu.american.student.mnemosyne.core.framework.ArtifactRepository;
 import edu.american.student.mnemosyne.core.framework.BaseNetworkRepository;
+import edu.american.student.mnemosyne.core.util.InputOutputHolder;
+import edu.american.student.mnemosyne.core.util.MnemosyneConstants;
 
-public class AccumuloForeman
+public class AccumuloForeman implements Foreman
 {
 
 	private Connector conn;

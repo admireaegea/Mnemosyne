@@ -13,9 +13,10 @@
  * limitations under the License.
  *
  */
-package edu.american.student.mnemosyne.core.util;
+package edu.american.student.mnemosyne.core.model;
 
 import edu.american.student.mnemosyne.conf.ClassificationNetworkConf;
+import edu.american.student.mnemosyne.core.util.BinaryUtils;
 
 
 public class NNInput

@@ -35,13 +35,13 @@ import edu.american.student.mnemosyne.core.IngestProcess;
 import edu.american.student.mnemosyne.core.TrainProcess;
 import edu.american.student.mnemosyne.core.exception.DataspaceException;
 import edu.american.student.mnemosyne.core.framework.MnemosyneAPI;
-import edu.american.student.mnemosyne.core.util.AccumuloForeman;
+import edu.american.student.mnemosyne.core.model.NNMetadata;
+import edu.american.student.mnemosyne.core.model.NNOutput;
 import edu.american.student.mnemosyne.core.util.CLIConstants;
 import edu.american.student.mnemosyne.core.util.InputOutputHolder;
-import edu.american.student.mnemosyne.core.util.MnemosyneAccumuloAdministrator;
 import edu.american.student.mnemosyne.core.util.MnemosyneConstants;
-import edu.american.student.mnemosyne.core.util.NNMetadata;
-import edu.american.student.mnemosyne.core.util.NNOutput;
+import edu.american.student.mnemosyne.core.util.foreman.AccumuloForeman;
+import edu.american.student.mnemosyne.core.util.foreman.MnemosyneAccumuloAdministrator;
 /**
  * TODO NEEDS CLEANUP
  * @author cam

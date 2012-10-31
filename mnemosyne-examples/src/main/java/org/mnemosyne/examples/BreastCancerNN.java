@@ -1,5 +1,7 @@
 package org.mnemosyne.examples;
 
+import org.mnemosyne.examples.util.Deploy;
+
 import edu.american.student.mnemosyne.core.cli.NNAnalyst;
 
 /**
@@ -16,14 +18,18 @@ public class BreastCancerNN
 	 */
 	public static void main(String[] args) throws Exception
 	{
-		deployPseudoDistrubtedSystem();
-	
-	}
-
-	private static void deployPseudoDistrubtedSystem()
-	{
-		// TODO Auto-generated method stub
+		Deploy.deployPsuedoDistrubtedSystem();
+		String[] setup = {"-setup"};
+		NNAnalyst analyst = new NNAnalyst(setup);
+		String[] ingest = {"-ingest"};
+		analyst = new NNAnalyst(ingest);
+		String[] build = {"-build"};
+		analyst = new NNAnalyst(build);
+		String[] construct = {"-construct"};
 		
+		String[] train = {"-train"};
+		
+	
 	}
 
 }

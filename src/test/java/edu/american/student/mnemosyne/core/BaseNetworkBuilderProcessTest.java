@@ -13,9 +13,9 @@ import org.junit.Test;
 
 import edu.american.student.mnemosyne.conf.ClassificationNetworkConf;
 import edu.american.student.mnemosyne.core.model.Artifact;
-import edu.american.student.mnemosyne.core.util.AccumuloForeman;
-import edu.american.student.mnemosyne.core.util.ArtifactForeman;
-import edu.american.student.mnemosyne.core.util.MnemosyneAccumuloAdministrator;
+import edu.american.student.mnemosyne.core.util.foreman.AccumuloForeman;
+import edu.american.student.mnemosyne.core.util.foreman.ArtifactForeman;
+import edu.american.student.mnemosyne.core.util.foreman.MnemosyneAccumuloAdministrator;
 import edu.american.student.mnemosyne.util.TestHelper;
 
 public class BaseNetworkBuilderProcessTest

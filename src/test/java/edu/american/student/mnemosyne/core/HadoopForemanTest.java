@@ -18,9 +18,9 @@ import org.junit.Test;
 
 import edu.american.student.mnemosyne.conf.HadoopJobConfiguration;
 import edu.american.student.mnemosyne.core.exception.HadoopException;
-import edu.american.student.mnemosyne.core.util.AccumuloForeman;
-import edu.american.student.mnemosyne.core.util.HadoopForeman;
-import edu.american.student.mnemosyne.core.util.MnemosyneAccumuloAdministrator;
+import edu.american.student.mnemosyne.core.util.foreman.AccumuloForeman;
+import edu.american.student.mnemosyne.core.util.foreman.HadoopForeman;
+import edu.american.student.mnemosyne.core.util.foreman.MnemosyneAccumuloAdministrator;
 
 public class HadoopForemanTest
 {

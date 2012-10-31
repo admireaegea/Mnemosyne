@@ -13,7 +13,7 @@
  * limitations under the License.
  *
  */
-package edu.american.student.mnemosyne.core.util;
+package edu.american.student.mnemosyne.core.util.foreman;
 
 import edu.american.student.mnemosyne.core.exception.RepositoryException;
 

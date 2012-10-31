@@ -119,19 +119,19 @@ public class Artifact
 		}
 		catch (IOException e)
 		{
-			String gripe = "Could not parse artifact XML";
+			String gripe = "Could not parse artifact XML ";
 			log.log(Level.SEVERE, gripe,e);
 			throw new ArtifactException(gripe,e);
 		}
 		catch (ParserConfigurationException e)
 		{
-			String gripe = "Could not parse artifact XML";
+			String gripe = "Could not parse artifact XML ";
 			log.log(Level.SEVERE, gripe,e);
 			throw new ArtifactException(gripe,e);
 		}
 		catch (SAXException e)
 		{
-			String gripe = "Could not parse artifact XML";
+			String gripe = "Could not parse artifact XML ";
 			log.log(Level.SEVERE, gripe,e);
 			throw new ArtifactException(gripe,e);
 		}

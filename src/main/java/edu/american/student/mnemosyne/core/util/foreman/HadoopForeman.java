@@ -13,7 +13,7 @@
  * limitations under the License.
  *
  */
-package edu.american.student.mnemosyne.core.util;
+package edu.american.student.mnemosyne.core.util.foreman;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -30,6 +30,7 @@ import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 
 import edu.american.student.mnemosyne.conf.HadoopJobConfiguration;
 import edu.american.student.mnemosyne.core.exception.HadoopException;
+import edu.american.student.mnemosyne.core.util.MnemosyneConstants;
 
 public class HadoopForeman
 {

@@ -41,14 +41,14 @@ import edu.american.student.mnemosyne.conf.HadoopJobConfiguration;
 import edu.american.student.mnemosyne.core.exception.ProcessException;
 import edu.american.student.mnemosyne.core.exception.RepositoryException;
 import edu.american.student.mnemosyne.core.exception.StopMapperException;
+import edu.american.student.mnemosyne.core.framework.ClassificationNetwork;
 import edu.american.student.mnemosyne.core.framework.MnemosyneProcess;
 import edu.american.student.mnemosyne.core.model.Artifact;
-import edu.american.student.mnemosyne.core.util.AccumuloForeman;
-import edu.american.student.mnemosyne.core.util.ClassificationNetwork;
-import edu.american.student.mnemosyne.core.util.HadoopForeman;
+import edu.american.student.mnemosyne.core.model.NNInput;
+import edu.american.student.mnemosyne.core.model.NNOutput;
 import edu.american.student.mnemosyne.core.util.InputOutputHolder;
-import edu.american.student.mnemosyne.core.util.NNInput;
-import edu.american.student.mnemosyne.core.util.NNOutput;
+import edu.american.student.mnemosyne.core.util.foreman.AccumuloForeman;
+import edu.american.student.mnemosyne.core.util.foreman.HadoopForeman;
 
 /**
  * Process that trains the base network and grows it in parallel
