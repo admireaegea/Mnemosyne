@@ -26,8 +26,11 @@ public class BreastCancerNN
 		String[] build = {"-build"};
 		analyst = new NNAnalyst(build);
 		String[] construct = {"-construct"};
-		
+		analyst = new NNAnalyst(construct);
 		String[] train = {"-train"};
+		analyst = new NNAnalyst(train);
+		
+		
 		
 	
 	}

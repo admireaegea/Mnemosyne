@@ -23,6 +23,7 @@ public class ArtifactRepository implements AccumuloTable
 	private String repositoryName = MnemosyneConstants.getArtifactTableName();
 	private String rawBytes = MnemosyneConstants.getArtifactTableRawBytes();
 	private String artifactEntry = MnemosyneConstants.getArtifactTableArtifactEntry();
+	private String verifyEntry = MnemosyneConstants.getArtifactTableVerifyEntry();
 	
 	@Override
 	public String toString()
@@ -38,5 +39,10 @@ public class ArtifactRepository implements AccumuloTable
 	public String artifactEntry()
 	{
 		return artifactEntry;
+	}
+
+	public String verifyEntry()
+	{
+		return verifyEntry;
 	}
 }

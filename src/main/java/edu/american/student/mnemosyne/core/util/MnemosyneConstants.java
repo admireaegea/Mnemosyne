@@ -228,4 +228,11 @@ public class MnemosyneConstants
 		String toReturn = (String) properties.get("baseNetworkTableBaseNetwork");
 		return toReturn;
 	}
+
+	public static String getArtifactTableVerifyEntry()
+	{
+		Properties properties = PropertyLoader.loadProperties(confDir+mnemosyneSite);
+		String toReturn = (String) properties.get("artifactTableVerifyEntry");
+		return toReturn;
+	}
 }

@@ -38,6 +38,7 @@ import org.encog.neural.networks.training.propagation.resilient.ResilientPropaga
 
 import edu.american.student.mnemosyne.conf.ClassificationNetworkConf;
 import edu.american.student.mnemosyne.conf.HadoopJobConfiguration;
+import edu.american.student.mnemosyne.core.exception.DataspaceException;
 import edu.american.student.mnemosyne.core.exception.ProcessException;
 import edu.american.student.mnemosyne.core.exception.RepositoryException;
 import edu.american.student.mnemosyne.core.exception.StopMapperException;
@@ -49,6 +50,7 @@ import edu.american.student.mnemosyne.core.model.NNOutput;
 import edu.american.student.mnemosyne.core.util.InputOutputHolder;
 import edu.american.student.mnemosyne.core.util.foreman.AccumuloForeman;
 import edu.american.student.mnemosyne.core.util.foreman.HadoopForeman;
+import edu.american.student.mnemosyne.core.util.foreman.TrainForeman;
 
 /**
  * Process that trains the base network and grows it in parallel
@@ -99,14 +101,15 @@ public class TrainProcess implements MnemosyneProcess
 	public static class NNTrainMapper extends Mapper<Key, Value, Writable, Writable>
 	{
 		private AccumuloForeman aForeman = new AccumuloForeman();
-
+		private TrainForeman tForeman = new TrainForeman();
 		@Override
 		public void map(Key ik, Value iv, Context context)
 		{
 			try
 			{
 				aForeman.connect();
-
+				tForeman.connect();
+				
 				log.log(Level.INFO, "Grabbing the base network...");
 				BasicNetwork base = null;
 				ClassificationNetworkConf baseConf = null;
@@ -114,7 +117,14 @@ public class TrainProcess implements MnemosyneProcess
 				base = aForeman.getBaseNetwork(ik.getRow().toString());
 				baseConf = aForeman.getBaseNetworkConf(ik.getRow().toString());
 				error = aForeman.getBaseNetworkError(ik.getRow().toString());
-				if (base != null)
+				if(round % 2 ==1)
+				{
+					double[] input = NNInput.inflate(baseConf, iv.toString());
+					double[] output = NNOutput.inflate(baseConf, iv.toString());
+					tForeman.register(ik.getRow().toString(),input,output);
+					round++;
+				}
+				else if (base != null)
 				{
 					log.log(Level.INFO, "Training ...");
 					long start = System.currentTimeMillis();
@@ -148,12 +158,13 @@ public class TrainProcess implements MnemosyneProcess
 
 				}
 			}
-			catch (RepositoryException e3)
+			catch (DataspaceException e3)
 			{
 				String gripe = "Could not access Repository Services";
 				log.log(Level.SEVERE,gripe,e3);
 				throw new StopMapperException(gripe,e3);
 			}
+
 
 		}
 
