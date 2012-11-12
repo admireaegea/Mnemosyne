@@ -33,6 +33,7 @@ import edu.american.student.mnemosyne.core.ArtifactBuilderProcess;
 import edu.american.student.mnemosyne.core.BaseNetworkBuilderProcess;
 import edu.american.student.mnemosyne.core.IngestProcess;
 import edu.american.student.mnemosyne.core.TrainProcess;
+import edu.american.student.mnemosyne.core.VerifyProcess;
 import edu.american.student.mnemosyne.core.exception.DataspaceException;
 import edu.american.student.mnemosyne.core.framework.MnemosyneAPI;
 import edu.american.student.mnemosyne.core.model.NNMetadata;
@@ -66,6 +67,7 @@ public class NNAnalyst  extends MnemosyneAPI implements CLI
 		options.addOption(CLIConstants.ERROR.getTitle(),false,"Compute the error of this network");
 		options.addOption(CLIConstants.SAVE.getTitle(),false,"Save a NN");
 		options.addOption(CLIConstants.INFLATE.getTitle(), true, "Inflate a NN");
+		options.addOption(CLIConstants.VERIFY.getTitle(),false,"Use the train foreman to verify the neural network");
 		Option help = new Option( "help", "print this message" );
 		options.addOption(help);
 		CommandLine cmd = posix.parse(options, args	);
@@ -137,6 +139,12 @@ public class NNAnalyst  extends MnemosyneAPI implements CLI
 			String[] cmdArgs = cmd.getArgs();
 			System.out.println(cmdArgs.length);
 			//aForeman.saveNetwork(AccumuloForeman.getBaseNetworkRepositoryName(), AccumuloForeman.getBaseNetworkRepository().baseNetwork(), artifactId, network, conf)
+		}
+		else if (cmd.hasOption(CLIConstants.VERIFY.getTitle()))
+		{
+			VerifyProcess pro  = new VerifyProcess();
+			pro.setup();
+			pro.process();
 		}
 		else
 		{

@@ -1,1 +1,2 @@
-This project will be stable very ...very... verryyyy soon. Im working on all the examples now so you lovely people can use this system :D -Cam October 28 2012
+Update: November 12 2012 - Making tons of Examples with fancy graphs... The project is stable, but not documented
+-Cam

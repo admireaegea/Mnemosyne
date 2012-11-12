@@ -18,17 +18,18 @@ public class BreastCancerNN
 	 */
 	public static void main(String[] args) throws Exception
 	{
-		Deploy.deployPsuedoDistrubtedSystem();
-		String[] setup = {"-setup"};
-		NNAnalyst analyst = new NNAnalyst(setup);
-		String[] ingest = {"-ingest"};
-		analyst = new NNAnalyst(ingest);
-		String[] build = {"-build"};
-		analyst = new NNAnalyst(build);
-		String[] construct = {"-construct"};
-		analyst = new NNAnalyst(construct);
-		String[] train = {"-train"};
-		analyst = new NNAnalyst(train);
+//		Deploy.deployPsuedoDistrubtedSystem();
+//		String[] setup = {"-setup"};
+//		NNAnalyst analyst = new NNAnalyst(setup);
+//		String[] ingest = {"-ingest"};
+//		analyst = new NNAnalyst(ingest);
+//		String[] build = {"-build"};
+//		analyst = new NNAnalyst(build);
+//		String[] construct = {"-construct"};
+//		analyst = new NNAnalyst(construct);
+//		String[] train = {"-train"};
+//		analyst = new NNAnalyst(train);
+	NNAnalyst	analyst = new NNAnalyst(new String[]{"-verify"});
 		
 		
 		

@@ -26,7 +26,8 @@ public enum CLIConstants
 	ERROR("calculateError"),
 	SAVE("save"),
 	INFLATE("inflate"),
-	INGEST("ingest");
+	INGEST("ingest"), 
+	VERIFY("verify");
 	
 	String title;
 	CLIConstants(String title)
