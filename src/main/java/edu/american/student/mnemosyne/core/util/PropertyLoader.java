@@ -48,7 +48,12 @@ public abstract class PropertyLoader
 
 			if (LOAD_AS_RESOURCE_BUNDLE)
 			{
-				name = name.replace('/', '.');
+				name = name.replace('.', '/');
+				if (!name.endsWith(SUFFIX))
+				{
+					name = name.concat(SUFFIX);
+					System.out.println(name);
+				}
 				// Throws MissingResourceException on lookup failures:
 				final ResourceBundle rb = ResourceBundle.getBundle(name, Locale.getDefault(), loader);
 
@@ -64,9 +69,12 @@ public abstract class PropertyLoader
 			else
 			{
 				name = name.replace('.', '/');
-
+				
 				if (!name.endsWith(SUFFIX))
+				{
 					name = name.concat(SUFFIX);
+					System.out.println(name);
+				}
 
 				// Returns null on lookup failures:
 				in = loader.getResourceAsStream(name);
@@ -74,6 +82,10 @@ public abstract class PropertyLoader
 				{
 					result = new Properties();
 					result.load(in); // Can throw IOException
+				}
+				else
+				{
+					System.out.println(in);
 				}
 			}
 		}

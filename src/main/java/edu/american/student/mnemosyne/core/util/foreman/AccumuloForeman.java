@@ -50,9 +50,11 @@ import org.encog.neural.networks.BasicNetwork;
 import org.encog.util.obj.SerializeObject;
 
 import edu.american.student.mnemosyne.conf.ClassificationNetworkConf;
+import edu.american.student.mnemosyne.conf.CongressNetworkConf;
 import edu.american.student.mnemosyne.core.exception.RepositoryException;
 import edu.american.student.mnemosyne.core.framework.ArtifactRepository;
 import edu.american.student.mnemosyne.core.framework.BaseNetworkRepository;
+import edu.american.student.mnemosyne.core.model.Neuron;
 import edu.american.student.mnemosyne.core.util.InputOutputHolder;
 import edu.american.student.mnemosyne.core.util.MnemosyneConstants;
 
@@ -573,6 +575,12 @@ public class AccumuloForeman implements Foreman
 	public void assertInputOutputHolder(String artifactId,InputOutputHolder newHolder) throws RepositoryException
 	{
 		addTrainingData(artifactId,  newHolder.getInput(), newHolder.getOutput());
+		
+	}
+
+	public void assertCongress(List<Neuron> neuronsCreated, String artifactId, CongressNetworkConf conf)
+	{
+		// TODO Auto-generated method stub
 		
 	}
 }

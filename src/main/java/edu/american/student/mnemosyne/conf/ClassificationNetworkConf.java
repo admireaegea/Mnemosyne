@@ -16,7 +16,7 @@
 package edu.american.student.mnemosyne.conf;
 
 import org.encog.engine.network.activation.ActivationFunction;
-import org.encog.engine.network.activation.ActivationSigmoid;
+import org.encog.engine.network.activation.ActivationLinear;
 
 /**
  * An object to hold all the info to build a classification network
@@ -38,15 +38,15 @@ public class ClassificationNetworkConf extends NetworkConf implements java.io.Se
 	
 	/**
 	 * Defines an Activation node for the initial hidden layer. It is not common for a hidden layer to have
-	 * NO Activation, so by default, we use ActivationSigmoid
+	 * NO Activation, so by default, we use ActivationLinear
 	 */
-	private ActivationFunction hiddenActivation = new ActivationSigmoid();
+	private ActivationFunction hiddenActivation = new ActivationLinear();
 	
 	/**
 	 * Defines an Activation node for the output layer. Usually, but not always, an output layer has
-	 * an Activation, so by default, we use ActivationSigmoid
+	 * an Activation, so by default, we use ActivationLinear
 	 */
-	private ActivationFunction outputActivation = new ActivationSigmoid();
+	private ActivationFunction outputActivation = new ActivationLinear();
 	
 	/**
 	 * Does the input layer have a bias node? It is common for it to. 

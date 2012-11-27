@@ -13,12 +13,16 @@ import org.apache.accumulo.core.util.Pair;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.Mapper.Context;
+import org.encog.ml.data.MLData;
+import org.encog.ml.data.basic.BasicMLData;
+import org.encog.neural.networks.BasicNetwork;
 
 import edu.american.student.mnemosyne.conf.HadoopJobConfiguration;
 import edu.american.student.mnemosyne.core.exception.ProcessException;
+import edu.american.student.mnemosyne.core.exception.RepositoryException;
 import edu.american.student.mnemosyne.core.framework.MnemosyneProcess;
 import edu.american.student.mnemosyne.core.model.Artifact;
+import edu.american.student.mnemosyne.core.util.MnemosyneConstants;
 import edu.american.student.mnemosyne.core.util.foreman.AccumuloForeman;
 import edu.american.student.mnemosyne.core.util.foreman.HadoopForeman;
 
@@ -48,7 +52,7 @@ public class VerifyProcess implements MnemosyneProcess
 
 	public void setup() throws ProcessException
 	{
-		// TODO Auto-generated method stub
+		aForeman.connect();
 		
 	}
 	
@@ -57,7 +61,74 @@ public class VerifyProcess implements MnemosyneProcess
 		@Override
 		public void map(Key ik, Value iv, Context context)
 		{
-			System.out.println(ik.toString()+" "+iv.toString());
+			//inflate the appropriate NN
+			//this is the ArtifactId
+			ik.getRow().toString();
+			//VERIFY_ENTRY
+			ik.getColumnFamily().toString();
+			//timestamp
+			ik.getColumnQualifier().toString();
+			
+			//input | output
+			String inOut = iv.toString();
+			
+			double[] input = getInput(inOut);
+			System.out.println("FOR INPUT:");
+			for(double in: input)
+			{
+				System.out.print(in+" ");
+			}
+			System.out.println();
+			double output = getOutput(inOut);
+			
+			try
+			{
+				BasicNetwork ntw = aForeman.getBaseNetwork(ik.getRow().toString());
+				System.out.println("LY COUNT:"+ntw.getLayerCount());
+				MLData out = ntw.compute(new BasicMLData(input));
+				double[] expected = out.getData();
+				
+				for(double expect: expected)
+				{
+					System.out.print(expect+" ");
+				}
+				System.out.println();
+				System.out.println(" Expected:"+output);
+			}
+			catch (RepositoryException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+	
+			//use input/output to get result
+			//save result
+			
+		}
+
+		private double getOutput(String inOut)
+		{
+			String value = inOut.split("\\|")[1];
+			String[] outs = value.split(",");
+			String binary ="";
+			for(String out: outs)
+			{
+				binary+=(int)Double.parseDouble(out)+"";
+			}
+			int toReturn = Integer.parseInt(binary,2);
+			return toReturn;
+		}
+
+		private double[] getInput(String inOut)
+		{
+			String[] ins = inOut.split("\\|")[0].split(",");
+			double[] toReturn = new double[ins.length];
+			for(int i=0;i<toReturn.length;i++)
+			{
+				toReturn[i]=Double.parseDouble(ins[i]);
+			}
+			return toReturn;
 		}
 	}
 

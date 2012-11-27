@@ -2,7 +2,9 @@ package edu.american.student.mnemosyne.util;
 
 import edu.american.student.mnemosyne.core.ArtifactBuilderProcess;
 import edu.american.student.mnemosyne.core.BaseNetworkBuilderProcess;
+import edu.american.student.mnemosyne.core.CongressBuilderProcess;
 import edu.american.student.mnemosyne.core.IngestProcess;
+import edu.american.student.mnemosyne.core.TrainProcess;
 
 public class TestHelper
 {
@@ -27,5 +29,27 @@ public class TestHelper
 		ArtifactBuilderProcess pro = new ArtifactBuilderProcess();
 		pro.setup();
 		pro.process();
+	}
+
+	public static void trainNetworks() throws Exception
+	{
+		TrainProcess pro = new TrainProcess();
+		pro.setup();
+		pro.process();
+		
+	}
+
+	public static void constructCongress() throws Exception
+	{
+		CongressBuilderProcess pro = new CongressBuilderProcess();
+		pro.setup();
+		pro.process();
+		
+	}
+
+	public static void trainCongress()
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -29,7 +29,7 @@ public class BreastCancerNN
 //		analyst = new NNAnalyst(construct);
 //		String[] train = {"-train"};
 //		analyst = new NNAnalyst(train);
-	NNAnalyst	analyst = new NNAnalyst(new String[]{"-verify"});
+		NNAnalyst analyst = new NNAnalyst(new String[]{"-verify"});
 		
 		
 		

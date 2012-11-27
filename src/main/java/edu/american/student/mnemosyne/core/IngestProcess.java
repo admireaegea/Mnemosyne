@@ -62,7 +62,6 @@ public class IngestProcess implements MnemosyneProcess
  	*/
 	public void setup() throws ProcessException
 	{
-		uuid = UUID.randomUUID().toString();
 		aForeman.connect();
 		pathsToProcess = MnemosyneConstants.getAllIngestableFiles();
 	}

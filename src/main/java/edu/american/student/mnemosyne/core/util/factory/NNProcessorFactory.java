@@ -16,8 +16,10 @@
 package edu.american.student.mnemosyne.core.util.factory;
 
 import edu.american.student.mnemosyne.conf.ClassificationNetworkConf;
+import edu.american.student.mnemosyne.conf.CongressNetworkConf;
 import edu.american.student.mnemosyne.conf.NetworkConf;
 import edu.american.student.mnemosyne.core.ClassificationNNProcessor;
+import edu.american.student.mnemosyne.core.CongressNNProcessor;
 import edu.american.student.mnemosyne.core.exception.RepositoryException;
 import edu.american.student.mnemosyne.core.framework.NNProcessor;
 
@@ -29,6 +31,10 @@ public class NNProcessorFactory
 		if(conf instanceof ClassificationNetworkConf)
 		{
 			return new ClassificationNNProcessor((ClassificationNetworkConf)conf);
+		}
+		else if (conf instanceof CongressNetworkConf)
+		{
+			return new CongressNNProcessor((CongressNetworkConf)conf);
 		}
 		
 		return null;

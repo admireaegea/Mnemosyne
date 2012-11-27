@@ -61,7 +61,7 @@ public class ClassificationNetworkUtilTest
 			System.out.println(artifact.getArtifactId());
 			BasicNetwork network =aForeman.getBaseNetwork(artifact.getArtifactId());
 			ClassificationNetworkConf conf= aForeman.getBaseNetworkConf(artifact.getArtifactId());
-			BasicNetwork networkPrime = ClassificationNetwork.addLayerToNetwork(network,conf,new BasicLayer(new ActivationSigmoid(),true,conf.getNumberOfCategories()));
+			BasicNetwork networkPrime = ClassificationNetwork.addLayerToNetwork(network,conf,new BasicLayer(new ActivationSigmoid(),true,conf.getHiddenNeuronCount()));
 			assertNotNull(networkPrime);
 		}
 	}

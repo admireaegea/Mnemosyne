@@ -29,7 +29,7 @@ import org.apache.accumulo.core.util.Pair;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapreduce.Mapper;
-import org.encog.engine.network.activation.ActivationSigmoid;
+import org.encog.engine.network.activation.ActivationLinear;
 import org.encog.ml.data.MLDataSet;
 import org.encog.ml.data.basic.BasicMLDataSet;
 import org.encog.neural.networks.BasicNetwork;
@@ -135,7 +135,7 @@ public class TrainProcess implements MnemosyneProcess
 					MLDataSet trainingSet = null;
 
 					trainingSet = constructTrainingSet(ik.getRow().toString(), input, output);
-					BasicNetwork modified = ClassificationNetwork.addLayerToNetwork(base, baseConf, new BasicLayer(new ActivationSigmoid(), true, baseConf.getNumberOfCategories()));
+					BasicNetwork modified = ClassificationNetwork.addLayerToNetwork(base, baseConf, new BasicLayer(new ActivationLinear(), true, baseConf.getNumberOfCategories()));
 					final ResilientPropagation train = new ResilientPropagation(modified, trainingSet);
 					int epoch = 1;
 

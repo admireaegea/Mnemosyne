@@ -41,7 +41,7 @@ public class TrainForeman implements Foreman
 		{
 			toReturn+=out+",";
 		}
-		toReturn = toReturn.substring(0, toReturn.length()-2);
+		toReturn = toReturn.substring(0, toReturn.length()-1);
 		
 		return toReturn;
 	}

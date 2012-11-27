@@ -30,7 +30,7 @@ import org.apache.accumulo.core.util.Pair;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapreduce.Mapper;
-import org.encog.engine.network.activation.ActivationSigmoid;
+import org.encog.engine.network.activation.ActivationLinear;
 
 import edu.american.student.mnemosyne.conf.ClassificationNetworkConf;
 import edu.american.student.mnemosyne.conf.HadoopJobConfiguration;
@@ -100,6 +100,7 @@ public class BaseNetworkBuilderProcess implements MnemosyneProcess
 			NNMetadata metadata = NNMetadata.inflate(iv.toString(), ik.getRow().toString());
 			int inputNeuronCount = BinaryUtils.toBinary(metadata.getInputMax(),new double[]{ metadata.getInputMax()},true).length;
 			int num = BinaryUtils.toBinary(metadata.getOutputMax(),new double[]{ metadata.getOutputMax() },false).length;
+			int categories = metadata.getOutputNameFields().size();
 
 			ClassificationNetworkConf conf = new ClassificationNetworkConf();
 			conf.setInputMax(metadata.getInputMax());
@@ -108,14 +109,13 @@ public class BaseNetworkBuilderProcess implements MnemosyneProcess
 			conf.setInputBias(true);
 			conf.setInputNeuronCount(inputNeuronCount);
 
-			conf.setHiddenActiviation(new ActivationSigmoid());
+			conf.setHiddenActiviation(new ActivationLinear());
 			conf.setHiddenBias(true);
-			conf.setHiddenNeuronCount(2 ^ num);
-
-			conf.setOutputActivation(new ActivationSigmoid());
+			conf.setHiddenNeuronCount(2 ^ categories);
+			conf.setOutputActivation(new ActivationLinear());
 			conf.setOutputNeuronCount(num);
 
-			conf.setNumberOfCategories(num);//FIXME:This is bogus now
+			conf.setNumberOfCategories(categories);//FIXME:This is bogus now
 			conf.setBasicMLInput(this.getRandomArray(inputNeuronCount));//FIXME:This is bogus now
 			conf.setBasicIdealMLOutput(this.getRandomArray(num));//FIXME:This is bogus now
 

@@ -26,10 +26,12 @@ public class MnemosyneAccumuloAdministrator
 	}
 	public static void setup() throws RepositoryException
 	{
+		System.out.println("Starting Accumulo Setup");
 		AccumuloForeman aForeman = new AccumuloForeman();
 		aForeman.connect();
 		aForeman.deleteTables();
 		aForeman.makeTable(AccumuloForeman.getBaseNetworkRepositoryName());
 		aForeman.makeTable(AccumuloForeman.getArtifactRepositoryName());
+		aForeman.makeTable("CONGRESS");
 	}
 }
