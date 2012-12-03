@@ -3,6 +3,7 @@ package edu.american.student.mnemosyne.util;
 import edu.american.student.mnemosyne.core.ArtifactBuilderProcess;
 import edu.american.student.mnemosyne.core.BaseNetworkBuilderProcess;
 import edu.american.student.mnemosyne.core.CongressBuilderProcess;
+import edu.american.student.mnemosyne.core.CongressTrainProcess;
 import edu.american.student.mnemosyne.core.IngestProcess;
 import edu.american.student.mnemosyne.core.TrainProcess;
 
@@ -47,9 +48,11 @@ public class TestHelper
 		
 	}
 
-	public static void trainCongress()
+	public static void trainCongress() throws Exception
 	{
-		// TODO Auto-generated method stub
+		CongressTrainProcess pro = new CongressTrainProcess();
+		pro.setup();
+		pro.process();
 		
 	}
 }

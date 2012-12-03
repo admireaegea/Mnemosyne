@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -42,6 +43,7 @@ import org.apache.accumulo.core.client.ZooKeeperInstance;
 import org.apache.accumulo.core.client.admin.TableOperations;
 import org.apache.accumulo.core.data.Key;
 import org.apache.accumulo.core.data.Mutation;
+import org.apache.accumulo.core.data.Range;
 import org.apache.accumulo.core.data.Value;
 import org.apache.accumulo.core.security.Authorizations;
 import org.apache.accumulo.core.security.ColumnVisibility;
@@ -181,7 +183,6 @@ public class AccumuloForeman implements Foreman
 
 	public void addBytes(String table, String row, String fam, String qual, byte[] value) throws RepositoryException
 	{
-
 		BatchWriter writer = this.getBatchWriter(table);
 		Mutation m = new Mutation(row);
 		Value v = new Value();
@@ -233,8 +234,34 @@ public class AccumuloForeman implements Foreman
 			return;
 		}
 
-		log.log(Level.INFO,tableName + " created ...");
+		log.log(Level.INFO, tableName + " created ...");
 
+	}
+
+	public List<Entry<Key, Value>> fetchByRowColumnFamily(String table, String row, String fam) throws RepositoryException
+	{
+		Authorizations auths = new Authorizations(MnemosyneConstants.getDefaultAuths());
+
+		Scanner scan;
+		List<Entry<Key, Value>> toRet = new ArrayList<Entry<Key, Value>>();
+		try
+		{
+			scan = conn.createScanner(table, auths);
+			scan.setRange(Range.exact(row));
+			scan.fetchColumnFamily(new Text(fam));
+			for (Entry<Key, Value> entry : scan)
+			{
+				toRet.add(entry);
+			}
+		}
+		catch (TableNotFoundException e)
+		{
+			String gripe = "Couldn't fetch columns. (Table does not exist)";
+			log.log(Level.SEVERE, gripe, e);
+			throw new RepositoryException(gripe, e);
+		}
+
+		return toRet;
 	}
 
 	public List<Entry<Key, Value>> fetchByColumnFamily(String table, String fam) throws RepositoryException
@@ -482,7 +509,7 @@ public class AccumuloForeman implements Foreman
 		}
 		return pastInputs;
 	}
-	
+
 	public ArrayList<double[][]> getPastTrainingInput(String artifactId) throws RepositoryException
 	{
 		List<Entry<Key, Value>> entries = this.fetchByColumnFamily(AccumuloForeman.getBaseNetworkRepository().baseNetwork(), AccumuloForeman.getBaseNetworkRepository().trainData());
@@ -556,10 +583,9 @@ public class AccumuloForeman implements Foreman
 		return pastOutputs;
 	}
 
-	
-	public void saveNetworkToFile(String fileName,String artifactId) throws RepositoryException
+	public void saveNetworkToFile(String fileName, String artifactId) throws RepositoryException
 	{
-		BasicNetwork n =this.inflateNetwork(AccumuloForeman.getBaseNetworkRepositoryName(), AccumuloForeman.getBaseNetworkRepository().baseNetwork(), artifactId);
+		BasicNetwork n = this.inflateNetwork(AccumuloForeman.getBaseNetworkRepositoryName(), AccumuloForeman.getBaseNetworkRepository().baseNetwork(), artifactId);
 		try
 		{
 			SerializeObject.save(new File(fileName), n);
@@ -567,20 +593,129 @@ public class AccumuloForeman implements Foreman
 		catch (IOException e)
 		{
 			String gripe = "Failed to save a network to a file";
-			log.log(Level.SEVERE,gripe,e);
-			throw new RepositoryException(gripe,e);
+			log.log(Level.SEVERE, gripe, e);
+			throw new RepositoryException(gripe, e);
 		}
-	
+
 	}
-	public void assertInputOutputHolder(String artifactId,InputOutputHolder newHolder) throws RepositoryException
+
+	public void assertInputOutputHolder(String artifactId, InputOutputHolder newHolder) throws RepositoryException
 	{
-		addTrainingData(artifactId,  newHolder.getInput(), newHolder.getOutput());
-		
+		addTrainingData(artifactId, newHolder.getInput(), newHolder.getOutput());
+
 	}
 
 	public void assertCongress(List<Neuron> neuronsCreated, String artifactId, CongressNetworkConf conf)
 	{
-		// TODO Auto-generated method stub
+		for (Neuron n : neuronsCreated)
+		{
+			try
+			{
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				ObjectOutputStream out = new ObjectOutputStream(baos);
+				out.writeObject(n);
+				out.close();
+				byte[] arr = baos.toByteArray();
+				this.add("CONGRESS", artifactId, "NEURON", n.getHash(), new String(arr));
+				this.add("CONGRESS", artifactId, "NEURON", n.getHash() + " IN USE", new String(false + ""));
+				this.add("CONGRESS", artifactId, "NEURON", n.getHash() + " TRAINED INPUT COUNT", new String(0 + ""));
+
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+
+		}
+
+	}
+
+	public Neuron getATrainableNeuron(String artifactId) throws RepositoryException
+	{
+		List<Entry<Key, Value>> entries = this.fetchByRowColumnQualifier("CONGRESS", artifactId, "NEURON", "IN USE");
+		boolean neuronNotFound = true;
+		Neuron toRet = null;
+		while (neuronNotFound)
+		{
+			int index = new Random().nextInt(entries.size());
+			Entry<Key, Value> entry = entries.get(index);
+			Key key = entry.getKey();
+			Value val = entry.getValue();
+			if(val.toString().equals("false"))
+			{
+				String cf = key.getColumnQualifier().toString();
+				String neuronHash = cf.replace("IN USE", "");
+				toRet = inflateNeuron(neuronHash);
+				neuronNotFound = true;
+				this.add("CONGRESS", artifactId, "NEURON", cf, "true");
+				neuronNotFound = false;
+			}
+			
+		}
+		return toRet;
+
+	}
+	
+
+	private Neuron inflateNeuron(String neuronHash) throws RepositoryException
+	{
+		System.out.println("NEURON HASH:"+ neuronHash);
+		List<Entry<Key, Value>> entry= this.fetchByQualifier("CONGRESS", "NEURON", neuronHash.trim());
+		System.out.println("ENTRY SIZE:"+entry.size());
+		byte[] serializedNeuron = entry.get(0).getValue().get();
+		
+		ObjectInputStream objectIn;
+		try
+		{
+			objectIn = new ObjectInputStream(new ByteArrayInputStream(serializedNeuron));
+			Neuron store = (Neuron) objectIn.readObject();
+			return store;
+		}
+		catch (IOException e)
+		{
+			String gripe = "Could not inflate this neuron:"+neuronHash;
+			throw new RepositoryException(gripe,e);
+		}
+		catch (ClassNotFoundException e)
+		{
+			String gripe = "Neuron class wasnt found! ";
+			throw new RepositoryException(gripe,e);
+		}
+	}
+
+	private List<Entry<Key, Value>> fetchByRowColumnQualifier(String table, String row, String fam, String qualifierRegex) throws RepositoryException
+	{
+		Authorizations auths = new Authorizations(MnemosyneConstants.getDefaultAuths());
+
+		Scanner scan;
+		List<Entry<Key, Value>> toRet = new ArrayList<Entry<Key, Value>>();
+		try
+		{
+			scan = conn.createScanner(table, auths);
+			scan.setRange(Range.exact(row));
+			scan.fetchColumnFamily(new Text(fam));
+			for (Entry<Key, Value> entry : scan)
+			{
+				String qualifier = entry.getKey().getColumnQualifier().toString();
+				if (qualifier.contains(qualifierRegex))
+				{
+					toRet.add(entry);
+				}
+			}
+		}
+		catch (TableNotFoundException e)
+		{
+			String gripe = "Couldn't fetch columns. (Table does not exist)";
+			log.log(Level.SEVERE, gripe, e);
+			throw new RepositoryException(gripe, e);
+		}
+
+		return toRet;
+	}
+
+	public void setNeuronAvailable(String artifactId, Neuron toTrain) throws RepositoryException
+	{
+		this.add("CONGRESS", artifactId	, "NEURON", toTrain.getHash()+" IN USE", "false");
 		
 	}
 }

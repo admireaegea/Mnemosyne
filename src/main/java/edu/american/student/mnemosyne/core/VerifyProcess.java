@@ -97,7 +97,6 @@ public class VerifyProcess implements MnemosyneProcess
 			}
 			catch (RepositoryException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
