@@ -63,7 +63,7 @@ public class VerifyProcess implements MnemosyneProcess
 		{
 			//inflate the appropriate NN
 			//this is the ArtifactId
-			ik.getRow().toString();
+			String artifactId = ik.getRow().toString();
 			//VERIFY_ENTRY
 			ik.getColumnFamily().toString();
 			//timestamp
@@ -84,7 +84,7 @@ public class VerifyProcess implements MnemosyneProcess
 			try
 			{
 				BasicNetwork ntw = aForeman.getBaseNetwork(ik.getRow().toString());
-				System.out.println("LY COUNT:"+ntw.getLayerCount());
+	
 				MLData out = ntw.compute(new BasicMLData(input));
 				double[] expected = out.getData();
 				
@@ -94,6 +94,7 @@ public class VerifyProcess implements MnemosyneProcess
 				}
 				System.out.println();
 				System.out.println(" Expected:"+output);
+				aForeman.associateOutput(artifactId, expected, output);
 			}
 			catch (RepositoryException e)
 			{

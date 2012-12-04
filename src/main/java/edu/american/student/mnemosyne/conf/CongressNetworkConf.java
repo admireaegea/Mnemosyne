@@ -31,4 +31,20 @@ public class CongressNetworkConf  extends NetworkConf implements java.io.Seriali
 		return numOfInputs;
 	}
 
+	public String serialize()
+	{
+		String toReturn = numOfNeurons+"|"+numOfInputs;
+		return toReturn;
+	}
+	
+	public static CongressNetworkConf inflate(String serialized)
+	{
+		String[] values = serialized.split("\\|");
+		
+		CongressNetworkConf toReturn = new CongressNetworkConf();
+		toReturn.setNumberOfNeurons(Integer.parseInt(values[0]));
+		toReturn.setNumberOfInputs(Integer.parseInt(values[1]));
+		return toReturn;
+	}
+
 }

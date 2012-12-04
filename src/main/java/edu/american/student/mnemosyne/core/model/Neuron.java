@@ -34,6 +34,11 @@ public class Neuron implements Serializable
 		hash = new String((System.currentTimeMillis()+UUID.randomUUID().toString()));
 	}
 	
+	private Neuron()
+	{
+		// TODO Auto-generated constructor stub
+	}
+
 	public String getHash()
 	{
 		return hash;
@@ -45,12 +50,15 @@ public class Neuron implements Serializable
 			weights.add(new Random().nextDouble());
 		}
 	}
-	public void train(InputSet<Integer> is, OutputSet<Integer> os, double aerror)
+	public void train(InputSet<Integer> is, OutputSet<Integer> os, double aerror, long timeout)
 	{
 		log.info("Training");
+		long start= System.currentTimeMillis();
+		long current = System.currentTimeMillis();
 		int timesCalculated = 1;
-		while(error > aerror)
+		while(error > aerror && start+timeout > current)
 		{
+			current = System.currentTimeMillis();
 			List<List<Integer>> iSets = is.getInputSets();
 			
 			for(int i=0;i<iSets.size();i++)
@@ -59,6 +67,15 @@ public class Neuron implements Serializable
 				log.debug("Expecting:"+expected);
 				List<Integer> inputs = iSets.get(i);
 				double sum = 0.0;
+				if(inputs.size() != weights.size())
+				{
+					String ins = "";
+					for(int in: inputs)
+					{
+						ins+=in+"&";
+					}
+					throw new RuntimeException("input size:"+inputs.size()+" weights size:"+weights.size()+"\n"+this.serialize()+"\n"+ins);
+				}
 				for(int j=0;j<inputs.size();j++)
 				{
 					int in = inputs.get(j);
@@ -88,7 +105,7 @@ public class Neuron implements Serializable
 		
 	}
 
-	public void compute(InputSet<Integer> is )
+	public int compute(InputSet<Integer> is ) throws Exception
 	{
 		List<List<Integer>> iSets = is.getInputSets();
 		for(int i=0;i<iSets.size();i++)
@@ -111,8 +128,86 @@ public class Neuron implements Serializable
 			{
 				result =1;
 			}
-			log.info("Result = "+result);
+			return result;
 		}
+		return -1;
 		
+	}
+
+	public String serialize()
+	{
+		String toReturn = this.getHash()+"|"+this.getError()+"|"+this.getLearningRate()+"|"+this.getThreshold()+"|";
+		List<Double> weights = this.getWeights();
+		for(Double d: weights)
+		{
+			toReturn+=d+"|";
+		}
+		return toReturn;
+	}
+
+	
+	public List<Double> getWeights()
+	{
+		return this.weights;
+	}
+
+	public double getError()
+	{
+		return this.error;
+	}
+
+	public double getLearningRate()
+	{
+		return this.learningRate;
+	}
+
+	public double getThreshold()
+	{
+		return this.threshold;
+	}
+
+	public static Neuron inflate(String serializedNeuron)
+	{
+		String[] in = serializedNeuron.split("\\|");
+		Neuron n = new Neuron();
+		n.setHash(in[0]);
+		n.setError(in[1]);
+		n.setLearningRate(in[2]);
+		n.setThreshold(in[3]);
+		for(int i=4;i<in.length;i++)
+		{
+			n.addWeight(in[i]);
+		}
+		return n;
+	}
+
+	private void addWeight(String w)
+	{
+		if(this.weights == null)
+		{
+			this.weights = new Vector<Double>();
+		}
+		this.weights.add(Double.parseDouble(w));
+		
+	}
+
+	private void setThreshold(String thres)
+	{
+		this.threshold = Double.parseDouble(thres);
+	}
+
+	private void setLearningRate(String lr)
+	{
+		this.learningRate = Double.parseDouble(lr);
+	}
+
+	private void setError(String err)
+	{
+		this.error = Double.parseDouble(err);
+	}
+
+	private void setHash(String hash)
+	{
+		this.hash = hash;
 	}
 }

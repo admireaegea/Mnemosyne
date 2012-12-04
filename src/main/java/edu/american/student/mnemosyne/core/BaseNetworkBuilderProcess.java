@@ -30,7 +30,7 @@ import org.apache.accumulo.core.util.Pair;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapreduce.Mapper;
-import org.encog.engine.network.activation.ActivationLinear;
+import org.encog.engine.network.activation.ActivationSigmoid;
 
 import edu.american.student.mnemosyne.conf.ClassificationNetworkConf;
 import edu.american.student.mnemosyne.conf.HadoopJobConfiguration;
@@ -109,10 +109,10 @@ public class BaseNetworkBuilderProcess implements MnemosyneProcess
 			conf.setInputBias(true);
 			conf.setInputNeuronCount(inputNeuronCount);
 
-			conf.setHiddenActiviation(new ActivationLinear());
+			conf.setHiddenActiviation(new ActivationSigmoid());
 			conf.setHiddenBias(true);
 			conf.setHiddenNeuronCount(2 ^ categories);
-			conf.setOutputActivation(new ActivationLinear());
+			conf.setOutputActivation(new ActivationSigmoid());
 			conf.setOutputNeuronCount(num);
 
 			conf.setNumberOfCategories(categories);//FIXME:This is bogus now

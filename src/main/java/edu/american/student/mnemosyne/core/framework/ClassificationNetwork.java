@@ -32,7 +32,7 @@ public class ClassificationNetwork
 	{
 		BasicNetwork network = new BasicNetwork();
 		BasicLayer input = new BasicLayer(conf.getInputActivation(), conf.getInputBias(), conf.getInputNeuronCount());
-		BasicLayer hidden = new BasicLayer(conf.getHiddenActivation(), conf.getHiddenBias(), conf.getNumberOfCategories());
+		BasicLayer hidden = new BasicLayer(conf.getHiddenActivation(), conf.getHiddenBias(), conf.getNumberOfCategories()*new Random().nextInt(15));
 		BasicLayer output = new BasicLayer(conf.getOutputActivation(), conf.getOutputBias(), conf.getOutputNeuronCount());
 
 		network.addLayer(input);// input layer

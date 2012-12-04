@@ -6,6 +6,7 @@ import edu.american.student.mnemosyne.core.CongressBuilderProcess;
 import edu.american.student.mnemosyne.core.CongressTrainProcess;
 import edu.american.student.mnemosyne.core.IngestProcess;
 import edu.american.student.mnemosyne.core.TrainProcess;
+import edu.american.student.mnemosyne.core.VerifyProcess;
 
 public class TestHelper
 {
@@ -54,5 +55,12 @@ public class TestHelper
 		pro.setup();
 		pro.process();
 		
+	}
+
+	public static void verifyCongress() throws Exception
+	{
+		VerifyProcess pro = new VerifyProcess();
+		pro.setup();
+		pro.process();
 	}
 }

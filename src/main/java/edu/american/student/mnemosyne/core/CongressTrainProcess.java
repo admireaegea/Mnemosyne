@@ -15,11 +15,15 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapreduce.Mapper;
 
+import edu.american.student.mnemosyne.conf.CongressNetworkConf;
 import edu.american.student.mnemosyne.conf.HadoopJobConfiguration;
 import edu.american.student.mnemosyne.core.exception.ProcessException;
+import edu.american.student.mnemosyne.core.exception.StopMapperException;
 import edu.american.student.mnemosyne.core.framework.MnemosyneProcess;
 import edu.american.student.mnemosyne.core.model.Artifact;
 import edu.american.student.mnemosyne.core.model.InputSet;
+import edu.american.student.mnemosyne.core.model.NNInput;
+import edu.american.student.mnemosyne.core.model.NNOutput;
 import edu.american.student.mnemosyne.core.model.Neuron;
 import edu.american.student.mnemosyne.core.model.OutputSet;
 import edu.american.student.mnemosyne.core.util.foreman.AccumuloForeman;
@@ -28,10 +32,10 @@ import edu.american.student.mnemosyne.core.util.foreman.TrainForeman;
 
 public class CongressTrainProcess implements MnemosyneProcess
 {
-
+	private static int round = 0;
+	
 	public void process() throws ProcessException
 	{
-		artifactForeman.connect();
 		List<Artifact> artifacts = artifactForeman.returnArtifacts();
 		for (Artifact artifact : artifacts)
 		{
@@ -51,7 +55,7 @@ public class CongressTrainProcess implements MnemosyneProcess
 
 	public void setup() throws ProcessException
 	{
-		// TODO Auto-generated method stub
+		artifactForeman.connect();
 
 	}
 
@@ -66,23 +70,57 @@ public class CongressTrainProcess implements MnemosyneProcess
 		{
 			try
 			{
+				System.out.println(iv.toString());
 				aForeman.connect();
 				tForeman.connect();
-				
-				log.log(Level.INFO, "Grabbing a random neuron...");
 				String artifactId = ik.getRow().toString();
-				Neuron toTrain = aForeman.getATrainableNeuron(artifactId);
-				log.log(Level.INFO,"FOUND THIS ONE"+toTrain.getHash());
-				aForeman.setNeuronAvailable(artifactId, toTrain);
-				//InputSet<Integer> is = null;
-				//OutputSet<Integer> os = null;
-				//double aerror = .5;
-				//toTrain.train(is, os, aerror);
-				//put it all back in
+				CongressNetworkConf conf = aForeman.inflateCongressConfiguration(artifactId);
+				int numOfInputs = aForeman.getCongressNumberOfInputs(artifactId);
+				System.out.println(round);
+				if(round % 2 ==1)
+				{
+					double[] input = NNInput.inflate(conf,iv.toString(),numOfInputs);
+					double[] output = NNOutput.inflate(iv.toString());
+					tForeman.register(ik.getRow().toString(),input,output);
+					round++;
+				}
+				else
+				{
+					log.log(Level.INFO, "Grabbing a random neuron...");
+					Neuron toTrain = aForeman.getATrainableNeuron(artifactId);
+					log.log(Level.INFO,"FOUND THIS ONE"+toTrain.getHash());
+					
+					InputSet<Integer> is = new InputSet<Integer>();
+					OutputSet<Integer> os = new OutputSet<Integer>();
+					//num of inputs = number of weights
+					//num of outputs = 2
+				
+					double[] input = NNInput.inflate(conf, iv.toString(),numOfInputs);
+					List<Integer>set = new ArrayList<Integer>();
+					for(double in : input)
+					{
+						set.add((int)in);
+					}
+					is.addSet(set);
+					double[] output = NNOutput.inflate( iv.toString());	
+					List<Integer> outset = new ArrayList<Integer>();
+					for(double out: output)
+					{
+						outset.add((int)out);
+					}
+					os.addSet(outset);
+					double aerror = .0002;
+					toTrain.train(is, os, aerror,30000);
+					aForeman.setNeuronAvailable(artifactId, toTrain);
+					aForeman.incrementNumberProcessed(artifactId,toTrain.getHash());
+					round++;
+				}
+
 				
 			}catch(Exception e)
 			{
-				e.printStackTrace();
+				String gripe = CongressTrainProcess.class.getSimpleName()+" failed!";
+				throw new StopMapperException(gripe,e);
 			}
 		}
 	}

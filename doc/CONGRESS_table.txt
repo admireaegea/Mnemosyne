@@ -1,4 +1,4 @@
-Default Table Name: Congress
+Default Table Name: CONGRESS
 
 	Rows: ArtifactId
 		Column Family: NEURON

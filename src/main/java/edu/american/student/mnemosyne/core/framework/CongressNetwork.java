@@ -21,8 +21,8 @@ public class CongressNetwork
 		for(int i=0;i<numOfNeurons;i++)
 		{
 			NeuronConf nConf = new NeuronConf();
-			nConf.setLearningRate(.2);
-			nConf.setThreshold(.5);
+			nConf.setLearningRate(.02);
+			nConf.setThreshold(.2);
 			Neuron toAdd  = new Neuron(nConf);
 			toAdd.setup(numberOfInputs);
 			toReturn.add(toAdd);

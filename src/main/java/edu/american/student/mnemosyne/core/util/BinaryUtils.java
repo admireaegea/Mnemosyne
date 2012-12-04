@@ -18,6 +18,7 @@ package edu.american.student.mnemosyne.core.util;
 import java.util.ArrayList;
 
 import edu.american.student.mnemosyne.conf.ClassificationNetworkConf;
+import edu.american.student.mnemosyne.conf.CongressNetworkConf;
 
 public class BinaryUtils
 {
@@ -68,6 +69,45 @@ public class BinaryUtils
 			conf.setOutputMax(max);
 		}
 		return BinaryUtils.toBinary(conf, toReturn, isInput);
+	}
+
+	public static int sizeOfBinary(int maximumNumber)
+	{
+		return (Long.toBinaryString((long)maximumNumber)+"").length();
+	}
+	
+	public static double[] toBinary(CongressNetworkConf conf, double[] toReturn, boolean isInput, int numOfInputs)
+	{
+		ArrayList<Double> binaryDoubles = new ArrayList<Double>();
+		int padding =0;
+		if(isInput)
+		{
+			String binString = Long.toBinaryString((long)numOfInputs).replace(' ', '0');
+			padding = binString.length();
+		}
+		else
+		{
+			String binString = Long.toBinaryString((long)1).replace(' ', '0');;
+			padding = binString.length();
+		}
+		
+		for(double value: toReturn)
+		{
+			String binaryString = String.format("%"+padding+"s", Long.toBinaryString((long)value)).replace(' ', '0');
+			char[] binaryArr =binaryString.toCharArray();
+			for(char chara: binaryArr)
+			{
+				binaryDoubles.add(Double.parseDouble(chara+""));
+			}
+		}
+		Double[] dubs = new Double[binaryDoubles.size()];
+		binaryDoubles.toArray(dubs);
+		double[] ret = new double[binaryDoubles.size()];
+		for(int i=0;i<binaryDoubles.size();i++)
+		{
+			ret[i]=dubs[i];
+		}
+		return ret;
 	}
 
 }

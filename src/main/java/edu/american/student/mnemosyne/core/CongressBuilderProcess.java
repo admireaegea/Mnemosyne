@@ -64,15 +64,15 @@ public class CongressBuilderProcess implements MnemosyneProcess
 		public void map(Key ik, Value iv, Context context)
 		{
 			NNMetadata metadata = NNMetadata.inflate(iv.toString(), ik.getRow().toString());
-			int inputNeuronCount = BinaryUtils.toBinary(metadata.getInputMax(),new double[]{ metadata.getInputMax()},true).length;
-			
+			int inputNeuronCount = BinaryUtils.sizeOfBinary(metadata.getInputMax()) * metadata.getInputNameFields().size();
 			//create a couple hundred neurons
 			CongressNetworkConf conf = new CongressNetworkConf();
 			conf.setNumberOfInputs(inputNeuronCount);
-			conf.setNumberOfNeurons(100);
+			conf.setNumberOfNeurons(20);
 			
 			try
 			{
+				aForeman.assertCongressNumberOfInputs(metadata.getArtifactId(),metadata.getInputMax());
 				NNProcessor processor = NNProcessorFactory.getProcessorBean(conf);
 				processor.constructNetworks(metadata.getArtifactId());
 			}

@@ -113,10 +113,9 @@ public class TrainProcess implements MnemosyneProcess
 				log.log(Level.INFO, "Grabbing the base network...");
 				BasicNetwork base = null;
 				ClassificationNetworkConf baseConf = null;
-				double error = 1;
+				double error = .003;
 				base = aForeman.getBaseNetwork(ik.getRow().toString());
 				baseConf = aForeman.getBaseNetworkConf(ik.getRow().toString());
-				error = aForeman.getBaseNetworkError(ik.getRow().toString());
 				if(round % 2 ==1)
 				{
 					double[] input = NNInput.inflate(baseConf, iv.toString());
@@ -135,11 +134,9 @@ public class TrainProcess implements MnemosyneProcess
 					MLDataSet trainingSet = null;
 
 					trainingSet = constructTrainingSet(ik.getRow().toString(), input, output);
-					BasicNetwork modified = ClassificationNetwork.addLayerToNetwork(base, baseConf, new BasicLayer(new ActivationLinear(), true, baseConf.getNumberOfCategories()));
-					final ResilientPropagation train = new ResilientPropagation(modified, trainingSet);
+					final ResilientPropagation train = new ResilientPropagation(base, trainingSet);
 					int epoch = 1;
 
-					error = aForeman.getBaseNetworkError(ik.getRow().toString());
 
 					long elapsed = System.currentTimeMillis() - start;
 					do
@@ -152,9 +149,7 @@ public class TrainProcess implements MnemosyneProcess
 					while (train.getError() > error && ((elapsed) < timeout) && epoch < epochTimeout);
 					round++;
 					start = System.currentTimeMillis();
-
-					aForeman.assertBaseNetwork(modified, ik.getRow().toString(), baseConf);
-					aForeman.assertBaseNetworkError(train.getError(), ik.getRow().toString());
+					aForeman.assertBaseNetwork(base, ik.getRow().toString(), baseConf);
 
 				}
 			}

@@ -18,10 +18,9 @@ public class VerifyProcessTest
 		MnemosyneAccumuloAdministrator.setup();
 		TestHelper.ingestTestArtifacts();
 		TestHelper.buildArtifacts();
-		TestHelper.constructCongress();
-		TestHelper.trainCongress();
-//		TestHelper.constructBaseClassificationNetwork();
-//		TestHelper.trainNetworks();
+		TestHelper.constructBaseClassificationNetwork();
+		TestHelper.trainNetworks();
+		TestHelper.verifyCongress();
 	}
 
 	@AfterClass
@@ -42,9 +41,7 @@ public class VerifyProcessTest
 	@Test
 	public void test() throws Exception
 	{
-//		VerifyProcess pro = new VerifyProcess();
-//		pro.setup();
-//		pro.process();
+
 	}
 
 }

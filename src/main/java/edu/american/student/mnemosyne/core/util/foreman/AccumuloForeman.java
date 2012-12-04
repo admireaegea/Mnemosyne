@@ -605,26 +605,15 @@ public class AccumuloForeman implements Foreman
 
 	}
 
-	public void assertCongress(List<Neuron> neuronsCreated, String artifactId, CongressNetworkConf conf)
+	public void assertCongress(List<Neuron> neuronsCreated, String artifactId, CongressNetworkConf conf) throws RepositoryException
 	{
+		this.add("CONGRESS", artifactId, "NEURON", "CONF", conf.serialize());
+
 		for (Neuron n : neuronsCreated)
 		{
-			try
-			{
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				ObjectOutputStream out = new ObjectOutputStream(baos);
-				out.writeObject(n);
-				out.close();
-				byte[] arr = baos.toByteArray();
-				this.add("CONGRESS", artifactId, "NEURON", n.getHash(), new String(arr));
-				this.add("CONGRESS", artifactId, "NEURON", n.getHash() + " IN USE", new String(false + ""));
-				this.add("CONGRESS", artifactId, "NEURON", n.getHash() + " TRAINED INPUT COUNT", new String(0 + ""));
-
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
+			this.add("CONGRESS", artifactId, "NEURON", n.getHash(), n.serialize());
+			this.add("CONGRESS", artifactId, "NEURON", n.getHash() + " IN USE", new String(false + ""));
+			this.add("CONGRESS", artifactId, "NEURON", n.getHash() + " TRAINED INPUT COUNT", new String(0 + ""));
 
 		}
 
@@ -641,46 +630,26 @@ public class AccumuloForeman implements Foreman
 			Entry<Key, Value> entry = entries.get(index);
 			Key key = entry.getKey();
 			Value val = entry.getValue();
-			if(val.toString().equals("false"))
+			if (val.toString().equals("false"))
 			{
 				String cf = key.getColumnQualifier().toString();
-				String neuronHash = cf.replace("IN USE", "");
+				String neuronHash = cf.replace("IN USE", "").trim();
 				toRet = inflateNeuron(neuronHash);
 				neuronNotFound = true;
 				this.add("CONGRESS", artifactId, "NEURON", cf, "true");
 				neuronNotFound = false;
 			}
-			
+
 		}
 		return toRet;
 
 	}
-	
 
 	private Neuron inflateNeuron(String neuronHash) throws RepositoryException
 	{
-		System.out.println("NEURON HASH:"+ neuronHash);
-		List<Entry<Key, Value>> entry= this.fetchByQualifier("CONGRESS", "NEURON", neuronHash.trim());
-		System.out.println("ENTRY SIZE:"+entry.size());
-		byte[] serializedNeuron = entry.get(0).getValue().get();
-		
-		ObjectInputStream objectIn;
-		try
-		{
-			objectIn = new ObjectInputStream(new ByteArrayInputStream(serializedNeuron));
-			Neuron store = (Neuron) objectIn.readObject();
-			return store;
-		}
-		catch (IOException e)
-		{
-			String gripe = "Could not inflate this neuron:"+neuronHash;
-			throw new RepositoryException(gripe,e);
-		}
-		catch (ClassNotFoundException e)
-		{
-			String gripe = "Neuron class wasnt found! ";
-			throw new RepositoryException(gripe,e);
-		}
+		List<Entry<Key, Value>> entry = this.fetchByQualifier("CONGRESS", "NEURON", neuronHash);
+		String serializedNeuron = entry.get(0).getValue().toString();
+		return Neuron.inflate(serializedNeuron);
 	}
 
 	private List<Entry<Key, Value>> fetchByRowColumnQualifier(String table, String row, String fam, String qualifierRegex) throws RepositoryException
@@ -715,7 +684,65 @@ public class AccumuloForeman implements Foreman
 
 	public void setNeuronAvailable(String artifactId, Neuron toTrain) throws RepositoryException
 	{
-		this.add("CONGRESS", artifactId	, "NEURON", toTrain.getHash()+" IN USE", "false");
+		this.add("CONGRESS", artifactId, "NEURON", toTrain.getHash() + " IN USE", "false");
+
+	}
+
+	public CongressNetworkConf inflateCongressConfiguration(String artifactId) throws RepositoryException
+	{
+		Entry<Key, Value> entry = this.fetchByRowColumnQualifier("CONGRESS", artifactId, "NEURON", "CONF").get(0);
+		Value v = entry.getValue();
+
+		return CongressNetworkConf.inflate(v.toString());
+
+	}
+
+	public List<Neuron> getCongress(String artifactId) throws RepositoryException
+	{
+		List<Entry<Key, Value>> entries = this.fetchByRowColumnQualifier("CONGRESS", artifactId, "NEURON", "IN USE");
+
+		List<Neuron> congress = new ArrayList<Neuron>();
+		for(Entry<Key,Value> entry: entries)
+		{
+			Key key = entry.getKey();
+			Value val = entry.getValue();
+			String cf = key.getColumnQualifier().toString();
+			String neuronHash = cf.replace("IN USE", "").trim();
+			Neuron n = inflateNeuron(neuronHash);
+			
+			Entry<Key,Value> numberProcessed = this.fetchByRowColumnQualifier("CONGRESS", artifactId, "NEURON", n.getHash() + " TRAINED INPUT COUNT").get(0);
+			int numProcessed = Integer.parseInt(numberProcessed.getValue().toString());
+			if(numProcessed >0)
+			{
+				congress.add(n);
+			}
+		}
+		return congress;
+	}
+
+	public void assertCongressNumberOfInputs(String artifactId, int inputNeuronCount) throws RepositoryException
+	{
+		this.add("CONGRESS", artifactId, "NEURON", "NUM OF INPUTS", inputNeuronCount+"");
+		
+	}
+	public int getCongressNumberOfInputs(String artifactId) throws RepositoryException
+	{
+		Entry<Key,Value> entry = this.fetchByRowColumnQualifier("CONGRESS", artifactId, "NEURON", "NUM OF INPUTS").get(0);
+		return Integer.parseInt(entry.getValue().toString());
+	}
+
+	public void incrementNumberProcessed(String artifactId, String hash) throws RepositoryException
+	{
+		Entry<Key,Value> entry = this.fetchByRowColumnQualifier("CONGRESS", artifactId, "NEURON", hash + " TRAINED INPUT COUNT").get(0);
+		int numProcessed = Integer.parseInt(entry.getValue().toString());
+		numProcessed++;
+		this.add("CONGRESS", artifactId, "NEURON", hash + " TRAINED INPUT COUNT", new String(numProcessed + ""));
+		
+	}
+
+	public void associateOutput(String artifactId, double[] expected, double output) throws RepositoryException
+	{
+		this.add(MnemosyneConstants.getBaseNetworkRepositoryName(), artifactId, "ASSOCIATION", expected[0]+"", output+"");
 		
 	}
 }

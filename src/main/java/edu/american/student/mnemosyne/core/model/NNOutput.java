@@ -18,6 +18,7 @@ package edu.american.student.mnemosyne.core.model;
 import java.util.List;
 
 import edu.american.student.mnemosyne.conf.ClassificationNetworkConf;
+import edu.american.student.mnemosyne.conf.CongressNetworkConf;
 import edu.american.student.mnemosyne.core.util.BinaryUtils;
 
 public class NNOutput
@@ -61,6 +62,18 @@ public class NNOutput
 			}
 		}
 		return null;
+	}
+
+	public static double[] inflate( String value)
+	{
+		String doubles = value.split("\\)")[1].replace("(", "");
+		String[] outputs = doubles.split(",");
+		double[] toReturn = new double[outputs.length];
+		for (int i = 0; i < outputs.length; i++)
+		{
+			toReturn[i] = Double.parseDouble(outputs[i]);
+		}
+		return toReturn;
 	}
 
 }
