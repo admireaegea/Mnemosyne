@@ -40,6 +40,7 @@ public class VerifyProcess implements MnemosyneProcess
 			HadoopJobConfiguration conf = new HadoopJobConfiguration();
 			conf.setJobName(HadoopJobConfiguration.buildJobName(this.getClass()));
 			conf.setMapperClass(VerifyMapper.class);
+			conf.setJarClass(this.getClass());
 			conf.overrideDefaultTable(AccumuloForeman.getArtifactRepositoryName());
 			Collection<Pair<Text, Text>> cfPairs = new ArrayList<Pair<Text, Text>>();
 			cfPairs.add(new Pair<Text, Text>(new Text(AccumuloForeman.getArtifactRepository().verifyEntry()), null));
@@ -63,6 +64,7 @@ public class VerifyProcess implements MnemosyneProcess
 		{
 			//inflate the appropriate NN
 			//this is the ArtifactId
+			
 			String artifactId = ik.getRow().toString();
 			//VERIFY_ENTRY
 			ik.getColumnFamily().toString();
@@ -83,18 +85,20 @@ public class VerifyProcess implements MnemosyneProcess
 			
 			try
 			{
-				BasicNetwork ntw = aForeman.getBaseNetwork(ik.getRow().toString());
-	
-				MLData out = ntw.compute(new BasicMLData(input));
-				double[] expected = out.getData();
-				
-				for(double expect: expected)
+				BasicNetwork[] ntws = aForeman.getBaseNetworkCommittees(ik.getRow().toString());
+				for(BasicNetwork ntw: ntws)
 				{
-					System.out.print(expect+" ");
+					MLData out = ntw.compute(new BasicMLData(input));
+					double[] expected = out.getData();
+					
+					for(double expect: expected)
+					{
+						System.out.print(expect+" ");
+					}
+					System.out.println();
+					System.out.println(" Expected:"+output);
+					aForeman.associateOutput(artifactId, expected, output);
 				}
-				System.out.println();
-				System.out.println(" Expected:"+output);
-				aForeman.associateOutput(artifactId, expected, output);
 			}
 			catch (RepositoryException e)
 			{

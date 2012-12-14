@@ -61,7 +61,7 @@ public class ArtifactBuilderProcess implements MnemosyneProcess
 		Collection<Pair<Text, Text>> cfPairs = new ArrayList<Pair<Text, Text>>();
 		cfPairs.add(new Pair<Text, Text>(new Text(AccumuloForeman.getArtifactRepository().rawBytes()), null));
 		conf.setFetchColumns(cfPairs);
-		
+		conf.setJarClass(this.getClass());
 		conf.setInputFormatClass(AccumuloInputFormat.class);
 		conf.setOutputFormatClass(AccumuloOutputFormat.class);
 		

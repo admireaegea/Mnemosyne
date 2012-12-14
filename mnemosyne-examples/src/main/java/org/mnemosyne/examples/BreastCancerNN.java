@@ -20,7 +20,7 @@ public class BreastCancerNN
 	{
 //		Deploy.deployPsuedoDistrubtedSystem();
 //		String[] setup = {"-setup"};
-//		NNAnalyst analyst = new NNAnalyst(setup);
+		NNAnalyst analyst = new NNAnalyst(new String[]{"-ingest"});
 //		String[] ingest = {"-ingest"};
 //		analyst = new NNAnalyst(ingest);
 //		String[] build = {"-build"};
@@ -29,7 +29,8 @@ public class BreastCancerNN
 //		analyst = new NNAnalyst(construct);
 //		String[] train = {"-train"};
 //		analyst = new NNAnalyst(train);
-		NNAnalyst analyst = new NNAnalyst(new String[]{"-verify"});
+//		analyst = new NNAnalyst(new String[]{"-verify"});
+		
 		
 		
 		

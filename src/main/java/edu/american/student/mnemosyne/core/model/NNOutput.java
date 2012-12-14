@@ -36,33 +36,23 @@ public class NNOutput
 		return BinaryUtils.toBinary(conf,toReturn,false);
 	}
 
-	public static String combine(double[] results, NNMetadata data)
-	{
-		String binaryString = "";
-		for (double res : results)
-		{
-			if (res > .001)
-			{
-				binaryString += 1;
-			}
-			else
-			{
-				binaryString += 0;
-			}
-		}
-		List<String> outputFields = data.getOutputNameFields();
-		List<String> outputValues = data.getOutputValueFields();
-		int result = Integer.parseInt(binaryString, 2);
-		for (int i = 0; i < outputValues.size(); i++)
-		{
-			String value = outputValues.get(i);
-			if (value.equals(result + ""))
-			{
-				return outputFields.get(i);
-			}
-		}
-		return null;
-	}
+//	public static String combine(double[] results, NNMetadata data)
+//	{
+//		
+//		List<String> outputFields = data.getOutputNameFields();
+//		List<String> outputValues = data.getOutputValueFields();
+//		
+//		int result = Integer.parseInt(binaryString, 2);
+//		for (int i = 0; i < outputValues.size(); i++)
+//		{
+//			String value = outputValues.get(i);
+//			if (value.equals(result + ""))
+//			{
+//				return outputFields.get(i);
+//			}
+//		}
+//		return null;
+//	}
 
 	public static double[] inflate( String value)
 	{

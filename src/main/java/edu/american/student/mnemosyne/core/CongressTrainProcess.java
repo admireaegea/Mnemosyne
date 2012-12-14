@@ -43,6 +43,7 @@ public class CongressTrainProcess implements MnemosyneProcess
 			HadoopJobConfiguration conf = new HadoopJobConfiguration();
 			conf.setJobName(HadoopJobConfiguration.buildJobName(this.getClass()));
 			conf.setMapperClass(CongressTrainMapper.class);
+			conf.setJarClass(this.getClass());
 			conf.overrideDefaultTable(AccumuloForeman.getArtifactRepositoryName());
 			Collection<Pair<Text, Text>> cfPairs = new ArrayList<Pair<Text, Text>>();
 			cfPairs.add(new Pair<Text, Text>(new Text(artifact.getArtifactId() + ":FIELD"), null));

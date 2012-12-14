@@ -23,7 +23,6 @@ public enum CLIConstants
 	BUILD("build"),
 	CONSTRUCT("construct"),
 	TRAIN("train"),
-	ERROR("calculateError"),
 	SAVE("save"),
 	INFLATE("inflate"),
 	INGEST("ingest"), 

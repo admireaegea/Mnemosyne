@@ -98,6 +98,7 @@ public class HadoopJobConfiguration
 	 */
 	private Collection<Pair<Text,Text>> cfPairs;
 	
+	private Class<?> jarClass;
 	/**
 	 * Returns the name of the Hadoop Job
 	 * @return the name of the Hadoop Job
@@ -321,6 +322,16 @@ public class HadoopJobConfiguration
 	public void setFetchColumns(Collection<Pair<Text,Text>> pairs)
 	{
 		this.cfPairs = pairs;
+	}
+
+	public Class<?> getJarClass()
+	{
+		return this.jarClass;
+	}
+	
+	public void setJarClass(Class<?> cls)
+	{
+		this.jarClass = cls;
 	}
 
 }

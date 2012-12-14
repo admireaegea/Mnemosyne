@@ -25,6 +25,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.NullOutputFormat;
@@ -79,7 +80,8 @@ public class IngestProcess implements MnemosyneProcess
 			this.fileName = path.getName();
 			HadoopForeman hForeman = new HadoopForeman();
 			HadoopJobConfiguration conf = new HadoopJobConfiguration();
-			conf.setJobName(HadoopJobConfiguration.buildJobName(this.getClass()));
+			
+			conf.setJarClass(this.getClass());
 			conf.setMapperClass(IngestMapper.class);
 			conf.setInputFormatClass(TextInputFormat.class);
 			conf.overridePathToProcess(path);

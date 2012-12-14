@@ -64,9 +64,8 @@ public class NNAnalyst  extends MnemosyneAPI implements CLI
 		options.addOption(CLIConstants.BUILD.getTitle(),false,"Build artifacts");
 		options.addOption(CLIConstants.CONSTRUCT.getTitle(),false,"Build base Neural Network");
 		options.addOption(CLIConstants.TRAIN.getTitle(),false,"Train Neural Networks");
-		options.addOption(CLIConstants.ERROR.getTitle(),false,"Compute the error of this network");
 		options.addOption(CLIConstants.SAVE.getTitle(),false,"Save a NN");
-		options.addOption(CLIConstants.INFLATE.getTitle(), true, "Inflate a NN");
+		options.addOption(CLIConstants.INFLATE.getTitle(), false, "Inflate a NN");
 		options.addOption(CLIConstants.VERIFY.getTitle(),false,"Use the train foreman to verify the neural network");
 		Option help = new Option( "help", "print this message" );
 		options.addOption(help);
@@ -84,8 +83,8 @@ public class NNAnalyst  extends MnemosyneAPI implements CLI
 				MLData result = n.compute(getMLDataInput(aForeman.getBaseNetworkConf(artifactId),data.getInputNameFields()));
 				System.out.println("### RESULT ###");
 				double[] results = result.getData();
-				String stringResults = NNOutput.combine(results,data);
-				System.out.println(stringResults);
+//				String stringResults = NNOutput.combine(results,data);
+//				System.out.println(stringResults);
 				break;
 			}
 		}
@@ -117,18 +116,6 @@ public class NNAnalyst  extends MnemosyneAPI implements CLI
 			train.setup();
 			train.process();
 		}
-		else if (cmd.hasOption(CLIConstants.ERROR.getTitle()))
-		{
-			//inflateInputOutputContainers
-			String artifactId = getOptionArtifact();
-			List<InputOutputHolder> holders =aForeman.getInputOutputHolders(artifactId);
-			for(InputOutputHolder holder: holders)
-			{
-				System.out.println("### HOLDER ###");
-				print(holder.getInput());
-				print(holder.getOutput());
-			}
-		}
 		else if (cmd.hasOption(CLIConstants.SAVE.getTitle()))
 		{
 			String artifactId = getOptionArtifact();
@@ -136,9 +123,29 @@ public class NNAnalyst  extends MnemosyneAPI implements CLI
 		}
 		else if (cmd.hasOption(CLIConstants.INFLATE.getTitle()))
 		{
-			String[] cmdArgs = cmd.getArgs();
-			System.out.println(cmdArgs.length);
-			//aForeman.saveNetwork(AccumuloForeman.getBaseNetworkRepositoryName(), AccumuloForeman.getBaseNetworkRepository().baseNetwork(), artifactId, network, conf)
+			aForeman = new AccumuloForeman();
+			aForeman.connect();
+			String artifactId = this.getOptionArtifact();
+			BasicNetwork ntw = aForeman.getBaseNetwork(artifactId);
+			List<Entry<Key,Value>> metadata = aForeman.fetchByColumnFamily(AccumuloForeman.getArtifactRepositoryName(), artifactId);
+			for(Entry<Key,Value> entry : metadata)
+			{
+				NNMetadata data = NNMetadata.inflate(entry.getValue().toString(),entry.getKey().getRow().toString());
+				
+				MLData result = ntw.compute(getMLDataInput(aForeman.getBaseNetworkConf(artifactId),data.getInputNameFields()));
+				double[] results = result.getData();
+				List<Entry<Key,Value>> associations = aForeman.getAssocations(artifactId);
+				double[] associationValues = new double[associations.size()];
+				for(int i=0;i<associations.size();i++)
+				{
+					Entry<Key,Value> ent = associations.get(i);
+					associationValues[i]= Double.parseDouble(ent.getKey().getColumnQualifier().toString());
+				}
+				double closest = closest2(results[0], associationValues);
+				double stringResults = aForeman.getAssocation(artifactId,closest);
+				System.out.println("###RESULT###");
+				System.out.println(stringResults);
+			}
 		}
 		else if (cmd.hasOption(CLIConstants.VERIFY.getTitle()))
 		{
@@ -168,6 +175,20 @@ public class NNAnalyst  extends MnemosyneAPI implements CLI
 		}
 		
 	}
+	
+	public static double closest2(double find, double[] values) {
+	    double closest = values[0];
+	    double distance = Math.abs(closest - find);
+	    for(double i: values) {
+	       double distanceI = Math.abs(i - find);
+	       if(distance > distanceI) {
+	           closest = i;
+	           distance = distanceI;
+	       }
+	    }
+	    return closest;
+	}
+	
 	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception
 	{

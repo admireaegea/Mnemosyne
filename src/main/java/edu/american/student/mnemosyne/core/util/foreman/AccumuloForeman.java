@@ -745,4 +745,64 @@ public class AccumuloForeman implements Foreman
 		this.add(MnemosyneConstants.getBaseNetworkRepositoryName(), artifactId, "ASSOCIATION", expected[0]+"", output+"");
 		
 	}
+
+	public BasicNetwork[] getBaseNetworkCommittees(String artifactId) throws RepositoryException
+	{
+		return this.inflateCommittees(AccumuloForeman.getBaseNetworkRepositoryName(), AccumuloForeman.getBaseNetworkRepository().getRawBytesField(), artifactId);
+	}
+
+	private BasicNetwork[] inflateCommittees(String tableName, String fam, String artifactId) throws RepositoryException
+	{
+		BasicNetwork[] toReturn =null;
+		try
+		{
+			
+			List<Entry<Key, Value>> rows = this.fetchByRowColumnQualifier(tableName, strip(artifactId), fam, strip(artifactId));
+			toReturn = new BasicNetwork[rows.size()];
+			for (int i=0;i<rows.size();i++)
+			{
+				Entry<Key,Value> entry = rows.get(i);
+				byte[] arr = entry.getValue().get();
+				ObjectInputStream objectIn = new ObjectInputStream(new ByteArrayInputStream(arr));
+				toReturn[i]=(BasicNetwork) objectIn.readObject();
+			}
+
+		}
+		catch (IOException e)
+		{
+			String gripe = "Could not inflate a network from Accumulo";
+			log.log(Level.SEVERE, gripe, e);
+			throw new RepositoryException(gripe, e);
+		}
+		catch (ClassNotFoundException e)
+		{
+			String gripe = "Attempted to inflate a network from Accumulo. It wasn't of type BaseNetwork";
+			log.log(Level.SEVERE, gripe, e);
+			throw new RepositoryException(gripe, e);
+		}
+		catch (RepositoryException e)
+		{
+			String gripe = "Attempted to inflate a network from Accumulo. It wasn't of type BaseNetwork";
+			log.log(Level.SEVERE, gripe, e);
+			throw new RepositoryException(gripe, e);
+		}
+		return toReturn;
+	}
+
+	private String strip(String artifactId)
+	{
+		String toReturn =artifactId.split("\\.xml")[0]+".xml";
+		return toReturn;
+	}
+
+	public List<Entry<Key, Value>> getAssocations(String artifactId) throws RepositoryException
+	{
+		return this.fetchByRowColumnFamily(MnemosyneConstants.getBaseNetworkRepositoryName(), artifactId, "ASSOCIATION");
+		//return null;
+	}
+
+	public double getAssocation(String artifactId, double closest) throws NumberFormatException, RepositoryException
+	{
+		return Double.parseDouble(this.fetchByRowColumnQualifier(MnemosyneConstants.getBaseNetworkRepositoryName(), artifactId, "ASSOCIATION", closest+"").get(0).getValue().toString());
+	}
 }

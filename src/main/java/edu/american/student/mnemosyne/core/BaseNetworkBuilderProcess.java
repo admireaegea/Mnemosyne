@@ -68,6 +68,7 @@ public class BaseNetworkBuilderProcess implements MnemosyneProcess
 			conf.setJobName(HadoopJobConfiguration.buildJobName(BaseNetworkBuilderProcess.class));
 			conf.setMapperClass(BaseNetworkBuilderMapper.class);
 			conf.overrideDefaultTable(AccumuloForeman.getArtifactRepositoryName());
+			conf.setJarClass(this.getClass());
 			Collection<Pair<Text, Text>> cfPairs = new ArrayList<Pair<Text, Text>>();
 			cfPairs.add(new Pair<Text, Text>(new Text(artifact.getArtifactId()), null));
 			conf.setFetchColumns(cfPairs);

@@ -80,6 +80,7 @@ public class TrainProcess implements MnemosyneProcess
 			HadoopJobConfiguration conf = new HadoopJobConfiguration();
 			conf.setJobName(HadoopJobConfiguration.buildJobName(this.getClass()));
 			conf.setMapperClass(NNTrainMapper.class);
+			conf.setJarClass(this.getClass());
 			conf.overrideDefaultTable(AccumuloForeman.getArtifactRepositoryName());
 			Collection<Pair<Text, Text>> cfPairs = new ArrayList<Pair<Text, Text>>();
 			cfPairs.add(new Pair<Text, Text>(new Text(artifact.getArtifactId() + ":FIELD"), null));
@@ -114,7 +115,14 @@ public class TrainProcess implements MnemosyneProcess
 				BasicNetwork base = null;
 				ClassificationNetworkConf baseConf = null;
 				double error = .003;
-				base = aForeman.getBaseNetwork(ik.getRow().toString());
+				int numberOfNeuralSenators = 50+1;
+				base = aForeman.getBaseNetwork(ik.getRow().toString()+(""+(round+1)%numberOfNeuralSenators));
+				if(base ==null)
+				{
+					base = aForeman.getBaseNetwork(ik.getRow().toString());
+					aForeman.assertBaseNetwork(base, ik.getRow().toString()+(""+(round+1)%numberOfNeuralSenators), baseConf);
+					base = aForeman.getBaseNetwork(ik.getRow().toString()+(""+(round+1)%numberOfNeuralSenators));
+				}
 				baseConf = aForeman.getBaseNetworkConf(ik.getRow().toString());
 				if(round % 2 ==1)
 				{
@@ -123,7 +131,7 @@ public class TrainProcess implements MnemosyneProcess
 					tForeman.register(ik.getRow().toString(),input,output);
 					round++;
 				}
-				else if (base != null)
+				else  if (base != null)
 				{
 					log.log(Level.INFO, "Training ...");
 					long start = System.currentTimeMillis();
@@ -149,7 +157,8 @@ public class TrainProcess implements MnemosyneProcess
 					while (train.getError() > error && ((elapsed) < timeout) && epoch < epochTimeout);
 					round++;
 					start = System.currentTimeMillis();
-					aForeman.assertBaseNetwork(base, ik.getRow().toString(), baseConf);
+					
+					aForeman.assertBaseNetwork(base, ik.getRow().toString()+(""+(round+1)%numberOfNeuralSenators), baseConf);
 
 				}
 			}
